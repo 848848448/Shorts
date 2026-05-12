@@ -3,104 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>The Empire - Fixed & Fast</title>
+    <title>Shorts Hub - Instagram Style</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
 
     <style>
-        :root { --primary: #ff0050; --bg: #000; --card: #1a1a1a; }
-        body { font-family: sans-serif; background: #000; color: #fff; margin: 0; padding: 0; overflow: hidden; height: 100vh; }
-        
+        :root { --primary: #ff0050; --bg: #000; --card: #121212; --text: #fff; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; overflow: hidden; height: 100vh; }
+
         /* Header */
-        header { height: 60px; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; border-bottom: 1px solid #222; }
-        .logo { font-size: 24px; font-weight: bold; }
+        .header { height: 60px; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; background: #000; position: sticky; top: 0; z-index: 1000; }
+        .logo-text { color: var(--primary); font-size: 22px; font-weight: bold; }
+        .top-btn { background: var(--primary); color: white; padding: 5px 15px; border-radius: 20px; font-size: 14px; border: none; font-weight: bold; }
 
-        /* Navigation */
-        nav { position: fixed; bottom: 0; width: 100%; height: 60px; background: #000; border-top: 1px solid #222; display: flex; justify-content: space-around; align-items: center; z-index: 1000; }
-        nav b { font-size: 25px; cursor: pointer; font-style: normal; }
+        /* Stories */
+        .stories-container { display: flex; gap: 15px; padding: 15px; overflow-x: auto; border-bottom: 0.5px solid #222; }
+        .story-circle { min-width: 70px; height: 70px; border-radius: 50%; border: 3px solid var(--primary); background: #333; display: flex; align-items: center; justify-content: center; font-size: 30px; }
 
-        /* Pages */
-        .page { display: none; height: calc(100vh - 120px); overflow-y: auto; padding: 15px; }
-        .active { display: block; }
+        /* Main Grid (4 Boxes) */
+        .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
+        .nav-box { background: var(--card); border-radius: 15px; height: 140px; border: 1px solid #333; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; }
+        .nav-box span { font-size: 40px; margin-bottom: 8px; }
 
-        /* 4 Big Boxes */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .box { background: var(--card); border-radius: 15px; height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid #333; }
-        .box i { font-size: 40px; margin-bottom: 10px; font-style: normal; }
+        /* Reels - Full Screen Instagram Style */
+        #reels-view { display: none; position: fixed; inset: 0; background: #000; z-index: 5000; overflow-y: scroll; scroll-snap-type: y mandatory; }
+        .reel-video { height: 100vh; width: 100%; scroll-snap-align: start; position: relative; display: flex; align-items: center; justify-content: center; }
+        .reel-video video { width: 100%; height: 100%; object-fit: cover; }
+        .reel-ui-right { position: absolute; bottom: 100px; right: 15px; display: flex; flex-direction: column; gap: 20px; align-items: center; }
+        .reel-ui-bottom { position: absolute; bottom: 100px; left: 15px; text-align: right; width: 70%; }
+        .action-icon { font-size: 30px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
 
-        /* Reels (Instagram Style) */
-        #reels-view { display: none; position: fixed; inset: 0; background: #000; z-index: 2000; overflow-y: scroll; scroll-snap-type: y mandatory; }
-        .reel { height: 100vh; width: 100%; scroll-snap-align: start; position: relative; }
-        .reel video { width: 100%; height: 100%; object-fit: cover; }
-        .reel-meta { position: absolute; bottom: 80px; left: 15px; text-shadow: 0 0 5px #000; }
+        /* Settings Page */
+        .settings-pg { display: none; padding: 25px; height: 100%; overflow-y: auto; }
+        .input-group { margin-bottom: 20px; }
+        input, select, textarea { width: 100%; padding: 15px; border-radius: 10px; border: 1px solid #444; background: #111; color: #fff; font-size: 16px; margin-top: 5px; }
+        .save-btn { width: 100%; padding: 18px; background: var(--primary); border: none; border-radius: 10px; color: white; font-weight: bold; font-size: 18px; }
 
-        /* Simple Upload Form */
-        input, select { width: 100%; padding: 15px; margin: 10px 0; border-radius: 8px; border: 1px solid #444; background: #111; color: #fff; }
-        .btn { width: 100%; padding: 15px; background: var(--primary); border: none; color: #fff; font-weight: bold; border-radius: 8px; }
+        /* Navigation Bottom */
+        nav { position: fixed; bottom: 0; width: 100%; height: 65px; background: #000; border-top: 0.5px solid #222; display: flex; justify-content: space-around; align-items: center; z-index: 2000; }
+        nav div { font-size: 26px; cursor: pointer; }
 
-        .close-btn { position: fixed; top: 20px; left: 20px; z-index: 3000; font-size: 30px; background: rgba(0,0,0,0.5); border-radius: 50%; width: 40px; height: 40px; text-align: center; line-height: 40px; }
+        .close-btn { position: fixed; top: 20px; left: 20px; z-index: 6000; font-size: 30px; color: white; }
     </style>
 </head>
 <body>
 
-    <header>
-        <div style="font-size: 10px; opacity: 0.6;" id="clock">00:00:00</div>
-        <div class="logo" id="main-symbol">💎</div>
-    </header>
+    <div id="main-app">
+        <header class="header">
+            <div style="font-size: 28px;" id="app-logo-display">💎</div>
+            <div class="logo-text">Shorts Hub</div>
+            <button class="top-btn">Sign In</button>
+        </header>
 
-    <div id="home-pg" class="page active">
-        <div class="grid">
-            <div class="box" onclick="showReels()"><i>🎬</i>ווידעאס</div>
-            <div class="box" onclick="openSec('music')"><i>🎵</i>מוזיק</div>
-            <div class="box" onclick="openSec('pics')"><i>🖼️</i>בילדער</div>
-            <div class="box" onclick="openSec('text')"><i>✍️</i>טעקסט</div>
+        <div id="home-view" class="view">
+            <div class="stories-container">
+                <div class="story-circle">🎬</div>
+                <div class="story-circle">🎵</div>
+                <div class="story-circle">🖼️</div>
+                <div class="story-circle">✍️</div>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <h1 style="font-size: 24px;">Welcome Home</h1>
+                <p style="color: #888;">!פרוביר צו דריקן די קנעפלעך</p>
+            </div>
+
+            <div class="main-grid">
+                <div class="nav-box" onclick="showReels()"><span>🎬</span>ווידעאס</div>
+                <div class="nav-box" onclick="openPage('music')"><span>🎵</span>מוזיק</div>
+                <div class="nav-box" onclick="openPage('pics')"><span>🖼️</span>בילדער</div>
+                <div class="nav-box" onclick="openPage('text')"><span>✍️</span>טעקסט</div>
+            </div>
         </div>
-    </div>
 
-    <div id="sec-pg" class="page">
-        <h2 id="sec-title"></h2>
-        <div id="sec-list"></div>
-    </div>
-
-    <div id="reels-view">
-        <div class="close-btn" onclick="closeReels()">✕</div>
-        <div id="reels-list"></div>
-    </div>
-
-    <div id="set-pg" class="page">
-        <h2>אדמין & סעטינגס</h2>
-        <input type="password" id="admin-pass" placeholder="Password">
-        <button class="btn" onclick="checkAdmin()">Login</button>
-        <div id="admin-tools" style="display:none; margin-top:20px; border:1px solid gold; padding:10px;">
-            <input type="text" id="new-sym" placeholder="טויש סימבאל (Emoji)">
-            <button class="btn" onclick="saveSym()">Update Symbol</button>
+        <div id="reels-view">
+            <div class="close-btn" onclick="closeReels()">✕</div>
+            <div id="reels-container"></div>
         </div>
-    </div>
 
-    <div id="up-pg" class="page">
-        <h2>ארויפלייגן (Upload)</h2>
-        <input type="text" id="up-title" placeholder="נאמען פונעם פייל">
-        <select id="up-type">
-            <option value="videos">ווידעא (Reels)</option>
-            <option value="music">מוזיק</option>
-            <option value="pics">בילדער</option>
-            <option value="text">טעקסט</option>
-        </select>
-        <input type="file" id="up-file" accept="video/*,audio/*,image/*">
-        <button class="btn" id="up-btn" onclick="uploadFile()">Upload Now!</button>
-    </div>
+        <div id="content-view" class="settings-pg" style="background: #000;">
+            <h2 id="view-title">Section</h2>
+            <div id="content-items"></div>
+        </div>
 
-    <nav>
-        <b onclick="nav('home')">🏠</b>
-        <b onclick="showReels()">🎬</b>
-        <b onclick="nav('up')">⊕</b>
-        <b onclick="nav('set')">⚙️</b>
-    </nav>
+        <div id="settings-view" class="settings-pg">
+            <h2>Settings</h2>
+            <div class="input-group">
+                <label>Change Main Symbol (Emoji)</label>
+                <input type="text" id="set-symbol" placeholder="💎">
+            </div>
+            <div class="input-group">
+                <label>Admin Password</label>
+                <input type="password" id="admin-pass" placeholder="Password">
+            </div>
+            <button class="save-btn" onclick="saveSettings()">Save All Fixes</button>
+            <div id="admin-tools" style="display:none; margin-top: 20px;">
+                <p style="color: gold;">BOSS MODE ACTIVE 👑</p>
+                <button class="save-btn" style="background: red;" onclick="clearAllData()">Clear Everything</button>
+            </div>
+        </div>
+
+        <input type="file" id="direct-up" style="display: none;" onchange="handleFile(this)">
+
+        <nav>
+            <div onclick="showView('home')">🏠</div>
+            <div onclick="showReels()">🎬</div>
+            <div onclick="triggerUpload()" style="font-size: 35px; color: var(--primary);">⊕</div>
+            <div onclick="showView('text')">🔔</div>
+            <div onclick="showView('settings')">👤</div>
+        </nav>
+    </div>
 
     <script>
-        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyAmKpAnoV_aG_3_rGMf4l_FzcbAWzwHTnY",
             authDomain: "flutter-ai-playground-8cfec.firebaseapp.com",
@@ -112,52 +129,56 @@
         const db = firebase.database(), storage = firebase.storage();
 
         function init() {
-            setInterval(() => document.getElementById('clock').innerText = new Date().toLocaleTimeString(), 1000);
-            db.ref('appConfig/symbol').on('value', s => document.getElementById('main-symbol').innerText = s.val() || "💎");
-            db.ref('content').on('value', s => { window.data = s.val() || {}; });
+            db.ref('appConfig/symbol').on('value', s => {
+                const val = s.val() || "💎";
+                document.getElementById('app-logo-display').innerText = val;
+            });
+            db.ref('content').on('value', s => { window.allData = s.val() || {}; });
         }
 
-        function nav(p) {
-            document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
-            document.getElementById(p + '-pg').classList.add('active');
-            if(p !== 'home') closeReels();
+        function showView(name) {
+            document.querySelectorAll('.view, .settings-pg').forEach(v => v.style.display = 'none');
+            document.getElementById(name + '-view').style.display = 'block';
+            closeReels();
         }
 
-        function uploadFile() {
-            const file = document.getElementById('up-file').files[0];
-            const title = document.getElementById('up-title').value;
-            const type = document.getElementById('up-type').value;
-            if(!file || !title) return alert("פעלט דאטא!");
-
-            const btn = document.getElementById('up-btn');
-            btn.innerText = "ארבעט... ⏳";
-            btn.disabled = true;
-
-            const ref = storage.ref('uploads/' + Date.now() + "_" + file.name);
-            ref.put(file).then(s => s.ref.getDownloadURL()).then(url => {
-                db.ref('content').push({ title, url, type, time: Date.now() });
-                alert("סוקסעס! ארויף!");
-                btn.innerText = "Upload Now!";
-                btn.disabled = false;
-                nav('home');
-            }).catch(e => { alert("Error: " + e.message); btn.disabled = false; });
+        function openPage(type) {
+            showView('content');
+            document.getElementById('view-title').innerText = type.toUpperCase();
+            const list = document.getElementById('content-items');
+            list.innerHTML = '';
+            for(let id in allData) {
+                if(allData[id].type === type) {
+                    list.innerHTML += `<div style="background:#1a1a1a; padding:15px; margin-bottom:10px; border-radius:10px; border-right:4px solid var(--primary);">
+                        ${allData[id].title} <br> <small style="color:#555">${new Date(allData[id].time).toLocaleString()}</small>
+                    </div>`;
+                }
+            }
         }
 
         function showReels() {
-            const list = document.getElementById('reels-list');
-            list.innerHTML = '';
-            const sym = document.getElementById('main-symbol').innerText;
-            
-            Object.keys(data).reverse().forEach(id => {
-                if(data[id].type === 'videos') {
-                    list.innerHTML += `
-                        <div class="reel">
-                            <div style="position:absolute; top:20px; right:20px; z-index:10; opacity:0.5;">${sym}</div>
-                            <video src="${data[id].url}" loop playsinline onclick="this.paused?this.play():this.pause()"></video>
-                            <div class="reel-meta"><h3>${data[id].title}</h3></div>
+            const container = document.getElementById('reels-container');
+            container.innerHTML = '';
+            let hasVids = false;
+            for(let id in allData) {
+                if(allData[id].type === 'videos') {
+                    hasVids = true;
+                    container.innerHTML += `
+                        <div class="reel-video">
+                            <video src="${allData[id].url}" loop playsinline onclick="this.paused?this.play():this.pause()"></video>
+                            <div class="reel-ui-right">
+                                <div class="action-icon">❤️</div>
+                                <div class="action-icon">💬</div>
+                                <div class="action-icon">🔗</div>
+                            </div>
+                            <div class="reel-ui-bottom">
+                                <b>@Dian_User ✅</b>
+                                <p>${allData[id].title} #Viral #Empire</p>
+                            </div>
                         </div>`;
                 }
-            });
+            }
+            if(!hasVids) container.innerHTML = '<div style="padding:100px; text-align:center;">נאכנישט דא קיין ווידעאס</div>';
             document.getElementById('reels-view').style.display = 'block';
         }
 
@@ -166,30 +187,41 @@
             document.querySelectorAll('video').forEach(v => v.pause());
         }
 
-        function openSec(type) {
-            nav('sec');
-            document.getElementById('sec-title').innerText = type.toUpperCase();
-            const list = document.getElementById('sec-list');
-            list.innerHTML = '';
-            for(let id in data) {
-                if(data[id].type === type) {
-                    list.innerHTML += `<div style="background:#222; padding:15px; margin-bottom:10px; border-radius:10px;">${data[id].title}</div>`;
-                }
-            }
+        // DIRECT UPLOAD FIX
+        function triggerUpload() { document.getElementById('direct-up').click(); }
+
+        function handleFile(input) {
+            const file = input.files[0];
+            if(!file) return;
+
+            let type = "pics";
+            if(file.type.includes('video')) type = "videos";
+            if(file.type.includes('audio')) type = "music";
+
+            alert("Uploading " + file.name + "... ביטע ווארט א רגע");
+            
+            const ref = storage.ref('empire/' + Date.now() + "_" + file.name);
+            ref.put(file).then(s => s.ref.getDownloadURL()).then(url => {
+                db.ref('content').push({
+                    title: "New " + type,
+                    url: url,
+                    type: type,
+                    time: Date.now()
+                });
+                alert("סוקסעס! עס איז שוין ארויף.");
+                if(type === 'videos') showReels(); else openPage(type);
+            });
         }
 
-        function checkAdmin() {
-            if(document.getElementById('admin-pass').value === "1234") {
-                document.getElementById('admin-tools').style.display = 'block';
-            }
-        }
-
-        function saveSym() {
-            db.ref('appConfig').update({ symbol: document.getElementById('new-sym').value });
-            alert("Updated!");
+        function saveSettings() {
+            const sym = document.getElementById('set-symbol').value;
+            const pass = document.getElementById('admin-pass').value;
+            if(sym) db.ref('appConfig').update({ symbol: sym });
+            if(pass === "1234") document.getElementById('admin-tools').style.display = 'block';
+            alert("Settings Updated!");
         }
 
         init();
     </script>
 </body>
-    </html>
+        </html>

@@ -3,212 +3,368 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>The Ultimate A-Z App</title>
+    <title>The Empire - Ultimate Social App</title>
+    
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+
     <style>
-        :root { --primary: #0095f6; --bg: #000; --card: #121212; --text: #fff; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 70px; overflow-x: hidden; }
+        :root { 
+            --primary: #ff0050; --bg: #000; --card: #121212; --text: #fff; 
+            --accent: #ff4500; --admin-gold: #ffd700; --light-bg: #f0f2f5; --light-card: #ffffff;
+        }
         
-        /* Header & Announcements */
-        header { background: #000; padding: 15px; border-bottom: 0.5px solid #262626; text-align: center; font-weight: bold; font-size: 18px; position: sticky; top: 0; z-index: 1000; }
-        .announcement { background: #ff4500; padding: 10px; font-weight: bold; text-align: center; font-size: 14px; transition: 0.3s; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 70px; overflow-x: hidden; transition: 0.3s; }
+        body.light-mode { --bg: var(--light-bg); --text: #000; --card: var(--light-card); }
 
-        /* Stories - באליס */
-        .stories-container { display: flex; overflow-x: auto; padding: 10px; border-bottom: 0.5px solid #262626; gap: 15px; background: #000; }
-        .story { min-width: 75px; text-align: center; font-size: 11px; }
-        .story-circle { width: 65px; height: 65px; border-radius: 50%; border: 2px solid #d6249f; padding: 2px; margin-bottom: 5px; cursor: pointer; overflow: hidden; }
-        .story-circle img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+        /* Maintenance Overlay */
+        #maintenance-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: white; }
+        .pulse-symbol { font-size: 80px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
 
-        /* Main Grid - Home */
-        .container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 12px; }
-        .box { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid #262626; position: relative; cursor: pointer; transition: transform 0.2s; }
-        .box img { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; }
-        .box-info { padding: 8px; text-align: right; }
-        .box-title { font-weight: bold; font-size: 13px; margin-bottom: 3px; }
-        .box-meta { font-size: 11px; color: #8e8e8e; }
+        /* Header & Counters */
+        .app-header { padding: 15px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; background: var(--bg); position: sticky; top: 0; z-index: 1000; }
+        .header-info { display: flex; flex-direction: column; gap: 2px; }
+        #live-clock { font-family: monospace; font-size: 12px; color: #888; }
+        .online-dot { width: 8px; height: 8px; background: #00ff00; border-radius: 50%; display: inline-block; margin-left: 5px; box-shadow: 0 0 5px #00ff00; }
+        #owner-symbol { font-size: 28px; cursor: pointer; transition: 0.2s; }
+        
+        /* News Ticker */
+        .news-ticker { background: var(--primary); color: white; overflow: hidden; white-space: nowrap; padding: 5px 0; font-size: 13px; font-weight: bold; }
+        .news-content { display: inline-block; animation: ticker 20s linear infinite; padding-right: 100%; }
+        @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
-        /* Fullscreen Player (Instagram Reels Style) */
-        #video-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:4000; display:none; flex-direction:column; justify-content: center; }
-        #player { width: 100%; height: 100%; object-fit: contain; }
-        .close-vid { position: absolute; top: 20px; right: 20px; color: white; background: rgba(0,0,0,0.5); border: none; font-size: 30px; z-index: 4100; border-radius: 50%; width: 45px; height: 45px; }
+        /* Main Grid */
+        .main-catalog { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 15px; }
+        .cat-box { background: var(--card); border-radius: 18px; height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid #333; cursor: pointer; transition: 0.3s; position: relative; }
+        .cat-box:active { transform: scale(0.92); }
+        .cat-icon { font-size: 38px; margin-bottom: 5px; }
 
-        /* Bottom Nav */
-        nav { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0; border-top: 0.5px solid #262626; z-index: 1000; }
-        nav span { font-size: 24px; cursor: pointer; opacity: 0.4; }
-        .active-nav { opacity: 1 !important; color: white; }
+        /* Video / Shorts Container */
+        .shorts-container { height: 100vh; width: 100%; scroll-snap-type: y mandatory; overflow-y: scroll; display: none; background: #000; position: fixed; top: 0; left: 0; z-index: 4000; }
+        .short-slide { height: 100vh; width: 100%; scroll-snap-align: start; position: relative; display: flex; align-items: center; justify-content: center; }
+        .short-slide video { width: 100%; height: 100%; object-fit: cover; }
+        
+        .watermark { position: absolute; top: 20px; left: 20px; opacity: 0.5; pointer-events: none; font-size: 20px; color: white; z-index: 4010; }
+        
+        /* Sidebar Actions */
+        .side-actions { position: absolute; right: 15px; bottom: 120px; display: flex; flex-direction: column; gap: 20px; z-index: 4050; }
+        .action-btn { background: none; border: none; color: white; font-size: 30px; text-align: center; }
+        .action-label { font-size: 12px; font-weight: bold; }
 
-        /* Pages */
-        .page { display: none; padding: 10px; }
-        .active { display: block; }
-        input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid #333; background: #1a1a1a; color: white; box-sizing: border-box; }
-        button { background: var(--primary); border: none; font-weight: bold; }
+        /* Global Chat */
+        #chat-view { display: none; padding: 15px; height: 70vh; flex-direction: column; }
+        #chat-messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
+        .msg { background: #262626; padding: 10px; border-radius: 12px; max-width: 80%; width: fit-content; position: relative; }
+        .msg.me { align-self: flex-start; background: var(--primary); }
+        .msg-author { font-size: 11px; color: gold; display: block; margin-bottom: 3px; }
+        .typing-indicator { font-style: italic; font-size: 12px; color: #888; height: 20px; }
 
-        /* Floating Add Button */
-        .add-btn { position: fixed; bottom: 85px; left: 20px; width: 55px; height: 55px; background: var(--primary); color: white; border-radius: 50%; border: none; font-size: 30px; display: flex; align-items: center; justify-content: center; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        /* Admin & UI Elements */
+        .admin-badge { color: var(--admin-gold); margin-right: 5px; }
+        .delete-btn { background: rgba(255,0,0,0.8); border: none; color: white; padding: 5px 10px; border-radius: 5px; font-size: 12px; }
+        
+        nav { position: fixed; bottom: 0; width: 100%; background: var(--bg); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #333; z-index: 3000; }
+        nav span { font-size: 24px; cursor: pointer; transition: 0.2s; }
+        nav span:active { transform: translateY(-5px); color: var(--primary); }
+
+        .page { display: none; padding: 15px; animation: slideUp 0.4s ease; }
+        .active-page { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Confetti Canvas */
+        #confetti { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
     </style>
 </head>
 <body>
 
-    <header>MY SYSTEM</header>
-    <div id="ann-bar" class="announcement">System Status: Active</div>
+    <canvas id="confetti"></canvas>
 
-    <div id="home-page" class="page active">
-        <div id="stories-bar" class="stories-container"></div>
-        <div id="main-grid" class="container"></div>
+    <div id="maintenance-screen">
+        <div class="pulse-symbol" id="mt-symbol">💎</div>
+        <h1>מיר פאַרריכטן דעם סיסטעם</h1>
+        <p id="mt-msg">באַלד צוריק מיט פרישע סאַפּרייזאַז!</p>
     </div>
 
-    <div id="lead-page" class="page">
-        <h3 style="text-align:center;">🏆 Top Videos</h3>
-        <div id="leader-list" style="padding: 10px;"></div>
+    <div class="news-ticker"><div class="news-content" id="news-text">ברוכים הבאים צו די נייע אימפעריע! לייגט ארויף אייערע ווידעאס...</div></div>
+
+    <header class="app-header">
+        <div class="header-info">
+            <div id="live-clock">00:00:00</div>
+            <div style="font-size: 12px;"><span class="online-dot"></span> <span id="online-count">1</span> Online</div>
+        </div>
+        <div id="owner-symbol" onclick="adminSecretTap()">💎</div>
+        <div id="total-visits" style="font-size: 10px; color: #666;">Visits: 0</div>
+    </header>
+
+    <div id="home-page" class="page active-page">
+        <div id="catalog-grid" class="main-catalog">
+            <div class="cat-box" onclick="openCat('videos')">
+                <span class="cat-icon">🎬</span>
+                <span>ווידעאָס</span>
+            </div>
+            <div class="cat-box" onclick="openCat('music')">
+                <span class="cat-icon">🎵</span>
+                <span>מוזיק</span>
+            </div>
+        </div>
+        
+        <div id="leaderboard" style="margin-top: 20px; background: var(--card); padding: 15px; border-radius: 15px;">
+            <h4 style="margin-top:0;">🏆 Top Creators</h4>
+            <div id="leaderboard-list"></div>
+        </div>
     </div>
 
-    <div id="request-page" class="page">
-        <div id="chat-box" style="height: 400px; overflow-y: auto; background: #080808; padding: 15px; border-radius: 10px; border: 1px solid #222;"></div>
-        <input type="text" id="chat-input" placeholder="שרייב א ריקוועסט...">
-        <button onclick="sendMsg()">שיקן</button>
+    <div id="chat-page" class="page">
+        <h3>גלאבאלע טשעט</h3>
+        <div id="chat-messages"></div>
+        <div class="typing-indicator" id="typing-box"></div>
+        <div style="display: flex; gap: 5px;">
+            <input type="text" id="chat-input" placeholder="שרייב עפעס..." oninput="handleTyping()">
+            <button onclick="sendMsg()" style="width: 80px;">שיק</button>
+        </div>
+    </div>
+
+    <div id="shorts-view" class="shorts-container">
+        <div style="position:fixed; top:20px; left:20px; z-index:5000; font-size:30px; color:white;" onclick="closeShorts()">✕</div>
+        <div id="shorts-wrapper"></div>
     </div>
 
     <div id="settings-page" class="page">
-        <div style="padding: 15px; border-bottom: 1px solid #222;">
-            <h3>דיין ניקנאָמען (Sign-in):</h3>
-            <input type="text" id="nick-input" placeholder="דיין נאמען...">
-            <button onclick="saveNick()">Save Name</button>
+        <h3>סעטינגס</h3>
+        <input type="text" id="user-nick" placeholder="דיין נאמען">
+        <button onclick="saveNick()">Update Name</button>
+        <button onclick="toggleTheme()" style="background: #444;">Toggle Day/Night Mode</button>
+        
+        <hr style="border: 0.5px solid #333; margin: 20px 0;">
+        
+        <div id="admin-login-area">
+            <input type="password" id="admin-pass" placeholder="Admin Password">
+            <button onclick="checkAdmin()">Admin Login</button>
         </div>
-        <div style="padding: 15px;">
-            <h3>Admin Login:</h3>
-            <input type="password" id="admin-pass" placeholder="Password">
-            <button onclick="adminLogin()">Login</button>
-            
-            <div id="admin-panel" style="display:none; margin-top: 20px;">
-                <h2 id="adm-type">Panel</h2>
-                <div id="master-tools" style="display:none;">
-                    <input type="text" id="new-live-pass" placeholder="נייע Live Admin פעסווארד">
-                    <button onclick="changeLivePass()">Change Password</button>
-                    <hr>
-                    <input type="text" id="new-ann" placeholder="Update System Announcement">
-                    <button onclick="setAnn()">Update Announcement</button>
-                </div>
-                <button onclick="db.ref('requests').remove()" style="background:red;">Clear Chat</button>
-                <div id="manage-items"></div>
-            </div>
+
+        <div id="admin-panel" style="display:none; border: 2px solid gold; padding: 15px; border-radius: 15px;">
+            <h4>Boss Control Panel 👑</h4>
+            <button onclick="db.ref('appConfig/maintenance').transaction(m => !m)" style="background:red;">Toggle Shutdown</button>
+            <input type="text" id="new-news" placeholder="Update News Ticker">
+            <input type="text" id="new-sym" placeholder="Update Owner Symbol">
+            <button onclick="updateAppInfo()">Update App</button>
+            <div id="admin-delete-list"></div>
         </div>
     </div>
 
-    <div id="video-overlay">
-        <button class="close-vid" onclick="closeVideo()">✕</button>
-        <video id="player" controls playsinline loop></video>
+    <div id="upload-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:6000; flex-direction:column; align-items:center; justify-content:center; padding:20px;">
+        <h3>Upload Media</h3>
+        <input type="text" id="up-title" placeholder="נאמען פון פייל">
+        <select id="up-type">
+            <option value="videos">Video</option>
+            <option value="music">Music</option>
+        </select>
+        <input type="file" id="up-file">
+        <button onclick="startUpload()" id="up-btn">Start Upload 🔥</button>
+        <button onclick="closeUp()" style="background:#333;">Cancel</button>
     </div>
-
-    <button class="add-btn" onclick="addNew()">+</button>
 
     <nav>
-        <span id="nav-home" class="active-nav" onclick="showPage('home')">🏠</span>
-        <span id="nav-lead" onclick="showPage('lead')">🏆</span>
-        <span id="nav-request" onclick="showPage('request')">💬</span>
-        <span id="nav-settings" onclick="showPage('settings')">⚙️</span>
+        <span onclick="nav('home')">🏠</span>
+        <span onclick="openCat('videos')">🎬</span>
+        <span onclick="openUp()">⊕</span>
+        <span onclick="nav('chat')">💬</span>
+        <span onclick="nav('settings')">⚙️</span>
     </nav>
 
     <script>
+        // --- 1. CONFIG & INIT ---
         const firebaseConfig = {
-          apiKey: "AIzaSyAmKpAnoV_aG_3_rGMf4l_FzcbAWzwHTnY",
-          authDomain: "flutter-ai-playground-8cfec.firebaseapp.com",
-          databaseURL: "https://flutter-ai-playground-8cfec-default-rtdb.firebaseio.com",
-          projectId: "flutter-ai-playground-8cfec",
-          storageBucket: "flutter-ai-playground-8cfec.firebasestorage.app",
-          messagingSenderId: "989658103041",
-          appId: "1:989658103041:web:f33b1ed6d748ef98b96f00"
+            apiKey: "AIzaSyAmKpAnoV_aG_3_rGMf4l_FzcbAWzwHTnY",
+            authDomain: "flutter-ai-playground-8cfec.firebaseapp.com",
+            databaseURL: "https://flutter-ai-playground-8cfec-default-rtdb.firebaseio.com",
+            projectId: "flutter-ai-playground-8cfec",
+            storageBucket: "flutter-ai-playground-8cfec.appspot.com"
         };
-
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        let userNick = localStorage.getItem('userNick') || "User";
-        let livePass = "5678"; // Default
+        const db = firebase.database(), storage = firebase.storage();
 
-        db.ref('adminConfig/livePass').on('value', s => { if(s.val()) livePass = s.val(); });
+        let isAdmin = false, myName = localStorage.getItem('nick') || "User_" + Math.floor(Math.random()*999);
+        let secretTaps = 0;
 
+        // --- 2. CORE LOGIC ---
         function init() {
-            // Announcement
-            db.ref('announcement').on('value', s => { document.getElementById('ann-bar').innerText = s.val() || "Active"; });
+            // Live Clock
+            setInterval(() => document.getElementById('live-clock').innerText = new Date().toLocaleTimeString(), 1000);
 
-            // Boxes & Stories
-            db.ref('boxes').on('value', snap => {
-                const grid = document.getElementById('main-grid');
-                const stories = document.getElementById('stories-bar');
-                const leadList = document.getElementById('leader-list');
-                const manage = document.getElementById('manage-items');
-                grid.innerHTML = ''; stories.innerHTML = ''; leadList.innerHTML = ''; manage.innerHTML = '<h4>Delete Items:</h4>';
-                let list = [];
+            // Online Counter
+            const userRef = db.ref('online').push(myName);
+            userRef.onDisconnect().remove();
+            db.ref('online').on('value', s => document.getElementById('online-count').innerText = s.numChildren());
 
-                snap.forEach(c => {
-                    let d = c.val(); d.id = c.key; d.views = d.views || 0;
-                    list.push(d);
-
-                    // Grid
-                    grid.innerHTML += `<div class="box" onclick="openVid('${d.id}','${d.url}')"><img src="${d.image || ''}"><div class="box-info"><div class="box-title">${d.name}</div><div class="box-meta">👁️ ${d.views} Views</div></div></div>`;
-                    
-                    // Story
-                    stories.innerHTML += `<div class="story" onclick="openVid('${d.id}','${d.url}')"><div class="story-circle"><img src="${d.image || ''}"></div><span>${d.author || 'User'}</span></div>`;
-
-                    // Admin Management
-                    manage.innerHTML += `<p>${d.name} <button style="width:auto; background:red; padding:4px;" onclick="db.ref('boxes/${d.id}').remove()">X</button></p>`;
-                });
-
-                // Leaderboard
-                list.sort((a,b) => b.views - a.views).forEach((item, i) => {
-                    leadList.innerHTML += `<div style="padding:10px; border-bottom:1px solid #222; display:flex; justify-content:space-between;"><span>#${i+1} ${item.name}</span><span>${item.views}</span></div>`;
-                });
+            // App Config (Maintenance, News, Symbol)
+            db.ref('appConfig').on('value', s => {
+                const c = s.val() || {};
+                document.getElementById('owner-symbol').innerText = c.symbol || "💎";
+                document.getElementById('news-text').innerText = c.news || "ברוכים הבאים!";
+                if(c.maintenance && !isAdmin) document.getElementById('maintenance-screen').style.display = 'flex';
+                else document.getElementById('maintenance-screen').style.display = 'none';
             });
 
-            // Chat
-            db.ref('requests').on('value', snap => {
-                const chat = document.getElementById('chat-box'); chat.innerHTML = '';
-                snap.forEach(c => { chat.innerHTML += `<div style="margin-bottom:8px;"><b>${c.val().user}:</b> ${c.val().text}</div>`; });
-                chat.scrollTop = chat.scrollHeight;
+            // Visit Counter
+            db.ref('stats/visits').transaction(v => (v || 0) + 1);
+            db.ref('stats/visits').on('value', s => document.getElementById('total-visits').innerText = "Visits: " + s.val());
+
+            // Load Content
+            db.ref('content').on('value', s => { window.appData = s.val() || {}; renderLeaderboard(); });
+            
+            // Load Chat
+            db.ref('chat').limitToLast(20).on('value', s => renderChat(s.val()));
+        }
+
+        // --- 3. UI FUNCTIONS ---
+        function nav(p) {
+            document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active-page'));
+            document.getElementById(p+'-page').classList.add('active-page');
+            if(p !== 'home') closeShorts();
+        }
+
+        function toggleTheme() { document.body.classList.toggle('light-mode'); }
+
+        function openUp() { document.getElementById('upload-modal').style.display = 'flex'; }
+        function closeUp() { document.getElementById('upload-modal').style.display = 'none'; }
+
+        // --- 4. MEDIA & SHORTS ---
+        function openCat(type) {
+            if(type === 'videos') {
+                document.getElementById('shorts-view').style.display = 'block';
+                renderShorts();
+            }
+        }
+
+        function renderShorts() {
+            const wrap = document.getElementById('shorts-wrapper');
+            const sym = document.getElementById('owner-symbol').innerText;
+            wrap.innerHTML = '';
+            for(let id in appData) {
+                if(appData[id].type !== 'videos') continue;
+                wrap.innerHTML += `
+                    <div class="short-slide" onclick="playPause(this)">
+                        <div class="watermark">${sym}</div>
+                        <video src="${appData[id].url}" loop playsinline></video>
+                        <div class="side-actions">
+                            <button class="action-btn" onclick="like('${id}')">🔥<div class="action-label">${appData[id].likes || 0}</div></button>
+                            <button class="action-btn" onclick="share('${appData[id].url}')">🔗</button>
+                            ${isAdmin ? `<button class="delete-btn" onclick="del('${id}')">מעקן</button>` : ''}
+                        </div>
+                    </div>`;
+            }
+        }
+
+        function playPause(el) {
+            const v = el.querySelector('video');
+            v.paused ? v.play() : v.pause();
+        }
+
+        function share(url) {
+            navigator.clipboard.writeText(url);
+            alert("לינק קאפּירט!");
+        }
+
+        // --- 5. CHAT & SOCIAL ---
+        function renderChat(msgs) {
+            const cont = document.getElementById('chat-messages');
+            cont.innerHTML = '';
+            for(let id in msgs) {
+                const m = msgs[id];
+                cont.innerHTML += `<div class="msg ${m.user===myName?'me':''}">
+                    <span class="msg-author">${m.user} ${m.user==='Boss'?'👑':''}</span>
+                    ${m.text}
+                </div>`;
+            }
+            cont.scrollTop = cont.scrollHeight;
+        }
+
+        function sendMsg() {
+            const txt = document.getElementById('chat-input').value;
+            if(!txt) return;
+            db.ref('chat').push({ user: isAdmin ? 'Boss' : myName, text: txt, time: Date.now() });
+            document.getElementById('chat-input').value = '';
+        }
+
+        // --- 6. ADMIN & DATA ---
+        function checkAdmin() {
+            if(document.getElementById('admin-pass').value === "1234") {
+                isAdmin = true;
+                document.getElementById('admin-panel').style.display = 'block';
+                document.getElementById('admin-login-area').style.display = 'none';
+                startConfetti();
+            }
+        }
+
+        function updateAppInfo() {
+            db.ref('appConfig').update({
+                news: document.getElementById('new-news').value,
+                symbol: document.getElementById('new-sym').value
+            });
+            alert("סיסטעם דערהייַנטיקט!");
+        }
+
+        function startUpload() {
+            const file = document.getElementById('up-file').files[0];
+            const title = document.getElementById('up-title').value;
+            const type = document.getElementById('up-type').value;
+            if(!file || !title) return alert("פעלט דאַטן");
+
+            const btn = document.getElementById('up-btn');
+            btn.innerText = "אויף דעם וועג... 🚀";
+            
+            const ref = storage.ref('media/' + Date.now() + "_" + file.name);
+            ref.put(file).then(s => s.ref.getDownloadURL()).then(url => {
+                db.ref('content').push({ name: title, url, type, user: myName, likes: 0 });
+                startConfetti();
+                closeUp();
+                btn.innerText = "Start Upload 🔥";
             });
         }
 
-        function openVid(id, url) {
-            db.ref('boxes/'+id+'/views').transaction(v => (v||0)+1);
-            document.getElementById('video-overlay').style.display = 'flex';
-            document.getElementById('player').src = url;
-            document.getElementById('player').play();
+        function renderLeaderboard() {
+            const scores = {};
+            for(let id in appData) {
+                const u = appData[id].user || "Unknown";
+                scores[u] = (scores[u] || 0) + 1;
+            }
+            const sorted = Object.entries(scores).sort((a,b) => b[1] - a[1]);
+            document.getElementById('leaderboard-list').innerHTML = sorted.map(s => `<div><b>${s[0]}</b>: ${s[1]} uploads</div>`).join('');
         }
 
-        function closeVideo() { document.getElementById('video-overlay').style.display='none'; document.getElementById('player').pause(); }
-
-        function saveNick() { let n = document.getElementById('nick-input').value; if(n) { localStorage.setItem('userNick', n); userNick = n; alert("Saved!"); } }
-
-        function adminLogin() {
-            let p = document.getElementById('admin-pass').value;
-            if(p === "1234") { // Master
-                document.getElementById('admin-panel').style.display='block';
-                document.getElementById('master-tools').style.display='block';
-                document.getElementById('adm-type').innerText = "Master Admin";
-            } else if (p === livePass) { // Live
-                document.getElementById('admin-panel').style.display='block';
-                document.getElementById('master-tools').style.display='none';
-                document.getElementById('adm-type').innerText = "Live Admin";
-            } else { alert("Wrong Password!"); }
+        function startConfetti() {
+            const canvas = document.getElementById('confetti');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            let particles = Array.from({length:100}, () => ({
+                x: Math.random()*canvas.width, y: -20, r: Math.random()*6+2, 
+                d: Math.random()*10, color: `hsl(${Math.random()*360}, 100%, 50%)`
+            }));
+            function draw() {
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                particles.forEach(p => {
+                    ctx.fillStyle = p.color; ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill();
+                    p.y += 3; p.x += Math.sin(p.d);
+                });
+                if(particles[0].y < canvas.height) requestAnimationFrame(draw);
+            }
+            draw();
         }
 
-        function addNew() {
-            let n = prompt("Name:"), u = prompt("Video Link:"), i = prompt("Image Link:");
-            if(n && u) db.ref('boxes').push({ name: n, url: u, image: i, author: userNick, views: 0 });
+        function adminSecretTap() {
+            secretTaps++;
+            if(secretTaps === 5) { alert("Secret Mode Unlocked! Go to settings."); secretTaps = 0; }
         }
 
-        function sendMsg() { let t = document.getElementById('chat-input').value; if(t) { db.ref('requests').push({ user: userNick, text: t }); document.getElementById('chat-input').value = ''; } }
-        function setAnn() { db.ref('announcement').set(document.getElementById('new-ann').value); }
-        function changeLivePass() { let p = document.getElementById('new-live-pass').value; if(p) db.ref('adminConfig/livePass').set(p); }
-
-        function showPage(p) {
-            document.querySelectorAll('.page').forEach(d => d.classList.remove('active'));
-            document.querySelectorAll('nav span').forEach(s => s.classList.remove('active-nav'));
-            document.getElementById(p + '-page').classList.add('active');
-            document.getElementById('nav-' + p).classList.add('active-nav');
-        }
+        function closeShorts() { document.getElementById('shorts-view').style.display = 'none'; document.querySelectorAll('video').forEach(v => v.pause()); }
+        function saveNick() { myName = document.getElementById('user-nick').value; localStorage.setItem('nick', myName); alert("נאמען אפדעיטעד!"); }
+        function del(id) { if(confirm("ביסטו זיכער?")) db.ref('content/'+id).remove(); }
 
         init();
     </script>
 </body>
-            </html>
+    </html>

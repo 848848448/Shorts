@@ -3,119 +3,246 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shorts Hub Interactive</title>
+    <title>Shorts Hub - Ultimate Pro Edition</title>
     <style>
-        /* Setup */
-        body { background: #0f0f0f; color: white; margin: 0; font-family: sans-serif; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
-        
+        /* קאלירן דעפיניציעס */
+        :root {
+            --bg: #0f0f0f;
+            --text: #ffffff;
+            --card: #1a1a1a;
+            --primary: #ff0050;
+            --secondary: #0074d9;
+            --border: #333333;
+        }
+
+        .light-mode {
+            --bg: #ffffff;
+            --text: #000000;
+            --card: #f2f2f2;
+            --border: #cccccc;
+        }
+
+        body { 
+            background: var(--bg); 
+            color: var(--text); 
+            margin: 0; 
+            font-family: sans-serif; 
+            overflow: hidden; 
+            transition: 0.3s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* פעידזשעס סטרוקטור */
+        .page { 
+            display: none; 
+            height: 100vh; 
+            width: 100%; 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            overflow-y: auto; 
+            padding-bottom: 80px; 
+            box-sizing: border-box; 
+        }
+        .active-page { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
         /* Header */
         .header { 
-            position: fixed; top: 0; width: 100%; height: 60px; 
-            background: #0f0f0f; display: flex; align-items: center; 
-            justify-content: space-between; padding: 0 15px; border-bottom: 1px solid #333; z-index: 2000;
-            box-sizing: border-box;
+            position: sticky; top: 0; background: var(--bg); 
+            display: flex; align-items: center; justify-content: space-between; 
+            padding: 15px; border-bottom: 1px solid var(--border); z-index: 1000; 
         }
-        .logo { font-size: 22px; font-weight: bold; color: #ff0050; pointer-events: none; }
+        .logo { font-size: 20px; font-weight: bold; color: var(--primary); }
 
-        /* Buttons with feedback */
-        .clickable { cursor: pointer; transition: transform 0.1s active; }
-        .clickable:active { transform: scale(0.95); opacity: 0.7; }
-
-        /* Sidebar */
-        .sidebar {
-            position: fixed; left: -260px; top: 0; width: 250px; height: 100%;
-            background: #1a1a1a; transition: 0.3s; z-index: 3000; padding-top: 60px;
+        /* קנעפלעך */
+        .btn { 
+            background: var(--primary); color: white; border: none; 
+            padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer;
         }
-        .sidebar.open { left: 0; }
-        .sidebar-item { padding: 18px 25px; border-bottom: 1px solid #222; cursor: pointer; }
-        .sidebar-item:active { background: #333; }
+        .btn:active { transform: scale(0.95); }
 
-        /* Stories */
-        .stories { display: flex; overflow-x: auto; padding: 15px; gap: 15px; margin-top: 65px; scroll-snap-type: x mandatory; }
-        .story-circle { width: 65px; height: 65px; border-radius: 50%; border: 3px solid #ff0050; background: #333; cursor: pointer; }
-
-        /* Login Modal */
-        #loginModal {
-            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: #1a1a1a; padding: 30px; border-radius: 15px; z-index: 4000;
-            width: 85%; max-width: 350px; border: 1px solid #444; box-shadow: 0 0 20px rgba(0,0,0,0.8);
+        /* Drawer פאר קאמענטארן */
+        .drawer { 
+            position: fixed; bottom: -100%; left: 0; width: 100%; height: 60%; 
+            background: var(--card); transition: 0.4s; z-index: 3000; 
+            border-top-radius: 20px; padding: 20px; box-sizing: border-box;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.5);
         }
+        .drawer.open { bottom: 0; }
 
-        /* Bottom Navigation */
-        .bottom-nav {
+        /* פראפיל און אדמין */
+        .profile-pic { width: 80px; height: 80px; border-radius: 50%; background: #444; margin: 0 auto 10px; border: 2px solid var(--primary); }
+        .admin-box { background: rgba(0, 116, 217, 0.1); border: 1px dashed var(--secondary); padding: 15px; border-radius: 10px; margin: 15px; }
+
+        /* Bottom Nav */
+        .bottom-nav { 
             position: fixed; bottom: 0; width: 100%; display: flex; 
-            justify-content: space-around; background: #0f0f0f; 
-            padding: 12px 0; border-top: 1px solid #333; z-index: 2000;
+            justify-content: space-around; background: var(--bg); 
+            padding: 12px 0; border-top: 1px solid var(--border); z-index: 1000; 
         }
-        .nav-btn { text-align: center; cursor: pointer; flex: 1; }
-        
-        /* Overlay to close sidebar */
-        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2500; }
+        .nav-item { text-align: center; color: #888; cursor: pointer; flex: 1; }
+        .nav-item.active-nav { color: var(--primary); }
+        .nav-icon { font-size: 20px; display: block; }
+        .nav-text { font-size: 10px; margin-top: 2px; }
     </style>
 </head>
-<body>
+<body id="mainBody" dir="rtl">
 
-    <div id="overlay" onclick="toggleSidebar()"></div>
-
-    <div id="mySidebar" class="sidebar">
-        <div class="sidebar-item" onclick="alert('Going Home')">🏠 Home</div>
-        <div class="sidebar-item" onclick="alert('Gallery Coming Soon')">🖼️ Gallery</div>
-        <div class="sidebar-item" onclick="toggleMode()">🌓 Dark/Light Mode</div>
-        <div class="sidebar-item" onclick="toggleSidebar()" style="color:#ff0050;">✖ Close Menu</div>
+    <div id="homePage" class="page active-page">
+        <div class="header">
+            <div class="logo" id="siteNameDisplay">Shorts Hub</div>
+            <div onclick="toggleTheme()" style="cursor:pointer; font-size: 20px;">🌓</div>
+        </div>
+        <div style="padding: 20px; text-align: center;">
+            <h2 id="txt-welcome">ברוכים הבאים!</h2>
+            <div style="background:var(--card); padding:50px; border-radius:15px; border:1px solid var(--border);" onclick="showPage('shortsPage')">
+                <span style="font-size: 40px;">▶</span><br>
+                <span id="txt-play">צום ווידעא</span>
+            </div>
+        </div>
     </div>
 
-    <div class="header">
-        <div class="clickable" style="font-size: 25px; padding: 10px;" onclick="toggleSidebar()">☰</div>
-        <div class="logo">Shorts Hub</div>
-        <div class="clickable" style="background:#ff0050; padding: 6px 12px; border-radius: 15px; font-weight: bold; font-size: 14px;" onclick="openLogin()">Sign In</div>
+    <div id="requestPage" class="page">
+        <div class="header"><strong id="txt-req-title">נייע איידיעס</strong></div>
+        <div style="padding: 20px;">
+            <p id="txt-req-desc">שרייב דא דיין געדאנק פאר א נייע פיטשער:</p>
+            <textarea id="ideaInput" style="width:100%; height:100px; background:var(--card); color:var(--text); border:1px solid var(--border); border-radius:8px; padding:10px;"></textarea>
+            <button class="btn" style="width:100%; margin-top:10px;" onclick="addIdea()" id="txt-send-req">שיק ריקוועסט</button>
+            <div id="ideasList" style="margin-top:20px;"></div>
+        </div>
     </div>
 
-    <div class="stories">
-        <div class="story-circle clickable" onclick="alert('Story 1')"></div>
-        <div class="story-circle clickable" onclick="alert('Story 2')"></div>
-        <div class="story-circle clickable" onclick="alert('Story 3')"></div>
-        <div class="story-circle clickable" onclick="alert('Story 4')"></div>
+    <div id="profilePage" class="page">
+        <div class="header"><strong id="txt-prof-title">מיין אקאונט</strong></div>
+        <div style="text-align:center; padding:30px;">
+            <div class="profile-pic"></div>
+            <h3 id="profileName">@Admin_User <span style="color:var(--secondary)">✔</span></h3>
+            <button class="btn" style="background:#444;" onclick="switchLanguage()" id="txt-lang-btn">טויש שפראך / Language</button>
+            <br><br>
+            <button class="btn" style="background:var(--secondary);" onclick="showPage('adminPage')" id="txt-admin-btn">Admin Panel</button>
+        </div>
     </div>
 
-    <div style="padding: 20px; text-align: center; margin-top: 20px;">
-        <h2 style="pointer-events: none;">Welcome Home</h2>
-        <p style="color: #888; pointer-events: none;">פרוביר צו דריקן די קנעפּלעך!</p>
-        <button class="clickable" style="width: 80%; padding: 15px; background: #222; border: 1px solid #444; color: white; border-radius: 10px;" onclick="alert('Searching...')">🔍 זוך דא...</button>
+    <div id="adminPage" class="page">
+        <div class="header"><span onclick="showPage('profilePage')" style="cursor:pointer;">←</span> <strong>Admin Panel</strong></div>
+        <div class="admin-box">
+            <h4>טויש סיסטעם נאמען</h4>
+            <input type="text" id="siteNameInput" style="padding:8px; width:60%;" placeholder="נייע נאמען">
+            <button class="btn" onclick="updateSiteName()">Update</button>
+        </div>
+        <div style="padding:20px;">
+            <button class="btn" style="background:red;" onclick="alert('אלע דאטא איז גערוימט')">Clear Cache</button>
+        </div>
     </div>
 
-    <div id="loginModal">
-        <h3>אריינסיינען</h3>
-        <input type="text" placeholder="User" style="width:100%; padding:10px; margin:10px 0; background:#000; border:1px solid #333; color:white;">
-        <button class="clickable" style="width:100%; padding:10px; background:#ff0050; border:none; color:white; border-radius:5px;" onclick="closeLogin()">Login</button>
-        <p onclick="closeLogin()" style="cursor:pointer; font-size:12px; margin-top:10px; color:#888;">Cancel</p>
+    <div id="shortsPage" class="page" style="background:black; padding:0;">
+        <div style="position:absolute; top:20px; left:20px; z-index:2000; font-size:30px; color:white;" onclick="showPage('homePage')">←</div>
+        <video id="mainVideo" src="video.mp4" loop muted playsinline autoplay style="width:100%; height:100%; object-fit:cover;"></video>
+        <div style="position:absolute; right:15px; bottom:100px; display:flex; flex-direction:column; gap:25px; font-size:28px;">
+            <div onclick="alert('Liked!')">❤️</div>
+            <div onclick="toggleComments()">💬</div>
+            <div onclick="alert('Shared!')">🔗</div>
+        </div>
+    </div>
+
+    <div id="commentsDrawer" class="drawer">
+        <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:10px;">
+            <strong>Comments</strong>
+            <span onclick="toggleComments()" style="cursor:pointer;">✖</span>
+        </div>
+        <div style="padding:15px 0;">
+            <p><strong>@User1:</strong> דאס ארבעט מורא'דיג!</p>
+            <p><strong>@Admin:</strong> נייע אפדעיט קומט באלד.</p>
+        </div>
     </div>
 
     <div class="bottom-nav">
-        <div class="nav-btn clickable" onclick="alert('Home')">🏠</div>
-        <div class="nav-btn clickable" onclick="alert('Shorts Section')">🎬</div>
-        <div class="nav-btn clickable" style="font-size:30px; color:#ff0050;" onclick="alert('Add Content')">⊕</div>
-        <div class="nav-btn clickable" onclick="alert('Alerts')">🔔</div>
-        <div class="nav-btn clickable" onclick="alert('Profile')">👤</div>
+        <div class="nav-item active-nav" onclick="showPage('homePage', this)">
+            <span class="nav-icon">🏠</span><span class="nav-text" id="nav-home">היים</span>
+        </div>
+        <div class="nav-item" onclick="showPage('requestPage', this)">
+            <span class="nav-icon">💡</span><span class="nav-text" id="nav-ideas">איידיעס</span>
+        </div>
+        <div class="nav-item" style="color:var(--primary); font-size:30px;">⊕</div>
+        <div class="nav-item" onclick="showPage('shortsPage', this)">
+            <span class="nav-icon">🎬</span><span class="nav-text" id="nav-shorts">שאָרטס</span>
+        </div>
+        <div class="nav-item" onclick="showPage('profilePage', this)">
+            <span class="nav-icon">👤</span><span class="nav-text" id="nav-prof">פּראָפֿיל</span>
+        </div>
     </div>
 
     <script>
-        function toggleSidebar() {
-            let sidebar = document.getElementById("mySidebar");
-            let overlay = document.getElementById("overlay");
-            if (sidebar.classList.contains("open")) {
-                sidebar.classList.remove("open");
-                overlay.style.display = "none";
-            } else {
-                sidebar.classList.add("open");
-                overlay.style.display = "block";
+        let currentLang = 'yi';
+
+        function showPage(pageId, navEl) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+            document.getElementById(pageId).classList.add('active-page');
+            
+            if(navEl) {
+                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active-nav'));
+                navEl.classList.add('active-nav');
+            }
+
+            let v = document.getElementById('mainVideo');
+            if(pageId === 'shortsPage') { v.play(); } else { v.pause(); }
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+        }
+
+        function toggleComments() {
+            document.getElementById('commentsDrawer').classList.toggle('open');
+        }
+
+        function addIdea() {
+            let input = document.getElementById('ideaInput');
+            if(input.value.trim() !== "") {
+                let div = document.createElement('div');
+                div.style.background = "var(--card)";
+                div.style.padding = "10px";
+                div.style.borderRadius = "8px";
+                div.style.marginBottom = "10px";
+                div.innerHTML = "<b>Idea:</b> " + input.value;
+                document.getElementById('ideasList').prepend(div);
+                input.value = "";
+                alert("Submitted!");
             }
         }
-        function openLogin() { document.getElementById("loginModal").style.display = "block"; }
-        function closeLogin() { document.getElementById("loginModal").style.display = "none"; }
-        function toggleMode() {
-            document.body.style.background = document.body.style.background === "white" ? "#0f0f0f" : "white";
-            document.body.style.color = document.body.style.color === "black" ? "white" : "black";
+
+        function updateSiteName() {
+            let name = document.getElementById('siteNameInput').value;
+            if(name) {
+                document.getElementById('siteNameDisplay').innerText = name;
+                alert("Site Name Updated!");
+            }
+        }
+
+        function switchLanguage() {
+            if(currentLang === 'yi') {
+                currentLang = 'en';
+                document.getElementById('mainBody').dir = 'ltr';
+                updateUI('Home', 'Ideas', 'Shorts', 'Profile', 'Welcome!', 'To Video', 'Account', 'Change Language', 'Ideas');
+            } else {
+                currentLang = 'yi';
+                document.getElementById('mainBody').dir = 'rtl';
+                updateUI('היים', 'איידיעס', 'שאָרטס', 'פּראָפֿיל', 'ברוכים הבאים!', 'צום ווידעא', 'מיין אקאונט', 'טויש שפראך', 'נייע איידיעס');
+            }
+        }
+
+        function updateUI(h, i, s, p, wel, play, prof, lang, reqT) {
+            document.getElementById('nav-home').innerText = h;
+            document.getElementById('nav-ideas').innerText = i;
+            document.getElementById('nav-shorts').innerText = s;
+            document.getElementById('nav-prof').innerText = p;
+            document.getElementById('txt-welcome').innerText = wel;
+            document.getElementById('txt-play').innerText = play;
+            document.getElementById('txt-prof-title').innerText = prof;
+            document.getElementById('txt-lang-btn').innerText = lang;
+            document.getElementById('txt-req-title').innerText = reqT;
         }
     </script>
 </body>
-</html>
+    </html>

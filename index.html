@@ -3,21 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>אונזערע Shorts</title>
+    <title>Shorts Pro Ultimate</title>
     <style>
-        body { background: black; color: white; margin: 0; font-family: sans-serif; overflow: hidden; }
-        .video-container { 
-            height: 100vh; 
-            scroll-snap-type: y mandatory; 
-            overflow-y: scroll; 
+        body { background: black; color: white; margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow: hidden; }
+        
+        /* Top Navigation */
+        .top-nav {
+            position: fixed; top: 0; width: 100%; display: flex; justify-content: space-between;
+            align-items: center; padding: 20px; z-index: 100;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
         }
-        .short { 
-            height: 100vh; 
-            scroll-snap-align: start; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-        }
+        .logo { font-size: 24px; font-weight: bold; color: #ff0050; letter-spacing: 1px; }
+
+        /* Video Area */
+        .video-container { height: 100vh; scroll-snap-type: y mandatory; overflow-y: scroll; }
+        .short { height: 100vh; scroll-snap-align: start; position: relative; display: flex; align-items: center; justify-content: center; }
         video { height: 100%; width: 100%; object-fit: cover; }
+
+        /* Side Bar (Like, Comment, Share) */
+        .side-bar {
+            position: absolute; right: 12px; bottom: 100px;
+            display: flex; flex-direction: column; gap: 20px; align-items: center;
+        }
+        .action-item { text-align: center; font-size: 13px; font-weight: 600; }
+        .action-btn { font-size: 32px; background: none; border: none; color: white; cursor: pointer; filter: drop-shadow(0px 2px 5px rgba(0,0,0,0.5)); }
+
+        /* User Info (Bottom Left) */
+        .user-info {
+            position: absolute; left: 15px; bottom: 85px; width: 70%;
+            text-shadow: 0px 1px 5px rgba(0,0,0,0.8);
+        }
+        .user-name { font-weight: bold; font-size: 17px; display: flex; align-items: center; gap: 5px; margin-bottom: 8px; }
+        .verify-badge { color: #2196F3; font-size: 14px; }
+        .follow-btn { background: #ff0050; color: white; border: none; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .caption { font-size: 14px; margin-bottom: 10px; line-height: 1.4; }
+        
+        /* Music Ticker */
+        .music-ticker { font-size: 13px; display: flex; align-items: center; gap: 8px; }
+        .music-icon { font-size: 16px; }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around;
+            align-items: center; background: black; padding: 12px 0; border-top: 0.5px solid #222; z-index: 100;
+        }
+        .nav-item { text-align: center; font-size: 10px; color: #888; font-weight: 500; }
+        .nav-icon { font-size: 24px; color: white; display: block; margin-bottom: 2px; }
     </style>
-</hhodchorshrshoshorhorsorshrshoshorhorsorshrshoshor
+</head>
+<body>
+
+    <div class="top-nav">
+        <div class="logo">MY SHORTS</div>
+        <div style="font-size: 20px;">🔍</div>
+    </div>
+
+    <div class="video-container">
+        <div class="short">
+            <video src="לינק_צו_ווידעא.mp4" loop muted playsinline onclick="this.paused ? this.play() : this.pause()"></video>
+            
+            <div class="user-info">
+                <div class="user-name">
+                    @Dian_User <span class="verify-badge">✔</span>
+                    <button class="follow-btn">Follow</button>
+                </div>
+                <div class="caption">דאס איז מיין ערשטע ווידעא! לאזט א לייק אויב איר האט הנאה #Viral #Fun #Shorts</div>
+                <div class="music-ticker">
+                    <span class="music-icon">♫</span> Original Sound - @Dian_User
+                </div>
+            </div>
+
+            <div class="side-bar">
+                <div class="action-item"><button class="action-btn">❤️</button><p>85.4K</p></div>
+                <div class="action-item"><button class="action-btn">💬</button><p>1,240</p></div>
+                <div class="action-item"><button class="action-btn">🚩</button><p>Save</p></div>
+                <div class="action-item"><button class="action-btn">🔗</button><p>Share</p></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item"><span class="nav-icon">🏠</span>Home</div>
+        <div class="nav-item"><span class="nav-icon">🧩</span>Explore</div>
+        <div class="nav-item"><span class="nav-icon" style="font-size: 38px; color: #ff0050;">+</span></div>
+        <div class="nav-item"><span class="nav-icon">📥</span>Inbox</div>
+        <div class="nav-item"><span class="nav-icon">👤</span>Profile</div>
+    </div>
+
+</body>
+</html>

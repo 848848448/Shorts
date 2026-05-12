@@ -3,96 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shorts Pro Ultimate</title>
+    <title>Shorts Hub - Ultimate Feed</title>
     <style>
-        /* הויפט אויסשטעל */
-        body { background: black; color: white; margin: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; overflow: hidden; }
+        /* Basic Setup */
+        body { background: #0f0f0f; color: white; margin: 0; font-family: sans-serif; transition: 0.3s; padding-bottom: 70px; }
         
-        /* אויבערשטע באר (Logo & Search) */
-        .top-nav { 
-            position: fixed; top: 0; width: 100%; display: flex; justify-content: space-between; 
-            padding: 20px; z-index: 100; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); 
+        /* Header */
+        .header { 
+            position: fixed; top: 0; width: 100%; height: 60px; 
+            background: rgba(15, 15, 15, 0.95); display: flex; align-items: center; 
+            justify-content: space-between; padding: 0 15px; border-bottom: 1px solid #333; z-index: 1000;
         }
-        .logo { font-size: 24px; font-weight: bold; color: #ff0050; letter-spacing: 1px; }
+        .logo { font-size: 22px; font-weight: bold; color: #ff0050; }
+        .login-btn { background: #ff0050; color: white; border: none; padding: 8px 18px; border-radius: 20px; font-weight: bold; cursor: pointer; }
 
-        /* ווידעא קאנטעינער */
-        .video-container { height: 100vh; scroll-snap-type: y mandatory; overflow-y: scroll; }
-        .short { height: 100vh; scroll-snap-align: start; position: relative; display: flex; align-items: center; justify-content: center; }
-        video { height: 100%; width: 100%; object-fit: cover; background: #111; }
+        /* Sidebar */
+        .sidebar {
+            position: fixed; left: -260px; top: 0; width: 250px; height: 100%;
+            background: #1a1a1a; transition: 0.3s; z-index: 2000; padding-top: 60px;
+        }
+        .sidebar.open { left: 0; }
+        .sidebar-item { padding: 15px 25px; border-bottom: 1px solid #222; cursor: pointer; font-size: 16px; }
 
-        /* רעכטע זייט באר (Actions) */
-        .side-bar { 
-            position: absolute; right: 12px; bottom: 100px; 
-            display: flex; flex-direction: column; gap: 20px; align-items: center; 
-        }
-        .action-item { text-align: center; font-size: 13px; font-weight: 600; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
-        .action-btn { font-size: 32px; background: none; border: none; color: white; cursor: pointer; }
+        /* Stories Bar */
+        .stories { display: flex; overflow-x: auto; padding: 15px; gap: 15px; margin-top: 60px; scrollbar-width: none; }
+        .story { text-align: center; flex-shrink: 0; }
+        .story-circle { width: 65px; height: 65px; border-radius: 50%; border: 3px solid #ff0050; background: #333; margin-bottom: 5px; }
 
-        /* באנוצער אינפארמאציע (אונטן לינקס) */
-        .user-info { 
-            position: absolute; left: 15px; bottom: 85px; width: 75%; 
-            text-shadow: 0px 1px 5px rgba(0,0,0,0.9); 
-        }
-        .user-name { font-weight: bold; font-size: 17px; display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-        .verify-badge { color: #2196F3; font-size: 14px; }
-        .follow-btn { background: #ff0050; color: white; border: none; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; }
-        .caption { font-size: 14px; margin-bottom: 10px; line-height: 1.4; }
-        
-        /* מוזיק דיסק וואס דרייט זיך */
-        .music-disk {
-            width: 45px; height: 45px; background: radial-gradient(circle, #333, #000);
-            border-radius: 50%; border: 4px solid #222;
-            animation: spin 3s linear infinite;
-        }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        /* Post Feed (The "Instagram" look) */
+        .feed { padding: 10px; max-width: 500px; margin: auto; }
+        .post-card { background: #1a1a1a; border-radius: 12px; margin-bottom: 20px; overflow: hidden; border: 1px solid #333; }
+        .post-header { padding: 10px; display: flex; align-items: center; gap: 10px; }
+        .post-user-img { width: 35px; height: 35px; border-radius: 50%; background: #444; }
+        .post-img { width: 100%; height: 300px; background: #222; display: flex; align-items: center; justify-content: center; color: #555; }
+        .post-actions { padding: 10px; font-size: 20px; display: flex; gap: 15px; }
+        .post-info { padding: 0 10px 10px; font-size: 14px; }
 
-        /* אונטערשטע נאוויגאציע (Menu) */
-        .bottom-nav { 
-            position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; 
-            align-items: center; background: black; padding: 12px 0; border-top: 0.5px solid #222; z-index: 100; 
+        /* Login Modal */
+        .modal {
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: #1a1a1a; padding: 30px; border-radius: 15px; z-index: 3000;
+            width: 85%; max-width: 350px; border: 1px solid #444; text-align: center;
         }
-        .nav-item { text-align: center; font-size: 10px; color: #888; text-decoration: none; }
-        .nav-icon { font-size: 24px; color: white; display: block; margin-bottom: 2px; }
+        .modal input { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #333; color: white; border-radius: 8px; box-sizing: border-box; }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed; bottom: 0; width: 100%; display: flex; 
+            justify-content: space-around; background: #0f0f0f; 
+            padding: 12px 0; border-top: 1px solid #333; z-index: 1000;
+        }
+        .nav-icon { font-size: 24px; display: block; }
+        .nav-text { font-size: 10px; color: #888; }
     </style>
 </head>
 <body>
 
-    <div class="top-nav">
-        <div class="logo">MY SHORTS</div>
-        <div style="font-size: 22px;">🔍</div>
+    <div id="mySidebar" class="sidebar">
+        <div class="sidebar-item" onclick="toggleSidebar()">✖ Close Menu</div>
+        <div class="sidebar-item">🏠 Home Feed</div>
+        <div class="sidebar-item">🖼️ Gallery</div>
+        <div class="sidebar-item">🕒 History</div>
+        <div class="sidebar-item">❤️ Liked Posts</div>
+        <div class="sidebar-item">⚙️ Settings</div>
+        <div class="sidebar-item" onclick="toggleMode()">🌓 Dark/Light Mode</div>
     </div>
 
-    <div class="video-container">
-        
-        <div class="short">
-            <video src="video.mp4" loop muted playsinline onclick="this.paused ? this.play() : this.pause()"></video>
-            
-            <div class="user-info">
-                <div class="user-name">
-                    @Dian_User <span class="verify-badge">✔</span>
-                    <button class="follow-btn">Follow</button>
-                </div>
-                <div class="caption">ברוכים הבאים צו מיין נייע Shorts עפּ! #Shorts #Viral #WebDev</div>
-                <div style="font-size: 13px;">♫ Original Sound - @Dian_User</div>
-            </div>
+    <div class="header">
+        <div style="font-size: 25px; cursor: pointer;" onclick="toggleSidebar()">☰</div>
+        <div class="logo">Shorts Hub</div>
+        <button class="login-btn" onclick="openLogin()">Sign In</button>
+    </div>
 
-            <div class="side-bar">
-                <div class="action-item"><button class="action-btn">❤️</button><p>85.4K</p></div>
-                <div class="action-item"><button class="action-btn">💬</button><p>1,240</p></div>
-                <div class="action-item"><button class="action-btn">🔗</button><p>Share</p></div>
-                <div class="music-disk"></div>
+    <div class="stories">
+        <div class="story"><div class="story-circle"></div><span>You</span></div>
+        <div class="story"><div class="story-circle"></div><span>News</span></div>
+        <div class="story"><div class="story-circle"></div><span>Live</span></div>
+        <div class="story"><div class="story-circle"></div><span>Trends</span></div>
+        <div class="story"><div class="story-circle"></div><span>Sports</span></div>
+    </div>
+
+    <div class="feed">
+        <div class="post-card">
+            <div class="post-header">
+                <div class="post-user-img"></div>
+                <strong>@Top_Creator</strong>
+            </div>
+            <div class="post-img">Image/Video Placeholder</div>
+            <div class="post-actions"><span>❤️</span> <span>💬</span> <span>🔗</span></div>
+            <div class="post-info">
+                <strong>@Top_Creator</strong> דאס איז א נייע פאוסט אויף מיין פיעד!
             </div>
         </div>
 
+        <div class="post-card">
+            <div class="post-header">
+                <div class="post-user-img"></div>
+                <strong>@News_Official</strong>
+            </div>
+            <div class="post-img" style="background: #333;">Breaking News Update</div>
+            <div class="post-actions"><span>❤️</span> <span>💬</span> <span>🔗</span></div>
+            <div class="post-info">
+                <strong>@News_Official</strong> קוקט דא פאר די לעצטע נייעס.
+            </div>
+        </div>
+    </div>
+
+    <div id="loginModal" class="modal">
+        <h3>ברוכים הבאים</h3>
+        <p>סיין זיך אריין צו דיין קאונט</p>
+        <input type="text" placeholder="Username / Email">
+        <input type="password" placeholder="Password">
+        <button class="login-btn" style="width: 100%; padding: 12px;" onclick="closeLogin()">Login</button>
+        <p style="font-size: 12px; margin-top: 15px; cursor: pointer; color: #888;" onclick="closeLogin()">Cancel</p>
     </div>
 
     <div class="bottom-nav">
-        <div class="nav-item"><span class="nav-icon">🏠</span>Home</div>
-        <div class="nav-item"><span class="nav-icon">🧩</span>Explore</div>
-        <div class="nav-item"><span class="nav-icon" style="font-size: 35px; color: #ff0050; font-weight: bold;">+</span></div>
-        <div class="nav-item"><span class="nav-icon">📥</span>Inbox</div>
-        <div class="nav-item"><span class="nav-icon">👤</span>Profile</div>
+        <div style="text-align:center;"><span class="nav-icon">🏠</span><span class="nav-text">Home</span></div>
+        <div style="text-align:center;"><span class="nav-icon">🎬</span><span class="nav-text">Shorts</span></div>
+        <div style="font-size: 30px; color: #ff0050; margin-top: -5px;">⊕</div>
+        <div style="text-align:center;"><span class="nav-icon">🔔</span><span class="nav-text">Alerts</span></div>
+        <div style="text-align:center;"><span class="nav-icon">👤</span><span class="nav-text">Profile</span></div>
     </div>
 
+    <script>
+        function toggleSidebar() {
+            document.getElementById("mySidebar").classList.toggle("open");
+        }
+        function openLogin() {
+            document.getElementById("loginModal").style.display = "block";
+        }
+        function closeLogin() {
+            document.getElementById("loginModal").style.display = "none";
+        }
+        function toggleMode() {
+            let b = document.body;
+            if(b.style.background === "white") {
+                b.style.background = "#0f0f0f";
+                b.style.color = "white";
+            } else {
+                b.style.background = "white";
+                b.style.color = "black";
+            }
+        }
+    </script>
+
 </body>
-</html>
+            </html>

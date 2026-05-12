@@ -3,95 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>The Ultimate Video App</title>
-    
+    <title>The Ultimate A-Z App</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-
     <style>
-        :root { --primary: #007bff; --bg: #000000; --card: #121212; --text: #ffffff; }
-        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 80px; }
+        :root { --primary: #0095f6; --bg: #000; --card: #121212; --text: #fff; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 70px; overflow-x: hidden; }
         
-        /* Header & Announcement */
-        header { background: #000; padding: 15px; border-bottom: 1px solid #333; font-weight: bold; font-size: 20px; text-align: center; }
-        .announcement { background: #ff4500; padding: 10px; font-weight: bold; text-align: center; font-size: 14px; }
+        /* Header & Announcements */
+        header { background: #000; padding: 15px; border-bottom: 0.5px solid #262626; text-align: center; font-weight: bold; font-size: 18px; position: sticky; top: 0; z-index: 1000; }
+        .announcement { background: #ff4500; padding: 10px; font-weight: bold; text-align: center; font-size: 14px; transition: 0.3s; }
 
-        /* Grid - Same as yesterday */
+        /* Stories - באליס */
+        .stories-container { display: flex; overflow-x: auto; padding: 10px; border-bottom: 0.5px solid #262626; gap: 15px; background: #000; }
+        .story { min-width: 75px; text-align: center; font-size: 11px; }
+        .story-circle { width: 65px; height: 65px; border-radius: 50%; border: 2px solid #d6249f; padding: 2px; margin-bottom: 5px; cursor: pointer; overflow: hidden; }
+        .story-circle img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+
+        /* Main Grid - Home */
         .container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 12px; }
-        .box { background: var(--card); border-radius: 15px; overflow: hidden; border: 1px solid #222; position: relative; }
-        .box img { width: 100%; height: 180px; object-fit: cover; background: #1a1a1a; display: block; }
-        .box-info { padding: 10px; text-align: right; }
-        .box-title { font-weight: bold; font-size: 15px; margin-bottom: 4px; }
-        .view-count { font-size: 12px; color: #888; }
-        .live-badge { position: absolute; top: 10px; left: 10px; background: red; padding: 2px 8px; border-radius: 5px; font-size: 10px; font-weight: bold; }
+        .box { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid #262626; position: relative; cursor: pointer; transition: transform 0.2s; }
+        .box img { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; }
+        .box-info { padding: 8px; text-align: right; }
+        .box-title { font-weight: bold; font-size: 13px; margin-bottom: 3px; }
+        .box-meta { font-size: 11px; color: #8e8e8e; }
 
-        /* Leaderboard & Chat Pages */
-        .page { display: none; padding: 15px; }
-        .active { display: block; }
-        .leader-item { display: flex; justify-content: space-between; background: #111; margin: 8px 0; padding: 15px; border-radius: 10px; border: 1px solid #333; }
-        
-        #chat-box { height: 350px; overflow-y: auto; background: #080808; border: 1px solid #333; margin: 10px 0; padding: 15px; text-align: right; border-radius: 12px; }
-        .msg { background: #1a1a1a; padding: 10px; margin: 8px 0; border-radius: 10px; border-right: 4px solid var(--primary); }
-
-        /* Video Player Overlay */
-        #video-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:2000; display:none; flex-direction:column; justify-content: center; }
-        video { width: 100%; max-height: 90%; }
-        .close-btn { position:absolute; top:20px; left:20px; background:rgba(255,255,255,0.2); color:white; border:none; padding:12px 18px; border-radius:50%; z-index:2100; font-size: 20px; }
+        /* Fullscreen Player (Instagram Reels Style) */
+        #video-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:4000; display:none; flex-direction:column; justify-content: center; }
+        #player { width: 100%; height: 100%; object-fit: contain; }
+        .close-vid { position: absolute; top: 20px; right: 20px; color: white; background: rgba(0,0,0,0.5); border: none; font-size: 30px; z-index: 4100; border-radius: 50%; width: 45px; height: 45px; }
 
         /* Bottom Nav */
-        nav { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #333; }
-        nav span { cursor: pointer; font-size: 24px; opacity: 0.5; }
-        nav span.active-nav { opacity: 1; color: var(--primary); }
+        nav { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0; border-top: 0.5px solid #262626; z-index: 1000; }
+        nav span { font-size: 24px; cursor: pointer; opacity: 0.4; }
+        .active-nav { opacity: 1 !important; color: white; }
 
-        /* Admin UI */
-        input, button { width: 100%; padding: 14px; margin: 8px 0; border-radius: 10px; border: 1px solid #333; background: #111; color: white; box-sizing: border-box; }
+        /* Pages */
+        .page { display: none; padding: 10px; }
+        .active { display: block; }
+        input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid #333; background: #1a1a1a; color: white; box-sizing: border-box; }
         button { background: var(--primary); border: none; font-weight: bold; }
+
+        /* Floating Add Button */
+        .add-btn { position: fixed; bottom: 85px; left: 20px; width: 55px; height: 55px; background: var(--primary); color: white; border-radius: 50%; border: none; font-size: 30px; display: flex; align-items: center; justify-content: center; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body>
 
-    <header>MY VIDEO APP</header>
-    <div id="ann-bar" class="announcement">לאָדט זיך...</div>
+    <header>MY SYSTEM</header>
+    <div id="ann-bar" class="announcement">System Status: Active</div>
 
     <div id="home-page" class="page active">
-        <div id="main-container" class="container"></div>
+        <div id="stories-bar" class="stories-container"></div>
+        <div id="main-grid" class="container"></div>
     </div>
 
     <div id="lead-page" class="page">
-        <h3 style="text-align: center;">🏆 טאַפּ ווידעאָס</h3>
-        <div id="leader-list"></div>
+        <h3 style="text-align:center;">🏆 Top Videos</h3>
+        <div id="leader-list" style="padding: 10px;"></div>
     </div>
 
     <div id="request-page" class="page">
-        <h3 style="text-align: center;">💬 ריקוועסטס & קאָמאַנדס</h3>
-        <div id="chat-box"></div>
-        <input type="text" id="user-msg" placeholder="שרייב עפעס...">
-        <button onclick="sendRequest()">שיקן ✉️</button>
+        <div id="chat-box" style="height: 400px; overflow-y: auto; background: #080808; padding: 15px; border-radius: 10px; border: 1px solid #222;"></div>
+        <input type="text" id="chat-input" placeholder="שרייב א ריקוועסט...">
+        <button onclick="sendMsg()">שיקן</button>
     </div>
 
     <div id="settings-page" class="page">
-        <div id="login-area">
-            <input type="password" id="pass" placeholder="Admin Password">
-            <button onclick="checkAdmin()">Login</button>
+        <div style="padding: 15px; border-bottom: 1px solid #222;">
+            <h3>דיין ניקנאָמען (Sign-in):</h3>
+            <input type="text" id="nick-input" placeholder="דיין נאמען...">
+            <button onclick="saveNick()">Save Name</button>
         </div>
-        <div id="admin-tools" style="display:none;">
-            <h4>אדמין פאַנעל</h4>
-            <input type="text" id="new-name" placeholder="נאמען">
-            <input type="text" id="new-url" placeholder="ווידעא לינק (.mp4)">
-            <input type="text" id="new-img" placeholder="בילד לינק (Poster)">
-            <button onclick="addBox()">לייג צו ווידעא +</button>
-            <hr>
-            <input type="text" id="new-ann" placeholder="טויש מעלדונג">
-            <button onclick="setAnn()">Update Announcement</button>
-            <button onclick="clearChat()" style="background:red;">ריין אויס טשעט</button>
-            <div id="admin-manage-list"></div>
+        <div style="padding: 15px;">
+            <h3>Admin Login:</h3>
+            <input type="password" id="admin-pass" placeholder="Password">
+            <button onclick="adminLogin()">Login</button>
+            
+            <div id="admin-panel" style="display:none; margin-top: 20px;">
+                <h2 id="adm-type">Panel</h2>
+                <div id="master-tools" style="display:none;">
+                    <input type="text" id="new-live-pass" placeholder="נייע Live Admin פעסווארד">
+                    <button onclick="changeLivePass()">Change Password</button>
+                    <hr>
+                    <input type="text" id="new-ann" placeholder="Update System Announcement">
+                    <button onclick="setAnn()">Update Announcement</button>
+                </div>
+                <button onclick="db.ref('requests').remove()" style="background:red;">Clear Chat</button>
+                <div id="manage-items"></div>
+            </div>
         </div>
     </div>
 
     <div id="video-overlay">
-        <button class="close-btn" onclick="closeVideo()">✕</button>
+        <button class="close-vid" onclick="closeVideo()">✕</button>
         <video id="player" controls playsinline loop></video>
     </div>
+
+    <button class="add-btn" onclick="addNew()">+</button>
 
     <nav>
         <span id="nav-home" class="active-nav" onclick="showPage('home')">🏠</span>
@@ -113,78 +122,85 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+        let userNick = localStorage.getItem('userNick') || "User";
+        let livePass = "5678"; // Default
+
+        db.ref('adminConfig/livePass').on('value', s => { if(s.val()) livePass = s.val(); });
 
         function init() {
-            // Load Announcement
-            db.ref('announcement').on('value', s => { document.getElementById('ann-bar').innerText = s.val() || "Welcome"; });
+            // Announcement
+            db.ref('announcement').on('value', s => { document.getElementById('ann-bar').innerText = s.val() || "Active"; });
 
-            // Load Boxes & Leaderboard
+            // Boxes & Stories
             db.ref('boxes').on('value', snap => {
-                const container = document.getElementById('main-container');
+                const grid = document.getElementById('main-grid');
+                const stories = document.getElementById('stories-bar');
                 const leadList = document.getElementById('leader-list');
-                const adminList = document.getElementById('admin-manage-list');
-                container.innerHTML = ''; adminList.innerHTML = '';
-                let items = [];
+                const manage = document.getElementById('manage-items');
+                grid.innerHTML = ''; stories.innerHTML = ''; leadList.innerHTML = ''; manage.innerHTML = '<h4>Delete Items:</h4>';
+                let list = [];
 
-                snap.forEach(child => {
-                    let d = child.val(); d.id = child.key; d.views = d.views || 0;
-                    items.push(d);
+                snap.forEach(c => {
+                    let d = c.val(); d.id = c.key; d.views = d.views || 0;
+                    list.push(d);
 
-                    const box = document.createElement('div');
-                    box.className = 'box';
-                    box.innerHTML = `<div class="live-badge">LIVE</div><img src="${d.image || ''}"><div class="box-info"><div class="box-title">${d.name}</div><div class="view-count">👁️ ${d.views}</div></div>`;
-                    box.onclick = () => {
-                        db.ref('boxes/'+d.id+'/views').transaction(v => (v||0)+1);
-                        document.getElementById('video-overlay').style.display='flex';
-                        document.getElementById('player').src = d.url;
-                        document.getElementById('player').play();
-                    };
-                    container.appendChild(box);
+                    // Grid
+                    grid.innerHTML += `<div class="box" onclick="openVid('${d.id}','${d.url}')"><img src="${d.image || ''}"><div class="box-info"><div class="box-title">${d.name}</div><div class="box-meta">👁️ ${d.views} Views</div></div></div>`;
+                    
+                    // Story
+                    stories.innerHTML += `<div class="story" onclick="openVid('${d.id}','${d.url}')"><div class="story-circle"><img src="${d.image || ''}"></div><span>${d.author || 'User'}</span></div>`;
 
-                    const adminItem = document.createElement('div');
-                    adminItem.innerHTML = `<p>${d.name} <button style="width:auto; padding:5px; background:red;" onclick="db.ref('boxes/${d.id}').remove()">Delete</button></p>`;
-                    adminList.appendChild(adminItem);
+                    // Admin Management
+                    manage.innerHTML += `<p>${d.name} <button style="width:auto; background:red; padding:4px;" onclick="db.ref('boxes/${d.id}').remove()">X</button></p>`;
                 });
 
                 // Leaderboard
-                leadList.innerHTML = '';
-                items.sort((a,b) => b.views - a.views).forEach((item, i) => {
-                    const row = document.createElement('div');
-                    row.className = 'leader-item';
-                    row.innerHTML = `<span>#${i+1} ${item.name}</span> <span>${item.views} Views</span>`;
-                    leadList.appendChild(row);
+                list.sort((a,b) => b.views - a.views).forEach((item, i) => {
+                    leadList.innerHTML += `<div style="padding:10px; border-bottom:1px solid #222; display:flex; justify-content:space-between;"><span>#${i+1} ${item.name}</span><span>${item.views}</span></div>`;
                 });
             });
 
-            // Load Chat
+            // Chat
             db.ref('requests').on('value', snap => {
-                const chat = document.getElementById('chat-box');
-                chat.innerHTML = '';
-                snap.forEach(c => {
-                    const m = document.createElement('div');
-                    m.className = 'msg'; m.innerText = c.val().text;
-                    chat.appendChild(m);
-                });
+                const chat = document.getElementById('chat-box'); chat.innerHTML = '';
+                snap.forEach(c => { chat.innerHTML += `<div style="margin-bottom:8px;"><b>${c.val().user}:</b> ${c.val().text}</div>`; });
                 chat.scrollTop = chat.scrollHeight;
             });
         }
 
-        function addBox() {
-            const name = document.getElementById('new-name').value;
-            const url = document.getElementById('new-url').value;
-            const img = document.getElementById('new-img').value;
-            if(name && url) db.ref('boxes').push({ name, url, image: img, views: 0 });
+        function openVid(id, url) {
+            db.ref('boxes/'+id+'/views').transaction(v => (v||0)+1);
+            document.getElementById('video-overlay').style.display = 'flex';
+            document.getElementById('player').src = url;
+            document.getElementById('player').play();
         }
 
-        function sendRequest() {
-            const t = document.getElementById('user-msg').value;
-            if(t) { db.ref('requests').push({ text: t }); document.getElementById('user-msg').value = ''; }
-        }
-
-        function setAnn() { db.ref('announcement').set(document.getElementById('new-ann').value); }
-        function clearChat() { if(confirm("מעקן טשעט?")) db.ref('requests').remove(); }
         function closeVideo() { document.getElementById('video-overlay').style.display='none'; document.getElementById('player').pause(); }
-        
+
+        function saveNick() { let n = document.getElementById('nick-input').value; if(n) { localStorage.setItem('userNick', n); userNick = n; alert("Saved!"); } }
+
+        function adminLogin() {
+            let p = document.getElementById('admin-pass').value;
+            if(p === "1234") { // Master
+                document.getElementById('admin-panel').style.display='block';
+                document.getElementById('master-tools').style.display='block';
+                document.getElementById('adm-type').innerText = "Master Admin";
+            } else if (p === livePass) { // Live
+                document.getElementById('admin-panel').style.display='block';
+                document.getElementById('master-tools').style.display='none';
+                document.getElementById('adm-type').innerText = "Live Admin";
+            } else { alert("Wrong Password!"); }
+        }
+
+        function addNew() {
+            let n = prompt("Name:"), u = prompt("Video Link:"), i = prompt("Image Link:");
+            if(n && u) db.ref('boxes').push({ name: n, url: u, image: i, author: userNick, views: 0 });
+        }
+
+        function sendMsg() { let t = document.getElementById('chat-input').value; if(t) { db.ref('requests').push({ user: userNick, text: t }); document.getElementById('chat-input').value = ''; } }
+        function setAnn() { db.ref('announcement').set(document.getElementById('new-ann').value); }
+        function changeLivePass() { let p = document.getElementById('new-live-pass').value; if(p) db.ref('adminConfig/livePass').set(p); }
+
         function showPage(p) {
             document.querySelectorAll('.page').forEach(d => d.classList.remove('active'));
             document.querySelectorAll('nav span').forEach(s => s.classList.remove('active-nav'));
@@ -192,9 +208,7 @@
             document.getElementById('nav-' + p).classList.add('active-nav');
         }
 
-        function checkAdmin() { if(document.getElementById('pass').value === '1234') document.getElementById('admin-tools').style.display = 'block'; }
-
         init();
     </script>
 </body>
-    </html>
+            </html>

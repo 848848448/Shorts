@@ -3,152 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>The Empire 2.0 - Full Power</title>
+    <title>Empire Social - Instagram Style</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
 
     <style>
-        :root { --primary: #ff0050; --bg: #000; --card: #1c1c1e; --text: #fff; --accent: #0095f6; }
+        :root { --primary: #ff0050; --bg: #000; --card: #1c1c1e; --text: #fff; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; overflow-x: hidden; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; overflow: hidden; height: 100vh; }
+
+        /* App Layout */
+        #app-container { height: 100vh; display: flex; flex-direction: column; }
+        .main-content { flex: 1; overflow-y: auto; position: relative; }
 
         /* Header */
-        .header { height: 60px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; border-bottom: 1px solid #333; position: sticky; top: 0; background: #000; z-index: 1000; }
-        #main-logo-area { font-size: 28px; font-weight: bold; }
-        .stats-area { font-size: 12px; color: #888; text-align: left; }
+        .header { height: 60px; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; border-bottom: 0.5px solid #333; background: #000; }
+        #logo-display { font-size: 24px; font-weight: bold; }
+        .header-stats { font-size: 11px; color: #888; }
 
-        /* Grid */
-        .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; margin-top: 10px; }
-        .cat-card { background: var(--card); border-radius: 15px; height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; border: 1px solid #333; transition: 0.2s; }
-        .cat-card:active { transform: scale(0.95); background: #2c2c2e; }
-        .cat-icon { font-size: 40px; margin-bottom: 10px; }
+        /* 4 Categories Grid */
+        .grid-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
+        .cat-item { background: var(--card); border-radius: 12px; height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 600; border: 0.5px solid #333; }
+        .cat-item:active { transform: scale(0.96); opacity: 0.8; }
+        .cat-item i { font-size: 40px; margin-bottom: 10px; font-style: normal; }
 
-        /* Instagram Reels View */
-        #reels-view { display: none; position: fixed; inset: 0; background: #000; z-index: 5000; overflow-y: scroll; scroll-snap-type: y mandatory; }
-        .reel-video { height: 100vh; width: 100%; scroll-snap-align: start; position: relative; display: flex; align-items: center; justify-content: center; }
-        .reel-video video { width: 100%; height: 100%; object-fit: cover; }
-        .reel-ui { position: absolute; bottom: 80px; right: 20px; display: flex; flex-direction: column; gap: 20px; align-items: center; }
-        .reel-info { position: absolute; bottom: 80px; left: 20px; text-align: right; width: 70%; }
+        /* Instagram Reels Full Screen */
+        #reels-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 5000; overflow-y: scroll; scroll-snap-type: y mandatory; }
+        .reel-item { height: 100vh; width: 100%; scroll-snap-align: start; position: relative; display: flex; align-items: center; justify-content: center; background: #000; }
+        .reel-item video { width: 100%; height: 100%; object-fit: cover; }
+        
+        .reel-controls { position: absolute; right: 15px; bottom: 100px; display: flex; flex-direction: column; gap: 20px; align-items: center; z-index: 10; }
+        .reel-icon { font-size: 28px; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        .reel-text { position: absolute; bottom: 100px; left: 15px; text-align: right; z-index: 10; width: 70%; text-shadow: 0 1px 3px #000; }
 
-        /* Settings Page - Big & Clear */
-        .settings-container { padding: 30px; display: none; }
-        .settings-container.active { display: block; }
-        h2 { border-bottom: 2px solid var(--primary); padding-bottom: 10px; }
-        .input-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; color: #aaa; }
-        input, select { width: 100%; padding: 15px; border-radius: 10px; border: 1px solid #444; background: #111; color: #fff; font-size: 16px; }
-        .btn-main { width: 100%; padding: 18px; background: var(--primary); border: none; border-radius: 10px; color: white; font-weight: bold; font-size: 18px; margin-top: 10px; }
+        /* Settings & Admin */
+        .page-view { display: none; padding: 20px; height: 100%; overflow-y: auto; background: #000; }
+        .input-box { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #333; background: #111; color: white; font-size: 16px; }
+        .action-btn { width: 100%; padding: 15px; border-radius: 8px; background: var(--primary); color: white; border: none; font-weight: bold; font-size: 16px; cursor: pointer; }
+        
+        /* Admin Panel Box */
+        #admin-panel { margin-top: 25px; border: 1px solid gold; padding: 15px; border-radius: 10px; display: none; }
 
-        /* Admin Dashboard */
-        .admin-only { border: 2px solid gold; padding: 20px; border-radius: 15px; margin-top: 30px; display: none; }
+        /* Navigation */
+        nav { height: 60px; background: #000; border-top: 0.5px solid #333; display: flex; justify-content: space-around; align-items: center; position: fixed; bottom: 0; width: 100%; }
+        nav span { font-size: 24px; cursor: pointer; }
 
-        /* Nav */
-        nav { position: fixed; bottom: 0; width: 100%; background: #000; border-top: 1px solid #333; display: flex; justify-content: space-around; padding: 15px 0; z-index: 2000; }
-        nav span { font-size: 26px; cursor: pointer; }
-
-        /* Maintenance Overlay */
-        #mt-screen { position: fixed; inset: 0; background: #000; z-index: 10000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        /* Empty State */
+        .empty-msg { text-align: center; margin-top: 50px; color: #555; }
     </style>
 </head>
 <body>
 
-    <div id="mt-screen">
-        <div id="mt-logo" style="font-size: 100px;">💎</div>
-        <h1 id="mt-text">סיסטעם ארבעט יעצט</h1>
-    </div>
-
-    <header class="header">
-        <div class="stats-area">
-            <div id="clock">00:00:00</div>
-            <div>Online: <span id="on-cnt">1</span></div>
-        </div>
-        <div id="main-logo-area">💎</div>
-    </header>
-
-    <div id="home-page" class="page active">
-        <div class="grid-container">
-            <div class="cat-card" onclick="showReels()">
-                <span class="cat-icon">🎬</span>
-                <span>ווידעאס</span>
+    <div id="app-container">
+        <header class="header">
+            <div class="header-stats">
+                <div id="clock">00:00:00</div>
+                <div>Online: <span id="on-val">1</span></div>
             </div>
-            <div class="cat-card" onclick="nav('music')">
-                <span class="cat-icon">🎵</span>
-                <span>מוזיק</span>
-            </div>
-            <div class="cat-card" onclick="nav('pics')">
-                <span class="cat-icon">🖼️</span>
-                <span>פוקטשערס</span>
-            </div>
-            <div class="cat-card" onclick="nav('text')">
-                <span class="cat-icon">✍️</span>
-                <span>טעקסט</span>
-            </div>
-        </div>
-    </div>
+            <div id="logo-display">💎</div>
+        </header>
 
-    <div id="content-page" class="page" style="display:none; padding:20px;">
-        <button onclick="nav('home')">⬅ צוריק</button>
-        <h2 id="page-title">סעקציע</h2>
-        <div id="content-list"></div>
-    </div>
+        <main class="main-content">
+            <div id="home-pg" class="page-view" style="display:block;">
+                <div class="grid-wrapper">
+                    <div class="cat-item" onclick="openReels()"><i>🎬</i>ווידעאס</div>
+                    <div class="cat-item" onclick="openSection('music')"><i>🎵</i>מוזיק</div>
+                    <div class="cat-item" onclick="openSection('pics')"><i>🖼️</i>פוקטשערס</div>
+                    <div class="cat-item" onclick="openSection('text')"><i>✍️</i>טעקסט</div>
+                </div>
+            </div>
 
-    <div id="reels-view">
-        <div style="position:fixed; top:20px; left:20px; z-index:6000; font-size:30px;" onclick="closeReels()">✕</div>
-        <div id="reels-container"></div>
-    </div>
+            <div id="section-pg" class="page-view">
+                <button onclick="nav('home')" style="color:var(--primary); background:none; border:none; margin-bottom:20px;">✕ צוריק</button>
+                <h2 id="sec-title">Section</h2>
+                <div id="sec-list"></div>
+            </div>
 
-    <div id="settings-page" class="settings-container">
-        <h2>סעטינגס</h2>
-        <div class="input-group">
-            <label>דיין נאמען</label>
-            <input type="text" id="user-name" placeholder="למשל: משה">
-            <button class="btn-main" style="background:#444;" onclick="saveName()">Update Profile</button>
+            <div id="settings-pg" class="page-view">
+                <h2>סעטינגס</h2>
+                <input type="text" id="nick-in" class="input-box" placeholder="דיין נאמען">
+                <button class="action-btn" onclick="saveNick()">Update Name</button>
+                
+                <div style="margin-top:40px;">
+                    <input type="password" id="pass-in" class="input-box" placeholder="Admin Password">
+                    <button class="action-btn" style="background:#333" onclick="doAdmin()">Admin Login</button>
+                </div>
+
+                <div id="admin-panel">
+                    <h3 style="color:gold">Admin Controls</h3>
+                    <label>Main Symbol (Emoji)</label>
+                    <input type="text" id="adm-sym" class="input-box" placeholder="💎">
+                    <button class="action-btn" onclick="saveAdmin()">Save Global Settings</button>
+                    <button class="action-btn" style="background:red; margin-top:10px;" onclick="toggleMT()">Toggle Maintenance</button>
+                </div>
+            </div>
+        </main>
+
+        <div id="reels-overlay">
+            <div style="position:fixed; top:20px; left:20px; z-index:6000; font-size:30px; color:white; text-shadow: 0 0 10px #000;" onclick="closeReels()">✕</div>
+            <div id="reels-list"></div>
         </div>
 
-        <div class="input-group">
-            <label>אדמין פעסווארד</label>
-            <input type="password" id="admin-key" placeholder="Password">
-            <button class="btn-main" onclick="checkAdmin()">Admin Login</button>
+        <div id="up-modal" class="page-view" style="position:fixed; inset:0; z-index:8000; display:none;">
+            <h2>ארויפלייגן פרישע זאכן</h2>
+            <input type="text" id="up-name" class="input-box" placeholder="טיטל / נאמען">
+            <select id="up-type" class="input-box">
+                <option value="videos">Video</option>
+                <option value="music">Music</option>
+                <option value="pics">Picture</option>
+                <option value="text">Text Message</option>
+            </select>
+            <input type="file" id="up-file" class="input-box">
+            <button id="up-go" class="action-btn" onclick="uploadNow()">Upload Now! 🚀</button>
+            <button onclick="closeUp()" style="background:none; border:none; color:white; width:100%; margin-top:10px;">Cancel</button>
         </div>
 
-        <div id="admin-area" class="admin-only">
-            <h3>Boss Dashboard 👑</h3>
-            <div class="input-group">
-                <label>טויש סימבאל (Emoji)</label>
-                <input type="text" id="new-sym" placeholder="💎">
-            </div>
-            <div class="input-group">
-                <label>לויפעדיגע מעלדונג</label>
-                <input type="text" id="new-ann" placeholder="News...">
-            </div>
-            <button class="btn-main" onclick="updateApp()">Save Changes</button>
-            <button class="btn-main" style="background:red; margin-top:20px;" onclick="toggleMT()">Toggle Maintenance</button>
-        </div>
+        <nav>
+            <span onclick="nav('home')">🏠</span>
+            <span onclick="openReels()">🎬</span>
+            <span onclick="openUp()">⊕</span>
+            <span onclick="nav('settings')">⚙️</span>
+        </nav>
     </div>
-
-    <div id="up-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:7000; padding:40px; flex-direction:column; justify-content:center;">
-        <h2>ארויפלייגן</h2>
-        <input type="text" id="up-name" placeholder="טיטל">
-        <select id="up-type">
-            <option value="videos">Video</option>
-            <option value="music">Music</option>
-            <option value="pics">Picture</option>
-        </select>
-        <input type="file" id="up-file">
-        <button class="btn-main" id="up-go" onclick="doUpload()">Upload Now!</button>
-        <button onclick="closeUp()" style="background:none; border:none; color:white; margin-top:20px;">Cancel</button>
-    </div>
-
-    <nav>
-        <span onclick="nav('home')">🏠</span>
-        <span onclick="showReels()">🎬</span>
-        <span onclick="openUp()">⊕</span>
-        <span onclick="nav('settings')">⚙️</span>
-    </nav>
 
     <script>
+        // FIREBASE CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyAmKpAnoV_aG_3_rGMf4l_FzcbAWzwHTnY",
             authDomain: "flutter-ai-playground-8cfec.firebaseapp.com",
@@ -162,115 +143,118 @@
         let isAdmin = false;
 
         function init() {
+            // Live Clock
             setInterval(() => document.getElementById('clock').innerText = new Date().toLocaleTimeString(), 1000);
             
+            // Global App Info
             db.ref('appConfig').on('value', s => {
                 const c = s.val() || {};
-                document.getElementById('main-logo-area').innerText = c.symbol || "💎";
-                document.getElementById('mt-logo').innerText = c.symbol || "💎";
-                if(c.mt && !isAdmin) document.getElementById('mt-screen').style.display = 'flex';
-                else document.getElementById('mt-screen').style.display = 'none';
+                document.getElementById('logo-display').innerText = c.symbol || "💎";
             });
 
-            db.ref('content').on('value', s => { window.allContent = s.val() || {}; });
-            
-            // Online count
-            const onlineRef = db.ref('online').push(true);
-            onlineRef.onDisconnect().remove();
-            db.ref('online').on('value', s => document.getElementById('on-cnt').innerText = s.numChildren());
+            // Content Listener
+            db.ref('content').on('value', s => { window.masterData = s.val() || {}; });
+
+            // Online Users
+            const onRef = db.ref('online').push(true);
+            onRef.onDisconnect().remove();
+            db.ref('online').on('value', s => document.getElementById('on-val').innerText = s.numChildren());
         }
 
-        function nav(page) {
-            document.querySelectorAll('.page, .settings-container').forEach(p => p.style.display = 'none');
-            document.getElementById(page + (page === 'settings' ? '-page' : '-page') || 'home-page').style.display = 'block';
-            if(page === 'home') document.getElementById('home-page').style.display = 'block';
-            if(page === 'music' || page === 'pics' || page === 'text') {
-                document.getElementById('content-page').style.display = 'block';
-                renderContent(page);
-            }
+        function nav(p) {
+            document.querySelectorAll('.page-view').forEach(v => v.style.display = 'none');
+            document.getElementById(p + '-pg').style.display = 'block';
+            closeReels();
         }
 
-        function renderContent(type) {
-            document.getElementById('page-title').innerText = type.toUpperCase();
-            const list = document.getElementById('content-list');
+        // --- REELS SYSTEM ---
+        function openReels() {
+            const list = document.getElementById('reels-list');
             list.innerHTML = '';
-            for(let id in allContent) {
-                if(allContent[id].type === type) {
-                    list.innerHTML += `<div class="cat-card" style="height:80px; margin-bottom:10px;">
-                        ${allContent[id].name}
-                        ${isAdmin ? `<button onclick="del('${id}')" style="color:red">Delete</button>` : ''}
+            let hasVids = false;
+            const sym = document.getElementById('logo-display').innerText;
+
+            for(let id in masterData) {
+                if(masterData[id].type === 'videos') {
+                    hasVids = true;
+                    list.innerHTML += `
+                        <div class="reel-item">
+                            <div style="position:absolute; top:20px; right:20px; opacity:0.6; z-index:100;">${sym}</div>
+                            <video src="${masterData[id].url}" loop playsinline onclick="this.paused?this.play():this.pause()"></video>
+                            <div class="reel-text"><h3>${masterData[id].name}</h3></div>
+                            <div class="reel-controls">
+                                <div class="reel-icon">❤️</div>
+                                <div class="reel-icon">💬</div>
+                                ${isAdmin ? `<button onclick="del('${id}')" style="background:red; color:white; border:none; padding:5px; border-radius:5px;">DEL</button>` : ''}
+                            </div>
+                        </div>`;
+                }
+            }
+            if(!hasVids) list.innerHTML = '<div class="empty-msg">נאכנישט דא קיין ווידעאס... לייג עפעס ארויף!</div>';
+            document.getElementById('reels-overlay').style.display = 'block';
+        }
+
+        function closeReels() {
+            document.getElementById('reels-overlay').style.display = 'none';
+            document.querySelectorAll('video').forEach(v => v.pause());
+        }
+
+        // --- OTHER SECTIONS ---
+        function openSection(type) {
+            nav('section');
+            document.getElementById('sec-title').innerText = type.toUpperCase();
+            const list = document.getElementById('sec-list');
+            list.innerHTML = '';
+            for(let id in masterData) {
+                if(masterData[id].type === type) {
+                    list.innerHTML += `<div class="cat-item" style="height:80px; margin-bottom:10px; flex-direction:row; padding:15px; justify-content:space-between;">
+                        <span>${masterData[id].name}</span>
+                        ${isAdmin ? `<button onclick="del('${id}')" style="color:red; background:none; border:none;">Delete</button>` : ''}
                     </div>`;
                 }
             }
         }
 
-        function showReels() {
-            document.getElementById('reels-view').style.display = 'block';
-            const cont = document.getElementById('reels-container');
-            cont.innerHTML = '';
-            const sym = document.getElementById('main-logo-area').innerText;
-            for(let id in allContent) {
-                if(allContent[id].type === 'videos') {
-                    cont.innerHTML += `
-                        <div class="reel-video">
-                            <div style="position:absolute; top:20px; right:20px; opacity:0.5;">${sym}</div>
-                            <video src="${allContent[id].url}" loop onclick="this.paused?this.play():this.pause()"></video>
-                            <div class="reel-info"><h3>${allContent[id].name}</h3></div>
-                            <div class="reel-ui">
-                                <span>❤️</span>
-                                <span>💬</span>
-                                ${isAdmin ? `<button onclick="del('${id}')" style="background:red; color:white; border:none; border-radius:5px;">DEL</button>` : ''}
-                            </div>
-                        </div>`;
-                }
-            }
-        }
-
-        function closeReels() {
-            document.getElementById('reels-view').style.display = 'none';
-            document.querySelectorAll('video').forEach(v => v.pause());
-        }
-
-        function openUp() { document.getElementById('up-modal').style.display = 'flex'; }
+        // --- UPLOAD SYSTEM ---
+        function openUp() { document.getElementById('up-modal').style.display = 'block'; }
         function closeUp() { document.getElementById('up-modal').style.display = 'none'; }
 
-        function doUpload() {
+        function uploadNow() {
             const file = document.getElementById('up-file').files[0];
             const name = document.getElementById('up-name').value;
             const type = document.getElementById('up-type').value;
-            if(!file || !name) return alert("פעלט דאטא");
+            if(!file || !name) return alert("פעלט נאמען אדער פייל");
 
             const btn = document.getElementById('up-go');
-            btn.innerText = "Uploading...";
-            
-            const ref = storage.ref('files/' + Date.now());
+            btn.innerText = "Uploading... 🚀";
+            btn.disabled = true;
+
+            const ref = storage.ref('empire_media/' + Date.now() + "_" + file.name);
             ref.put(file).then(s => s.ref.getDownloadURL()).then(url => {
-                db.ref('content').push({ name, url, type, likes: 0 });
-                btn.innerText = "Upload Now!";
+                db.ref('content').push({ name, url, type, time: Date.now() });
+                alert("Upload Success!");
+                btn.innerText = "Upload Now! 🚀";
+                btn.disabled = false;
                 closeUp();
-                alert("Success!");
-            });
+            }).catch(e => alert("Error: " + e.message));
         }
 
-        function checkAdmin() {
-            if(document.getElementById('admin-key').value === "1234") {
+        // --- ADMIN ---
+        function doAdmin() {
+            if(document.getElementById('pass-in').value === "1234") {
                 isAdmin = true;
-                document.getElementById('admin-area').style.display = 'block';
-                alert("שלום באָס!");
+                document.getElementById('admin-panel').style.display = 'block';
+                alert("שלום באס!");
             }
         }
 
-        function updateApp() {
-            db.ref('appConfig').update({
-                symbol: document.getElementById('new-sym').value,
-                ann: document.getElementById('new-ann').value
-            });
-            alert("Updated!");
+        function saveAdmin() {
+            db.ref('appConfig').update({ symbol: document.getElementById('adm-sym').value });
+            alert("Settings Saved!");
         }
 
-        function toggleMT() { db.ref('appConfig/mt').transaction(m => !m); }
-        function del(id) { if(confirm("Delete?")) db.ref('content/' + id).remove(); }
-        function saveName() { localStorage.setItem('user', document.getElementById('user-name').value); alert("Saved!"); }
+        function del(id) { if(confirm("Delete this?")) db.ref('content/' + id).remove(); }
+        function saveNick() { localStorage.setItem('user', document.getElementById('nick-in').value); alert("Saved!"); }
 
         init();
     </script>

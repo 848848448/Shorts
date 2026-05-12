@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="yi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>אונזערע Shorts</title>
+    <style>
+        body { background: black; color: white; margin: 0; font-family: sans-serif; overflow: hidden; }
+        .video-container { 
+            height: 100vh; 
+            scroll-snap-type: y mandatory; 
+            overflow-y: scroll; 
+        }
+        .short { 
+            height: 100vh; 
+            scroll-snap-align: start; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+        }
+        video { height: 100%; width: 100%; object-fit: cover; }
+    </style>
+</head>
+<body>
+
+<div class="video-container">
+    <div class="short">
+        <video src="לייג_דא_דיין_לינק_1.mp4" controls loop></video>
+    </div>
+</div>
+
+</body>
+</html>

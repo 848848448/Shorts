@@ -3,262 +3,227 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shorts Hub - Ultimate Pro</title>
+    <title>Shorts Hub - VIP Edition</title>
     <style>
-        :root { --bg: #000; --text: #fff; --primary: #ff0050; --border: #262626; --card: #121212; --accent: #00f2ea; }
-        body { background: var(--bg); color: var(--text); margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow: hidden; }
-        
+        :root { --bg: #000; --text: #fff; --primary: #ff0050; --border: #262626; --card: #121212; }
+        body { background: var(--bg); color: var(--text); margin: 0; font-family: -apple-system, system-ui, sans-serif; overflow: hidden; }
         .page { display: none; height: 100vh; overflow-y: auto; padding-bottom: 100px; box-sizing: border-box; }
-        .active-page { display: block; animation: slideIn 0.3s ease-out; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Login */
-        #loginScreen { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; height: 100vh; background: radial-gradient(circle, #1a1a1a 0%, #000 100%); }
+        .active-page { display: block; }
         
         /* Home Hub */
         .hub-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
-        .hub-card { background: var(--card); border-radius: 20px; height: 150px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); cursor: pointer; transition: transform 0.2s, border 0.2s; }
-        .hub-card:active { transform: scale(0.95); border-color: var(--primary); }
+        .hub-card { background: var(--card); border-radius: 20px; height: 150px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
+        .hub-card:active { transform: scale(0.95); }
         .hub-card img { position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0.4; pointer-events: none; }
-        .hub-card span { z-index: 2; font-weight: bold; font-size: 20px; text-shadow: 2px 2px 10px #000; letter-spacing: 1px; }
+        .hub-card span { z-index: 2; font-weight: bold; font-size: 20px; text-shadow: 2px 2px 5px #000; }
 
-        /* Video/Post Feed */
-        .video-container { width: 100%; border-bottom: 8px solid #111; padding-bottom: 20px; position: relative; }
-        .video-wrapper { width: 100%; aspect-ratio: 9/16; background: #000; display: flex; align-items: center; justify-content: center; position: relative; }
-        video { width: 100%; height: 100%; object-fit: contain; }
-        
-        .post-actions { display: flex; gap: 20px; padding: 15px; align-items: center; }
-        .like-btn { cursor: pointer; font-size: 24px; transition: 0.2s; }
-        .like-btn.active { color: var(--primary); transform: scale(1.2); }
+        /* Content Styles */
+        .video-item { width: 100%; border-bottom: 8px solid #111; padding-bottom: 10px; }
+        video { width: 100%; aspect-ratio: 9/16; background: #000; object-fit: contain; }
+        .actions { padding: 10px; display: flex; gap: 15px; align-items: center; }
+        .like-btn { cursor: pointer; font-size: 22px; }
 
-        /* Admin UI */
-        .admin-box { background: #1a1a1a; padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin: 15px; }
-        .user-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #333; align-items: center; }
-        .ban-btn { background: red; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 12px; }
-
-        /* Global Inputs */
-        input, select, textarea { width: 100%; padding: 15px; margin: 10px 0; background: #1a1a1a; border: 1px solid #333; color: white; border-radius: 12px; box-sizing: border-box; font-size: 16px; outline: none; }
-        input:focus { border-color: var(--primary); }
-        .btn { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; cursor: pointer; width: 100%; font-weight: bold; font-size: 16px; transition: 0.2s; }
-        .btn:active { transform: scale(0.98); opacity: 0.9; }
-
-        /* Navigation */
-        .header { position: sticky; top: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); padding: 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; z-index: 100; }
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; background: #000; padding: 15px 0; border-top: 1px solid var(--border); z-index: 1000; }
-        .nav-icon { font-size: 24px; cursor: pointer; opacity: 0.6; }
-        .nav-icon.active { opacity: 1; color: var(--primary); }
+        /* Global UI */
+        .header { position: sticky; top: 0; background: rgba(0,0,0,0.9); padding: 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; z-index: 100; }
+        input, textarea { width: 100%; padding: 12px; margin: 10px 0; background: #1a1a1a; border: 1px solid #333; color: white; border-radius: 10px; box-sizing: border-box; }
+        .btn { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; font-size: 16px; }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; background: #000; padding: 15px 0; border-top: 1px solid var(--border); }
+        .nav-btn { font-size: 24px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div id="bannedScreen" class="page" style="text-align:center; padding-top:100px;">
-        <h1 style="color:red;">Account Disabled</h1>
-        <p>דיין אקאונט איז געווארן בלאקירט דורך דעם אדמין.</p>
-    </div>
-
-    <div id="loginScreen" class="page">
-        <h1 style="color:var(--primary); font-size: 45px; margin:0;">Shorts Hub</h1>
-        <p style="opacity:0.7;">The Ultimate Experience</p>
-        <div style="width:100%; max-width:300px; margin-top:30px;">
-            <input type="text" id="userNickname" placeholder="דיין ניקנעם" autocomplete="off">
-            <input type="email" id="userEmail" placeholder="דיין אימעיל אדרעס" autocomplete="off">
-            <button class="btn" onclick="handleLogin()">אנהייבן</button>
-        </div>
-    </div>
-
-    <div id="homeHub" class="page">
+    <div id="homePage" class="page">
         <div class="header">
             <div style="font-weight:bold; font-size:22px; color:var(--primary);">Shorts Hub</div>
-            <div onclick="showPage('profilePage')">👤</div>
+            <div onclick="showPage('settingsPage')">⚙️</div>
         </div>
-        <div class="hub-container" id="menuGrid"></div>
+        <div id="mainMenu" class="hub-container"></div>
     </div>
 
     <div id="videoPage" class="page">
-        <div class="header"><span onclick="showPage('homeHub')">←</span> <strong>Shorts</strong></div>
+        <div class="header"><span onclick="showPage('homePage')">←</span> <strong>Shorts</strong></div>
         <div id="videoFeed"></div>
     </div>
 
     <div id="photoPage" class="page">
-        <div class="header"><span onclick="showPage('homeHub')">←</span> <strong>Photos</strong></div>
+        <div class="header"><span onclick="showPage('homePage')">←</span> <strong>Photos</strong></div>
         <div id="photoFeed" style="padding:10px; display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div>
-    </div>
-
-    <div id="musicPage" class="page">
-        <div class="header"><span onclick="showPage('homeHub')">←</span> <strong>Music</strong></div>
-        <div id="musicFeed" style="padding:15px;"></div>
     </div>
 
     <div id="chatPage" class="page">
         <div class="header"><strong>Messages</strong></div>
         <div id="chatBox" style="padding:15px; height:70vh; overflow-y:auto; display:flex; flex-direction:column; gap:10px;"></div>
-        <div style="position:fixed; bottom:80px; width:100%; display:flex; padding:10px; background:#000; box-sizing:border-box;">
-            <input type="text" id="chatInput" placeholder="שרייב א מעסעדזש..." style="margin:0;">
-            <button onclick="sendChat()" style="background:var(--primary); border:none; color:white; padding:0 20px; border-radius:10px; margin-right:5px;">Send</button>
-        </div>
-    </div>
-
-    <div id="profilePage" class="page">
-        <div class="header"><span onclick="showPage('homeHub')">←</span> <strong>Settings</strong></div>
-        <div style="padding:20px;">
-            <div id="adminLogin">
-                <input type="password" id="adminKey" placeholder="Admin פאסווארט">
-                <button class="btn" onclick="accessAdmin()">Admin Login</button>
-            </div>
-            <div id="adminPanel" style="display:none;">
-                <div class="admin-box">
-                    <h3 style="margin-top:0;">Stats</h3>
-                    <p>Visitors: <span id="statVisits">0</span> | Users: <span id="statUsers">0</span></p>
-                </div>
-                <h4>Manage Menu Order</h4>
-                <div id="reorderArea"></div>
-                <h4>User Management</h4>
-                <div id="userManagementList" style="background:#111; border-radius:10px; padding:10px;"></div>
-                <h4>Requests</h4>
-                <div id="adminReqList" style="font-size:12px; color:#888;"></div>
-                <button class="btn" style="background:#444; margin-top:20px;" onclick="fullReset()">System Reset</button>
-            </div>
+        <div style="padding:10px; display:flex; gap:5px; background:#000;">
+            <input type="text" id="msgInp" placeholder="שרייב עפעס..." style="margin:0;">
+            <button onclick="sendMsg()" style="background:var(--primary); border:none; color:white; padding:0 15px; border-radius:10px;">Send</button>
         </div>
     </div>
 
     <div id="requestPage" class="page">
-        <div class="header"><span onclick="showPage('homeHub')">←</span> <strong>Request Content</strong></div>
+        <div class="header"><span onclick="showPage('homePage')">←</span> <strong>Requests</strong></div>
         <div style="padding:20px;">
-            <textarea id="reqInp" placeholder="וואס ווילסטו זען אויף די עפפ?"></textarea>
-            <button class="btn" onclick="postRequest()">Submit</button>
+            <textarea id="reqText" placeholder="וואס זאלן מיר ארויסלייגן?"></textarea>
+            <button class="btn" onclick="submitReq()">שיק ריקוועסט</button>
         </div>
     </div>
 
-    <input type="file" id="fInp" style="display:none" onchange="processFile(event)">
-    
-    <div class="bottom-nav" id="navBar">
-        <div class="nav-icon" onclick="showPage('homeHub')">🏠</div>
-        <div class="nav-icon" onclick="document.getElementById('fInp').click()" style="color:var(--primary); font-size:35px;">⊕</div>
-        <div class="nav-icon" onclick="showPage('chatPage')">💬</div>
+    <div id="settingsPage" class="page">
+        <div class="header"><span onclick="showPage('homePage')">←</span> <strong>Settings</strong></div>
+        <div style="padding:20px;">
+            <div id="loginArea">
+                <h3>Login</h3>
+                <input type="text" id="nickInp" placeholder="דיין ניקנעם" autocomplete="off">
+                <input type="email" id="mailInp" placeholder="דיין אימעיל" autocomplete="off">
+                <button class="btn" onclick="userLogin()">אריינגיין</button>
+                <hr style="margin:20px 0; border:0; border-top:1px solid #333;">
+                <input type="password" id="admPass" placeholder="Admin Password">
+                <button class="btn" style="background:#444;" onclick="adminLogin()">Admin Login</button>
+            </div>
+            
+            <div id="adminPanel" style="display:none;">
+                <h2 style="color:var(--primary);">Admin Dashboard</h2>
+                <div style="background:#111; padding:15px; border-radius:10px; display:flex; justify-content:space-around;">
+                    <span>Visits: <b id="statV">0</b></span>
+                    <span>Users: <b id="statU">0</b></span>
+                </div>
+                <h4>Menu Order:</h4>
+                <div id="reorderList"></div>
+                <h4>Requests:</h4>
+                <div id="reqList" style="font-size:12px; color:#888;"></div>
+                <button class="btn" style="background:#222; margin-top:20px;" onclick="localStorage.clear(); location.reload();">Full Reset</button>
+            </div>
+            
+            <div id="userProfile" style="display:none; text-align:center;">
+                <h3 id="uName"></h3>
+                <p id="uMail" style="color:#888;"></p>
+                <button class="btn" style="background:#333;" onclick="localStorage.removeItem('active_user'); location.reload();">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="fileUp" style="display:none" onchange="doUpload(event)">
+    <div class="bottom-nav">
+        <div class="nav-btn" onclick="showPage('homePage')">🏠</div>
+        <div class="nav-btn" onclick="document.getElementById('fileUp').click()" style="color:var(--primary); font-size:35px;">⊕</div>
+        <div class="nav-btn" onclick="showPage('chatPage')">💬</div>
     </div>
 
     <script>
-        // --- 1. CORE DATA ---
-        let app = JSON.parse(localStorage.getItem('ultimateHubDB')) || {
-            users: [], posts: [], chats: [], requests: [],
-            visits: 0, order: ['Videos', 'Photos', 'Music', 'Messages', 'Requests'],
-            banned: []
+        let db = JSON.parse(localStorage.getItem('shorts_hub_db')) || {
+            users: [], posts: [], chats: [], reqs: [], visits: 0,
+            order: ['Videos', 'Photos', 'Chat', 'Requests']
         };
-        let me = JSON.parse(localStorage.getItem('activeSession')) || null;
+        let currentUser = JSON.parse(localStorage.getItem('active_user')) || null;
         let isAdm = false;
 
         window.onload = () => {
-            app.visits++;
-            save();
-            if(me && app.banned.includes(me.email)) return showPage('bannedScreen');
-            if(!me) showPage('loginScreen'); else start();
-        };
-
-        function save() { localStorage.setItem('ultimateHubDB', JSON.stringify(app)); }
-
-        // --- 2. LOGIN & START ---
-        function handleLogin() {
-            let n = document.getElementById('userNickname').value.trim();
-            let e = document.getElementById('userEmail').value.trim();
-            if(n && e) {
-                me = { nick: n, email: e };
-                if(!app.users.find(u => u.email === e)) app.users.push(me);
-                localStorage.setItem('activeSession', JSON.stringify(me));
-                save(); start();
-            }
-        }
-
-        function start() {
+            db.visits++; save();
             renderMenu();
             renderFeeds();
             renderChats();
-            showPage('homeHub');
-        }
+            if(currentUser) setupUserUI();
+            showPage('homePage');
+        };
+
+        function save() { localStorage.setItem('shorts_hub_db', JSON.stringify(db)); }
 
         function showPage(id) {
-            if(me && app.banned.includes(me.email) && id !== 'bannedScreen') return;
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
             document.getElementById(id).classList.add('active-page');
-            if(id === 'videoPage') setTimeout(runAutoplay, 500);
+            if(id === 'videoPage') setTimeout(initAutoplay, 500);
         }
 
-        // --- 3. MENU SYSTEM ---
+        // --- Auth ---
+        function userLogin() {
+            let n = document.getElementById('nickInp').value;
+            let e = document.getElementById('mailInp').value;
+            if(n && e) {
+                currentUser = { n, e };
+                if(!db.users.find(u => u.e === e)) db.users.push(currentUser);
+                localStorage.setItem('active_user', JSON.stringify(currentUser));
+                save(); setupUserUI();
+            }
+        }
+
+        function setupUserUI() {
+            document.getElementById('loginArea').style.display = 'none';
+            document.getElementById('userProfile').style.display = 'block';
+            document.getElementById('uName').innerText = currentUser.n;
+            document.getElementById('uMail').innerText = currentUser.e;
+        }
+
+        function adminLogin() {
+            if(document.getElementById('admPass').value === '1234') {
+                isAdm = true;
+                document.getElementById('loginArea').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+                document.getElementById('statV').innerText = db.visits;
+                document.getElementById('statU').innerText = db.users.length;
+                renderAdmin();
+            }
+        }
+
+        // --- Menu ---
         const config = {
-            'Videos': { img: 'https://images.unsplash.com/photo-1492691523567-f610403553a4?w=400', p: 'videoPage' },
-            'Photos': { img: 'https://images.unsplash.com/photo-1554080353-a576cf803bda?w=400', p: 'photoPage' },
-            'Music': { img: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400', p: 'musicPage' },
-            'Messages': { img: 'https://images.unsplash.com/photo-1577563906417-45a18e029474?w=400', p: 'chatPage' },
-            'Requests': { img: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=400', p: 'requestPage' }
+            'Videos': { img: 'https://images.unsplash.com/photo-1492691523567-f610403553a4?w=200', p: 'videoPage' },
+            'Photos': { img: 'https://images.unsplash.com/photo-1554080353-a576cf803bda?w=200', p: 'photoPage' },
+            'Chat': { img: 'https://images.unsplash.com/photo-1577563906417-45a18e029474?w=200', p: 'chatPage' },
+            'Requests': { img: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=200', p: 'requestPage' }
         };
 
         function renderMenu() {
-            const m = document.getElementById('menuGrid');
-            m.innerHTML = "";
-            app.order.forEach(k => {
-                m.innerHTML += `
+            const m = document.getElementById('mainMenu');
+            m.innerHTML = db.order.map(k => `
                 <div class="hub-card" onclick="showPage('${config[k].p}')">
                     <img src="${config[k].img}">
                     <span>${k}</span>
-                </div>`;
-            });
+                </div>`).join("");
         }
 
-        // --- 4. FEED & CONTENT ---
-        function processFile(e) {
-            const f = e.target.files[0];
-            const r = new FileReader();
-            r.onload = (ev) => {
-                let t = f.type.startsWith('video') ? 'video' : (f.type.startsWith('audio') ? 'music' : 'photo');
-                app.posts.push({ id: Date.now(), t, src: ev.target.result, u: me.nick, likes: [], comments: [] });
-                save(); renderFeeds(); alert("Uploaded!");
+        // --- Content ---
+        function doUpload(e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                let type = file.type.startsWith('video') ? 'v' : 'p';
+                db.posts.push({ id: Date.now(), t: type, src: ev.target.result, u: currentUser ? currentUser.n : 'Guest', likes: [] });
+                save(); renderFeeds();
             };
-            r.readAsDataURL(f);
+            reader.readAsDataURL(file);
         }
 
         function renderFeeds() {
-            const v = document.getElementById('videoFeed'), p = document.getElementById('photoFeed'), m = document.getElementById('musicFeed');
-            v.innerHTML = ""; p.innerHTML = ""; m.innerHTML = "";
-
-            app.posts.forEach(i => {
-                let del = isAdm ? `<button onclick="delPost(${i.id})" style="color:red; background:none; border:none;">[X]</button>` : "";
-                let liked = i.likes.includes(me.email) ? 'active' : '';
-                
-                if(i.t === 'video') {
-                    v.innerHTML += `
-                    <div class="video-container">
-                        <div style="padding:10px; display:flex; justify-content:space-between;"><b>${i.u}</b> ${del}</div>
-                        <div class="video-wrapper"><video src="${i.src}" loop muted playsinline></video></div>
-                        <div class="post-actions">
-                            <span class="like-btn ${liked}" onclick="toggleLike(${i.id})">❤️</span>
-                            <span style="font-size:14px;">${i.likes.length} Likes</span>
-                        </div>
-                        <div style="padding:0 15px;">
-                            ${i.comments.slice(-2).map(c => `<div style="font-size:12px;"><b>${c.u}:</b> ${c.t}</div>`).join("")}
-                            <input placeholder="Add comment..." style="padding:8px; font-size:12px;" onkeypress="if(event.key==='Enter') addComm(${i.id}, this)">
-                        </div>
-                    </div>`;
-                } else if(i.t === 'photo') {
-                    p.innerHTML += `<div style="position:relative; background:#111; border-radius:10px; overflow:hidden;"><img src="${i.src}" style="width:100%;"><div onclick="toggleLike(${i.id})" style="position:absolute; bottom:5px; right:5px; background:rgba(0,0,0,0.5); padding:5px; border-radius:50%; cursor:pointer;">${liked?'❤️':'🤍'}</div></div>`;
-                } else if(i.t === 'music') {
-                    m.innerHTML += `<div style="background:#111; padding:15px; border-radius:15px; margin-bottom:10px; border:1px solid #222;"><b>${i.u}</b><br><audio src="${i.src}" controls style="width:100%; margin-top:10px;"></audio></div>`;
+            const vf = document.getElementById('videoFeed'), pf = document.getElementById('photoFeed');
+            vf.innerHTML = ""; pf.innerHTML = "";
+            db.posts.forEach(p => {
+                let liked = currentUser && p.likes.includes(currentUser.e) ? '❤️' : '🤍';
+                if(p.t === 'v') {
+                    vf.innerHTML += `
+                        <div class="video-item">
+                            <video src="${p.src}" loop muted playsinline></video>
+                            <div class="actions">
+                                <span class="like-btn" onclick="like(${p.id})">${liked}</span>
+                                <span>${p.likes.length} likes</span>
+                                <small style="margin-left:auto; opacity:0.5;">By ${p.u}</small>
+                                ${isAdm ? `<button onclick="delPost(${p.id})">❌</button>` : ''}
+                            </div>
+                        </div>`;
+                } else {
+                    pf.innerHTML += `<div style="position:relative;"><img src="${p.src}" style="width:100%; border-radius:10px;">${isAdm ? `<button onclick="delPost(${p.id})" style="position:absolute; top:0;">❌</button>` : ''}</div>`;
                 }
             });
         }
 
-        function toggleLike(id) {
-            let p = app.posts.find(x => x.id === id);
-            if(p.likes.includes(me.email)) p.likes = p.likes.filter(l => l !== me.email);
-            else p.likes.push(me.email);
+        function like(id) {
+            if(!currentUser) return alert("ביטע לאג דיך אריין צו לייקן");
+            let p = db.posts.find(x => x.id === id);
+            if(p.likes.includes(currentUser.e)) p.likes = p.likes.filter(l => l !== currentUser.e);
+            else p.likes.push(currentUser.e);
             save(); renderFeeds();
         }
 
-        function addComm(id, inp) {
-            if(!inp.value) return;
-            app.posts.find(x => x.id === id).comments.push({ u: me.nick, t: inp.value });
-            inp.value = ""; save(); renderFeeds();
-        }
-
-        function runAutoplay() {
+        function initAutoplay() {
             const vids = document.querySelectorAll('video');
             const obs = new IntersectionObserver((es) => {
                 es.forEach(e => { if(e.isIntersecting) e.target.play().catch(()=>{}); else e.target.pause(); });
@@ -266,79 +231,49 @@
             vids.forEach(v => obs.observe(v));
         }
 
-        // --- 5. CHAT & REQUESTS ---
-        function sendChat() {
-            let i = document.getElementById('chatInput');
+        // --- Chat & Req ---
+        function sendMsg() {
+            let i = document.getElementById('msgInp');
             if(!i.value) return;
-            app.chats.push({ u: me.nick, e: me.email, t: i.value });
+            db.chats.push({ u: currentUser ? currentUser.n : 'Guest', t: i.value });
             i.value = ""; save(); renderChats();
         }
 
         function renderChats() {
-            const b = document.getElementById('chatBox');
-            b.innerHTML = app.chats.map(c => `
-                <div style="background:${c.e===me.email?'#ff0050':'#222'}; padding:12px; border-radius:15px; align-self:${c.e===me.email?'flex-start':'flex-end'}; max-width:85%;">
-                    <small style="opacity:0.6; font-size:10px;">${c.u}</small><br>${c.t}
+            document.getElementById('chatBox').innerHTML = db.chats.map(c => `
+                <div style="background:#222; padding:10px; border-radius:10px; align-self:flex-start; max-width:80%;">
+                    <small style="color:var(--primary); font-size:10px;">${c.u}</small><br>${c.t}
                 </div>`).join("");
-            b.scrollTop = b.scrollHeight;
+            document.getElementById('chatBox').scrollTop = 9999;
         }
 
-        function postRequest() {
-            let t = document.getElementById('reqInp').value;
+        function submitReq() {
+            let t = document.getElementById('reqText').value;
             if(!t) return;
-            app.requests.push({ u: me.nick, t });
-            document.getElementById('reqInp').value = ""; save(); alert("Sent!");
+            db.reqs.push({ u: currentUser ? currentUser.n : 'Guest', t: t });
+            document.getElementById('reqText').value = "";
+            save(); alert("Sent!");
         }
 
-        // --- 6. ADMIN SYSTEM ---
-        function accessAdmin() {
-            if(document.getElementById('adminKey').value === "1234") {
-                isAdm = true;
-                document.getElementById('adminLogin').style.display = 'none';
-                document.getElementById('adminPanel').style.display = 'block';
-                renderAdmin();
-            }
-        }
-
+        // --- Admin Reorder ---
         function renderAdmin() {
-            document.getElementById('statVisits').innerText = app.visits;
-            document.getElementById('statUsers').innerText = app.users.length;
-            
-            const re = document.getElementById('reorderArea');
-            re.innerHTML = app.order.map((n, i) => `
-                <div style="display:flex; justify-content:space-between; background:#222; padding:10px; margin-bottom:5px; border-radius:8px;">
-                    ${n} <div><span onclick="move(${i},-1)">🔼</span> <span onclick="move(${i},1)">🔽</span></div>
+            document.getElementById('reorderList').innerHTML = db.order.map((n, i) => `
+                <div style="display:flex; justify-content:space-between; padding:10px; background:#222; margin-bottom:5px; border-radius:8px;">
+                    ${n} <span onclick="move(${i})">🔼</span>
                 </div>`).join("");
-
-            const ul = document.getElementById('userManagementList');
-            ul.innerHTML = app.users.map(u => `
-                <div class="user-row">
-                    <span>${u.nick}</span>
-                    <button class="ban-btn" onclick="toggleBan('${u.email}')">${app.banned.includes(u.email)?'Unban':'Ban'}</button>
-                </div>`).join("");
-
-            document.getElementById('adminReqList').innerHTML = app.requests.map(r => `<p><b>${r.u}:</b> ${r.t}</p>`).join("");
+            document.getElementById('reqList').innerHTML = db.reqs.map(r => `<p>${r.u}: ${r.t}</p>`).join("");
         }
 
-        function move(idx, dir) {
-            let t = idx + dir;
-            if(t < 0 || t >= app.order.length) return;
-            [app.order[idx], app.order[t]] = [app.order[t], app.order[idx]];
+        function move(i) {
+            if(i === 0) return;
+            [db.order[i], db.order[i-1]] = [db.order[i-1], db.order[i]];
             save(); renderAdmin(); renderMenu();
         }
 
-        function toggleBan(e) {
-            if(app.banned.includes(e)) app.banned = app.banned.filter(x => x !== e);
-            else app.banned.push(e);
-            save(); renderAdmin();
-        }
-
         function delPost(id) {
-            app.posts = app.posts.filter(x => x.id !== id);
+            db.posts = db.posts.filter(p => p.id !== id);
             save(); renderFeeds();
         }
-
-        function fullReset() { if(confirm("DELETE ALL DATA?")) { localStorage.clear(); location.reload(); } }
     </script>
 </body>
-                                                                   </html>
+                                </html>

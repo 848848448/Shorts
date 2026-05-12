@@ -3,246 +3,247 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shorts Hub - Ultimate Pro Edition</title>
+    <title>Shorts Hub Ultimate - Pro Edition</title>
     <style>
-        /* קאלירן דעפיניציעס */
-        :root {
-            --bg: #0f0f0f;
-            --text: #ffffff;
-            --card: #1a1a1a;
-            --primary: #ff0050;
-            --secondary: #0074d9;
-            --border: #333333;
-        }
-
-        .light-mode {
-            --bg: #ffffff;
-            --text: #000000;
-            --card: #f2f2f2;
-            --border: #cccccc;
-        }
-
-        body { 
-            background: var(--bg); 
-            color: var(--text); 
-            margin: 0; 
-            font-family: sans-serif; 
-            overflow: hidden; 
-            transition: 0.3s;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        /* פעידזשעס סטרוקטור */
-        .page { 
-            display: none; 
-            height: 100vh; 
-            width: 100%; 
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            overflow-y: auto; 
-            padding-bottom: 80px; 
-            box-sizing: border-box; 
-        }
-        .active-page { display: block; animation: fadeIn 0.3s ease; }
+        :root { --bg: #000; --text: #fff; --primary: #ff0050; --border: #262626; --card: #121212; }
+        body { background: var(--bg); color: var(--text); margin: 0; font-family: -apple-system, sans-serif; overflow: hidden; transition: 0.3s; }
+        
+        /* Pages */
+        .page { display: none; height: 100vh; overflow-y: auto; padding-bottom: 80px; box-sizing: border-box; }
+        .active-page { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Header */
-        .header { 
-            position: sticky; top: 0; background: var(--bg); 
-            display: flex; align-items: center; justify-content: space-between; 
-            padding: 15px; border-bottom: 1px solid var(--border); z-index: 1000; 
-        }
-        .logo { font-size: 20px; font-weight: bold; color: var(--primary); }
+        /* Header & Status */
+        .status-bar { height: 25px; padding: 0 15px; display: flex; justify-content: space-between; font-size: 12px; align-items: center; background: #000; }
+        .header { position: sticky; top: 0; width: 100%; height: 55px; background: #000; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; border-bottom: 1px solid var(--border); z-index: 1000; box-sizing: border-box; }
+        #siteLogo { font-size: 24px; font-weight: bold; font-family: serif; font-style: italic; }
 
-        /* קנעפלעך */
-        .btn { 
-            background: var(--primary); color: white; border: none; 
-            padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer;
-        }
-        .btn:active { transform: scale(0.95); }
+        /* Stories */
+        .stories-container { display: flex; overflow-x: auto; padding: 15px 10px; gap: 15px; border-bottom: 1px solid var(--border); scrollbar-width: none; }
+        .story-item { text-align: center; flex-shrink: 0; cursor: pointer; }
+        .story-circle { width: 64px; height: 64px; border-radius: 50%; border: 2px solid var(--primary); background: #333; padding: 2px; }
 
-        /* Drawer פאר קאמענטארן */
-        .drawer { 
-            position: fixed; bottom: -100%; left: 0; width: 100%; height: 60%; 
-            background: var(--card); transition: 0.4s; z-index: 3000; 
-            border-top-radius: 20px; padding: 20px; box-sizing: border-box;
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.5);
-        }
+        /* Feed Posts */
+        .post { border-bottom: 1px solid var(--border); margin-bottom: 10px; }
+        .post-header { padding: 12px; display: flex; align-items: center; gap: 10px; font-weight: bold; }
+        .post-content { width: 100%; background: #050505; display: flex; align-items: center; justify-content: center; }
+        .post-content img, .post-content video { width: 100%; max-height: 550px; object-fit: contain; }
+        .post-actions { padding: 12px; font-size: 26px; display: flex; gap: 20px; }
+        .like-btn.active { color: var(--primary); }
+
+        /* Comments Drawer */
+        .drawer { position: fixed; bottom: -100%; left: 0; width: 100%; height: 70%; background: var(--card); transition: 0.4s; z-index: 3000; border-top-left-radius: 20px; border-top-right-radius: 20px; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; }
         .drawer.open { bottom: 0; }
+        .comments-list { flex-grow: 1; overflow-y: auto; margin: 15px 0; }
+        .comment-input-area { display: flex; gap: 10px; border-top: 1px solid var(--border); padding-top: 10px; }
+        .comment-input-area input { flex-grow: 1; padding: 10px; border-radius: 20px; background: #000; color: #fff; border: 1px solid var(--border); }
 
-        /* פראפיל און אדמין */
-        .profile-pic { width: 80px; height: 80px; border-radius: 50%; background: #444; margin: 0 auto 10px; border: 2px solid var(--primary); }
-        .admin-box { background: rgba(0, 116, 217, 0.1); border: 1px dashed var(--secondary); padding: 15px; border-radius: 10px; margin: 15px; }
+        /* Admin Panel Styles */
+        .admin-box { background: #001f3f; padding: 20px; border-radius: 15px; margin: 20px; border: 1px dashed #0074d9; }
+        input[type="text"], input[type="password"] { width: 100%; padding: 12px; margin: 10px 0; background: #1a1a1a; border: 1px solid #333; color: white; border-radius: 8px; box-sizing: border-box; }
+        .btn { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; }
 
-        /* Bottom Nav */
-        .bottom-nav { 
-            position: fixed; bottom: 0; width: 100%; display: flex; 
-            justify-content: space-around; background: var(--bg); 
-            padding: 12px 0; border-top: 1px solid var(--border); z-index: 1000; 
-        }
-        .nav-item { text-align: center; color: #888; cursor: pointer; flex: 1; }
-        .nav-item.active-nav { color: var(--primary); }
-        .nav-icon { font-size: 20px; display: block; }
-        .nav-text { font-size: 10px; margin-top: 2px; }
+        /* Nav Bar */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; background: #000; padding: 15px 0; border-top: 1px solid var(--border); z-index: 1000; }
+        .nav-btn { font-size: 26px; cursor: pointer; color: #888; }
+        .nav-active { color: white; }
+
+        /* Story Overlay */
+        #storyOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 5000; display: none; flex-direction: column; }
+        .story-progress { width: 100%; height: 3px; background: #333; margin-top: 10px; }
+        .story-bar { width: 0%; height: 100%; background: #fff; }
     </style>
 </head>
-<body id="mainBody" dir="rtl">
+<body dir="rtl">
+
+    <div class="status-bar"><div id="clock">12:00</div><div>📶 🔋 100%</div></div>
 
     <div id="homePage" class="page active-page">
         <div class="header">
-            <div class="logo" id="siteNameDisplay">Shorts Hub</div>
-            <div onclick="toggleTheme()" style="cursor:pointer; font-size: 20px;">🌓</div>
+            <div id="siteLogo">Shorts Hub</div>
+            <div style="display:flex; gap:15px;">
+                <span onclick="showPage('msgPage')" style="cursor:pointer;">✉️</span>
+                <span onclick="toggleTheme()" style="cursor:pointer;">🌓</span>
+            </div>
         </div>
-        <div style="padding: 20px; text-align: center;">
-            <h2 id="txt-welcome">ברוכים הבאים!</h2>
-            <div style="background:var(--card); padding:50px; border-radius:15px; border:1px solid var(--border);" onclick="showPage('shortsPage')">
-                <span style="font-size: 40px;">▶</span><br>
-                <span id="txt-play">צום ווידעא</span>
+        <div class="stories-container">
+            <div class="story-item" onclick="openStory('Moishe')"><div class="story-circle"></div><div style="font-size:11px;">Moishe</div></div>
+            <div class="story-item" onclick="openStory('Admin')"><div class="story-circle"></div><div style="font-size:11px;">Admin</div></div>
+        </div>
+        <div id="feedContainer">
+            <div class="post">
+                <div class="post-header">Shorts_Bot ✔</div>
+                <div class="post-content"><p style="padding:20px;">וועלקאַם! דרוק דעם (+) קנעפּל אונטן אַרויסצולייגן דיין ערשטע ווידעאָ אָדער בילד.</p></div>
+                <div class="post-actions">
+                    <span onclick="this.classList.toggle('active')" class="like-btn" style="cursor:pointer;">❤️</span>
+                    <span onclick="toggleComments()" style="cursor:pointer;">💬</span>
+                    <span onclick="alert('Link Copied!')" style="cursor:pointer;">🔗</span>
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="requestPage" class="page">
-        <div class="header"><strong id="txt-req-title">נייע איידיעס</strong></div>
-        <div style="padding: 20px;">
-            <p id="txt-req-desc">שרייב דא דיין געדאנק פאר א נייע פיטשער:</p>
-            <textarea id="ideaInput" style="width:100%; height:100px; background:var(--card); color:var(--text); border:1px solid var(--border); border-radius:8px; padding:10px;"></textarea>
-            <button class="btn" style="width:100%; margin-top:10px;" onclick="addIdea()" id="txt-send-req">שיק ריקוועסט</button>
-            <div id="ideasList" style="margin-top:20px;"></div>
-        </div>
+    <div id="msgPage" class="page">
+        <div class="header"><span onclick="showPage('homePage')" style="cursor:pointer;">←</span> <strong>Messages</strong></div>
+        <div style="padding:20px; border-bottom:1px solid #222;"><strong>Admin:</strong> שלום עליכם! וויאזוי ארבעט די עפּ?</div>
+        <div style="padding:20px; border-bottom:1px solid #222;"><strong>Moishe:</strong> שיק מיר דעם ווידעאָ וואָס דו האָסט געמאַכט.</div>
     </div>
 
     <div id="profilePage" class="page">
-        <div class="header"><strong id="txt-prof-title">מיין אקאונט</strong></div>
+        <div class="header"><strong>פּראָפֿיל</strong></div>
         <div style="text-align:center; padding:30px;">
-            <div class="profile-pic"></div>
-            <h3 id="profileName">@Admin_User <span style="color:var(--secondary)">✔</span></h3>
-            <button class="btn" style="background:#444;" onclick="switchLanguage()" id="txt-lang-btn">טויש שפראך / Language</button>
-            <br><br>
-            <button class="btn" style="background:var(--secondary);" onclick="showPage('adminPage')" id="txt-admin-btn">Admin Panel</button>
-        </div>
-    </div>
+            <div style="width:100px;height:100px;border-radius:50%;background:#333;margin:0 auto 15px;border:3px solid var(--primary);"></div>
+            <h2 id="displayUser">@Guest_User</h2>
+            
+            <div id="loginBox">
+                <input type="password" id="passInput" placeholder="Admin קאוד">
+                <button class="btn" onclick="checkAdmin()">Login</button>
+            </div>
 
-    <div id="adminPage" class="page">
-        <div class="header"><span onclick="showPage('profilePage')" style="cursor:pointer;">←</span> <strong>Admin Panel</strong></div>
-        <div class="admin-box">
-            <h4>טויש סיסטעם נאמען</h4>
-            <input type="text" id="siteNameInput" style="padding:8px; width:60%;" placeholder="נייע נאמען">
-            <button class="btn" onclick="updateSiteName()">Update</button>
-        </div>
-        <div style="padding:20px;">
-            <button class="btn" style="background:red;" onclick="alert('אלע דאטא איז גערוימט')">Clear Cache</button>
-        </div>
-    </div>
-
-    <div id="shortsPage" class="page" style="background:black; padding:0;">
-        <div style="position:absolute; top:20px; left:20px; z-index:2000; font-size:30px; color:white;" onclick="showPage('homePage')">←</div>
-        <video id="mainVideo" src="video.mp4" loop muted playsinline autoplay style="width:100%; height:100%; object-fit:cover;"></video>
-        <div style="position:absolute; right:15px; bottom:100px; display:flex; flex-direction:column; gap:25px; font-size:28px;">
-            <div onclick="alert('Liked!')">❤️</div>
-            <div onclick="toggleComments()">💬</div>
-            <div onclick="alert('Shared!')">🔗</div>
+            <div id="adminPanel" style="display:none;" class="admin-box">
+                <h4>אדמין קאָנטראָל</h4>
+                <input type="text" id="newLogoName" placeholder="טויש סימבאַל/נאָמען">
+                <button class="btn" onclick="saveLogo()">Update Name</button>
+                <hr style="margin:20px 0; border:0.5px solid #004488;">
+                <input type="password" id="newPass" placeholder="נייע פאַסוואָרט">
+                <button class="btn" style="background:#cc0000;" onclick="changePassword()">טויש פאַסוואָרט</button>
+            </div>
         </div>
     </div>
 
     <div id="commentsDrawer" class="drawer">
-        <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
             <strong>Comments</strong>
-            <span onclick="toggleComments()" style="cursor:pointer;">✖</span>
+            <span onclick="toggleComments()" style="cursor:pointer; font-size:28px;">×</span>
         </div>
-        <div style="padding:15px 0;">
-            <p><strong>@User1:</strong> דאס ארבעט מורא'דיג!</p>
-            <p><strong>@Admin:</strong> נייע אפדעיט קומט באלד.</p>
+        <div class="comments-list" id="commentsList">
+            <div style="margin-bottom:10px;"><b>Admin:</b> Wow, דאס איז א מעכטיגע ווידעא!</div>
+        </div>
+        <div class="comment-input-area">
+            <input type="text" id="commentInput" placeholder="Add a comment...">
+            <button onclick="addComment()" style="background:none; border:none; color:var(--primary); font-weight:bold;">Post</button>
         </div>
     </div>
 
+    <div id="storyOverlay">
+        <div class="story-progress"><div id="storyBar" class="story-bar"></div></div>
+        <div style="padding:15px; display:flex; justify-content:space-between;">
+            <strong id="storyUser">User</strong>
+            <span onclick="closeStory()" style="cursor:pointer;">×</span>
+        </div>
+        <div style="flex-grow:1; display:flex; align-items:center; justify-content:center; background:#111;">
+            <h2 id="storyText">Loading Story...</h2>
+        </div>
+    </div>
+
+    <input type="file" id="mediaInput" style="display:none;" accept="image/*,video/*" onchange="processUpload(event)">
+
     <div class="bottom-nav">
-        <div class="nav-item active-nav" onclick="showPage('homePage', this)">
-            <span class="nav-icon">🏠</span><span class="nav-text" id="nav-home">היים</span>
-        </div>
-        <div class="nav-item" onclick="showPage('requestPage', this)">
-            <span class="nav-icon">💡</span><span class="nav-text" id="nav-ideas">איידיעס</span>
-        </div>
-        <div class="nav-item" style="color:var(--primary); font-size:30px;">⊕</div>
-        <div class="nav-item" onclick="showPage('shortsPage', this)">
-            <span class="nav-icon">🎬</span><span class="nav-text" id="nav-shorts">שאָרטס</span>
-        </div>
-        <div class="nav-item" onclick="showPage('profilePage', this)">
-            <span class="nav-icon">👤</span><span class="nav-text" id="nav-prof">פּראָפֿיל</span>
-        </div>
+        <div class="nav-btn" onclick="showPage('homePage')">🏠</div>
+        <div class="nav-btn">🔍</div>
+        <div class="nav-btn" style="color:var(--primary); font-size:35px;" onclick="document.getElementById('mediaInput').click()">⊕</div>
+        <div class="nav-btn" onclick="showPage('msgPage')">🎬</div>
+        <div class="nav-btn" onclick="showPage('profilePage')">👤</div>
     </div>
 
     <script>
-        let currentLang = 'yi';
+        // 1. Clock
+        function updateClock() {
+            let now = new Date();
+            document.getElementById('clock').innerText = now.getHours() + ":" + String(now.getMinutes()).padStart(2, '0');
+        }
+        setInterval(updateClock, 1000); updateClock();
 
-        function showPage(pageId, navEl) {
+        // 2. Navigation
+        function showPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
             document.getElementById(pageId).classList.add('active-page');
-            
-            if(navEl) {
-                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active-nav'));
-                navEl.classList.add('active-nav');
-            }
+        }
 
-            let v = document.getElementById('mainVideo');
-            if(pageId === 'shortsPage') { v.play(); } else { v.pause(); }
+        // 3. Admin System
+        if(!localStorage.getItem('adminPassword')) localStorage.setItem('adminPassword', '1234');
+
+        function checkAdmin() {
+            let entered = document.getElementById('passInput').value;
+            if(entered === localStorage.getItem('adminPassword')) {
+                document.getElementById('loginBox').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+                document.getElementById('displayUser').innerHTML = "@Admin_User ✔";
+            } else { alert("Wrong Password!"); }
+        }
+
+        function changePassword() {
+            let newPw = document.getElementById('newPass').value;
+            if(newPw) {
+                localStorage.setItem('adminPassword', newPw);
+                alert("נייע פאַסוואָרט געהיטן!");
+            }
+        }
+
+        function saveLogo() {
+            let name = document.getElementById('newLogoName').value;
+            if(name) document.getElementById('siteLogo').innerText = name;
+        }
+
+        // 4. Upload System (Images & Videos)
+        function processUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const url = URL.createObjectURL(file);
+            const isVideo = file.type.startsWith('video');
+            
+            let mediaHTML = isVideo 
+                ? `<video src="${url}" controls style="width:100%"></video>` 
+                : `<img src="${url}" style="width:100%">`;
+
+            const postHTML = `
+                <div class="post">
+                    <div class="post-header">You (נאר וואס ארויף)</div>
+                    <div class="post-content">${mediaHTML}</div>
+                    <div class="post-actions">
+                        <span class="like-btn" onclick="this.classList.toggle('active')">❤️</span>
+                        <span onclick="toggleComments()">💬</span>
+                    </div>
+                </div>`;
+            document.getElementById('feedContainer').insertAdjacentHTML('afterbegin', postHTML);
+            showPage('homePage');
+        }
+
+        // 5. Comments
+        function toggleComments() { document.getElementById('commentsDrawer').classList.toggle('open'); }
+        function addComment() {
+            let val = document.getElementById('commentInput').value;
+            if(val) {
+                let div = document.createElement('div');
+                div.innerHTML = `<b>You:</b> ${val}`;
+                document.getElementById('commentsList').appendChild(div);
+                document.getElementById('commentInput').value = "";
+            }
+        }
+
+        // 6. Story System
+        let storyInt;
+        function openStory(user) {
+            document.getElementById('storyOverlay').style.display = 'flex';
+            document.getElementById('storyUser').innerText = user;
+            document.getElementById('storyText').innerText = user + "'s Story Content";
+            let bar = document.getElementById('storyBar');
+            bar.style.width = '0%';
+            let width = 0;
+            storyInt = setInterval(() => {
+                width += 1;
+                bar.style.width = width + '%';
+                if(width >= 100) closeStory();
+            }, 50);
+        }
+        function closeStory() {
+            document.getElementById('storyOverlay').style.display = 'none';
+            clearInterval(storyInt);
         }
 
         function toggleTheme() {
-            document.body.classList.toggle('light-mode');
-        }
-
-        function toggleComments() {
-            document.getElementById('commentsDrawer').classList.toggle('open');
-        }
-
-        function addIdea() {
-            let input = document.getElementById('ideaInput');
-            if(input.value.trim() !== "") {
-                let div = document.createElement('div');
-                div.style.background = "var(--card)";
-                div.style.padding = "10px";
-                div.style.borderRadius = "8px";
-                div.style.marginBottom = "10px";
-                div.innerHTML = "<b>Idea:</b> " + input.value;
-                document.getElementById('ideasList').prepend(div);
-                input.value = "";
-                alert("Submitted!");
-            }
-        }
-
-        function updateSiteName() {
-            let name = document.getElementById('siteNameInput').value;
-            if(name) {
-                document.getElementById('siteNameDisplay').innerText = name;
-                alert("Site Name Updated!");
-            }
-        }
-
-        function switchLanguage() {
-            if(currentLang === 'yi') {
-                currentLang = 'en';
-                document.getElementById('mainBody').dir = 'ltr';
-                updateUI('Home', 'Ideas', 'Shorts', 'Profile', 'Welcome!', 'To Video', 'Account', 'Change Language', 'Ideas');
-            } else {
-                currentLang = 'yi';
-                document.getElementById('mainBody').dir = 'rtl';
-                updateUI('היים', 'איידיעס', 'שאָרטס', 'פּראָפֿיל', 'ברוכים הבאים!', 'צום ווידעא', 'מיין אקאונט', 'טויש שפראך', 'נייע איידיעס');
-            }
-        }
-
-        function updateUI(h, i, s, p, wel, play, prof, lang, reqT) {
-            document.getElementById('nav-home').innerText = h;
-            document.getElementById('nav-ideas').innerText = i;
-            document.getElementById('nav-shorts').innerText = s;
-            document.getElementById('nav-prof').innerText = p;
-            document.getElementById('txt-welcome').innerText = wel;
-            document.getElementById('txt-play').innerText = play;
-            document.getElementById('txt-prof-title').innerText = prof;
-            document.getElementById('txt-lang-btn').innerText = lang;
-            document.getElementById('txt-req-title').innerText = reqT;
+            document.body.style.filter = document.body.style.filter === 'invert(1)' ? 'invert(0)' : 'invert(1)';
         }
     </script>
 </body>
-    </html>
+                                                                                                                                                      </html>

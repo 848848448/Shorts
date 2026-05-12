@@ -3,150 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shorts Hub - Ultimate Feed</title>
+    <title>Shorts Hub Interactive</title>
     <style>
-        /* Basic Setup */
-        body { background: #0f0f0f; color: white; margin: 0; font-family: sans-serif; transition: 0.3s; padding-bottom: 70px; }
+        /* Setup */
+        body { background: #0f0f0f; color: white; margin: 0; font-family: sans-serif; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         
         /* Header */
         .header { 
             position: fixed; top: 0; width: 100%; height: 60px; 
-            background: rgba(15, 15, 15, 0.95); display: flex; align-items: center; 
-            justify-content: space-between; padding: 0 15px; border-bottom: 1px solid #333; z-index: 1000;
+            background: #0f0f0f; display: flex; align-items: center; 
+            justify-content: space-between; padding: 0 15px; border-bottom: 1px solid #333; z-index: 2000;
+            box-sizing: border-box;
         }
-        .logo { font-size: 22px; font-weight: bold; color: #ff0050; }
-        .login-btn { background: #ff0050; color: white; border: none; padding: 8px 18px; border-radius: 20px; font-weight: bold; cursor: pointer; }
+        .logo { font-size: 22px; font-weight: bold; color: #ff0050; pointer-events: none; }
+
+        /* Buttons with feedback */
+        .clickable { cursor: pointer; transition: transform 0.1s active; }
+        .clickable:active { transform: scale(0.95); opacity: 0.7; }
 
         /* Sidebar */
         .sidebar {
             position: fixed; left: -260px; top: 0; width: 250px; height: 100%;
-            background: #1a1a1a; transition: 0.3s; z-index: 2000; padding-top: 60px;
+            background: #1a1a1a; transition: 0.3s; z-index: 3000; padding-top: 60px;
         }
         .sidebar.open { left: 0; }
-        .sidebar-item { padding: 15px 25px; border-bottom: 1px solid #222; cursor: pointer; font-size: 16px; }
+        .sidebar-item { padding: 18px 25px; border-bottom: 1px solid #222; cursor: pointer; }
+        .sidebar-item:active { background: #333; }
 
-        /* Stories Bar */
-        .stories { display: flex; overflow-x: auto; padding: 15px; gap: 15px; margin-top: 60px; scrollbar-width: none; }
-        .story { text-align: center; flex-shrink: 0; }
-        .story-circle { width: 65px; height: 65px; border-radius: 50%; border: 3px solid #ff0050; background: #333; margin-bottom: 5px; }
-
-        /* Post Feed (The "Instagram" look) */
-        .feed { padding: 10px; max-width: 500px; margin: auto; }
-        .post-card { background: #1a1a1a; border-radius: 12px; margin-bottom: 20px; overflow: hidden; border: 1px solid #333; }
-        .post-header { padding: 10px; display: flex; align-items: center; gap: 10px; }
-        .post-user-img { width: 35px; height: 35px; border-radius: 50%; background: #444; }
-        .post-img { width: 100%; height: 300px; background: #222; display: flex; align-items: center; justify-content: center; color: #555; }
-        .post-actions { padding: 10px; font-size: 20px; display: flex; gap: 15px; }
-        .post-info { padding: 0 10px 10px; font-size: 14px; }
+        /* Stories */
+        .stories { display: flex; overflow-x: auto; padding: 15px; gap: 15px; margin-top: 65px; scroll-snap-type: x mandatory; }
+        .story-circle { width: 65px; height: 65px; border-radius: 50%; border: 3px solid #ff0050; background: #333; cursor: pointer; }
 
         /* Login Modal */
-        .modal {
+        #loginModal {
             display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: #1a1a1a; padding: 30px; border-radius: 15px; z-index: 3000;
-            width: 85%; max-width: 350px; border: 1px solid #444; text-align: center;
+            background: #1a1a1a; padding: 30px; border-radius: 15px; z-index: 4000;
+            width: 85%; max-width: 350px; border: 1px solid #444; box-shadow: 0 0 20px rgba(0,0,0,0.8);
         }
-        .modal input { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #333; color: white; border-radius: 8px; box-sizing: border-box; }
 
         /* Bottom Navigation */
         .bottom-nav {
             position: fixed; bottom: 0; width: 100%; display: flex; 
             justify-content: space-around; background: #0f0f0f; 
-            padding: 12px 0; border-top: 1px solid #333; z-index: 1000;
+            padding: 12px 0; border-top: 1px solid #333; z-index: 2000;
         }
-        .nav-icon { font-size: 24px; display: block; }
-        .nav-text { font-size: 10px; color: #888; }
+        .nav-btn { text-align: center; cursor: pointer; flex: 1; }
+        
+        /* Overlay to close sidebar */
+        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2500; }
     </style>
 </head>
 <body>
 
+    <div id="overlay" onclick="toggleSidebar()"></div>
+
     <div id="mySidebar" class="sidebar">
-        <div class="sidebar-item" onclick="toggleSidebar()">✖ Close Menu</div>
-        <div class="sidebar-item">🏠 Home Feed</div>
-        <div class="sidebar-item">🖼️ Gallery</div>
-        <div class="sidebar-item">🕒 History</div>
-        <div class="sidebar-item">❤️ Liked Posts</div>
-        <div class="sidebar-item">⚙️ Settings</div>
+        <div class="sidebar-item" onclick="alert('Going Home')">🏠 Home</div>
+        <div class="sidebar-item" onclick="alert('Gallery Coming Soon')">🖼️ Gallery</div>
         <div class="sidebar-item" onclick="toggleMode()">🌓 Dark/Light Mode</div>
+        <div class="sidebar-item" onclick="toggleSidebar()" style="color:#ff0050;">✖ Close Menu</div>
     </div>
 
     <div class="header">
-        <div style="font-size: 25px; cursor: pointer;" onclick="toggleSidebar()">☰</div>
+        <div class="clickable" style="font-size: 25px; padding: 10px;" onclick="toggleSidebar()">☰</div>
         <div class="logo">Shorts Hub</div>
-        <button class="login-btn" onclick="openLogin()">Sign In</button>
+        <div class="clickable" style="background:#ff0050; padding: 6px 12px; border-radius: 15px; font-weight: bold; font-size: 14px;" onclick="openLogin()">Sign In</div>
     </div>
 
     <div class="stories">
-        <div class="story"><div class="story-circle"></div><span>You</span></div>
-        <div class="story"><div class="story-circle"></div><span>News</span></div>
-        <div class="story"><div class="story-circle"></div><span>Live</span></div>
-        <div class="story"><div class="story-circle"></div><span>Trends</span></div>
-        <div class="story"><div class="story-circle"></div><span>Sports</span></div>
+        <div class="story-circle clickable" onclick="alert('Story 1')"></div>
+        <div class="story-circle clickable" onclick="alert('Story 2')"></div>
+        <div class="story-circle clickable" onclick="alert('Story 3')"></div>
+        <div class="story-circle clickable" onclick="alert('Story 4')"></div>
     </div>
 
-    <div class="feed">
-        <div class="post-card">
-            <div class="post-header">
-                <div class="post-user-img"></div>
-                <strong>@Top_Creator</strong>
-            </div>
-            <div class="post-img">Image/Video Placeholder</div>
-            <div class="post-actions"><span>❤️</span> <span>💬</span> <span>🔗</span></div>
-            <div class="post-info">
-                <strong>@Top_Creator</strong> דאס איז א נייע פאוסט אויף מיין פיעד!
-            </div>
-        </div>
-
-        <div class="post-card">
-            <div class="post-header">
-                <div class="post-user-img"></div>
-                <strong>@News_Official</strong>
-            </div>
-            <div class="post-img" style="background: #333;">Breaking News Update</div>
-            <div class="post-actions"><span>❤️</span> <span>💬</span> <span>🔗</span></div>
-            <div class="post-info">
-                <strong>@News_Official</strong> קוקט דא פאר די לעצטע נייעס.
-            </div>
-        </div>
+    <div style="padding: 20px; text-align: center; margin-top: 20px;">
+        <h2 style="pointer-events: none;">Welcome Home</h2>
+        <p style="color: #888; pointer-events: none;">פרוביר צו דריקן די קנעפּלעך!</p>
+        <button class="clickable" style="width: 80%; padding: 15px; background: #222; border: 1px solid #444; color: white; border-radius: 10px;" onclick="alert('Searching...')">🔍 זוך דא...</button>
     </div>
 
-    <div id="loginModal" class="modal">
-        <h3>ברוכים הבאים</h3>
-        <p>סיין זיך אריין צו דיין קאונט</p>
-        <input type="text" placeholder="Username / Email">
-        <input type="password" placeholder="Password">
-        <button class="login-btn" style="width: 100%; padding: 12px;" onclick="closeLogin()">Login</button>
-        <p style="font-size: 12px; margin-top: 15px; cursor: pointer; color: #888;" onclick="closeLogin()">Cancel</p>
+    <div id="loginModal">
+        <h3>אריינסיינען</h3>
+        <input type="text" placeholder="User" style="width:100%; padding:10px; margin:10px 0; background:#000; border:1px solid #333; color:white;">
+        <button class="clickable" style="width:100%; padding:10px; background:#ff0050; border:none; color:white; border-radius:5px;" onclick="closeLogin()">Login</button>
+        <p onclick="closeLogin()" style="cursor:pointer; font-size:12px; margin-top:10px; color:#888;">Cancel</p>
     </div>
 
     <div class="bottom-nav">
-        <div style="text-align:center;"><span class="nav-icon">🏠</span><span class="nav-text">Home</span></div>
-        <div style="text-align:center;"><span class="nav-icon">🎬</span><span class="nav-text">Shorts</span></div>
-        <div style="font-size: 30px; color: #ff0050; margin-top: -5px;">⊕</div>
-        <div style="text-align:center;"><span class="nav-icon">🔔</span><span class="nav-text">Alerts</span></div>
-        <div style="text-align:center;"><span class="nav-icon">👤</span><span class="nav-text">Profile</span></div>
+        <div class="nav-btn clickable" onclick="alert('Home')">🏠</div>
+        <div class="nav-btn clickable" onclick="alert('Shorts Section')">🎬</div>
+        <div class="nav-btn clickable" style="font-size:30px; color:#ff0050;" onclick="alert('Add Content')">⊕</div>
+        <div class="nav-btn clickable" onclick="alert('Alerts')">🔔</div>
+        <div class="nav-btn clickable" onclick="alert('Profile')">👤</div>
     </div>
 
     <script>
         function toggleSidebar() {
-            document.getElementById("mySidebar").classList.toggle("open");
-        }
-        function openLogin() {
-            document.getElementById("loginModal").style.display = "block";
-        }
-        function closeLogin() {
-            document.getElementById("loginModal").style.display = "none";
-        }
-        function toggleMode() {
-            let b = document.body;
-            if(b.style.background === "white") {
-                b.style.background = "#0f0f0f";
-                b.style.color = "white";
+            let sidebar = document.getElementById("mySidebar");
+            let overlay = document.getElementById("overlay");
+            if (sidebar.classList.contains("open")) {
+                sidebar.classList.remove("open");
+                overlay.style.display = "none";
             } else {
-                b.style.background = "white";
-                b.style.color = "black";
+                sidebar.classList.add("open");
+                overlay.style.display = "block";
             }
         }
+        function openLogin() { document.getElementById("loginModal").style.display = "block"; }
+        function closeLogin() { document.getElementById("loginModal").style.display = "none"; }
+        function toggleMode() {
+            document.body.style.background = document.body.style.background === "white" ? "#0f0f0f" : "white";
+            document.body.style.color = document.body.style.color === "black" ? "white" : "black";
+        }
     </script>
-
 </body>
-            </html>
+</html>

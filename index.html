@@ -1,224 +1,110 @@
 <!DOCTYPE html>
-<html lang="yi">
+<html lang="yi" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>My Ultimate App</title>
+    <title>The Ultimate Video App</title>
     
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <style>
-        :root {
-            --primary-color: #007bff;
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --text-color: #ffffff;
-        }
-
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding-bottom: 70px;
-            direction: rtl;
-            overflow-x: hidden;
-        }
-
-        /* Header & Logo */
-        header {
-            padding: 15px;
-            text-align: center;
-            background: #000;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid #333;
-        }
-        #app-logo { max-height: 45px; border-radius: 5px; }
-
-        /* Announcement Bar */
-        #announcement-bar {
-            background: linear-gradient(90deg, #ff8c00, #ff4500);
-            padding: 10px;
-            text-align: center;
-            font-weight: bold;
-            display: none;
-            font-size: 14px;
-        }
-
-        /* Layouts: Boxes vs Bubbles */
-        .container {
-            display: grid;
-            gap: 15px;
-            padding: 15px;
-        }
-        .layout-grid { grid-template-columns: repeat(2, 1fr); }
-        .layout-bubbles { 
-            display: flex; 
-            flex-wrap: wrap; 
-            justify-content: center; 
-            gap: 20px; 
-        }
-
-        .box {
-            background: var(--card-bg);
-            border-radius: 12px;
-            overflow: hidden;
-            position: relative;
-            cursor: pointer;
-            transition: 0.3s;
-            border: 1px solid #333;
-        }
-        .layout-bubbles .box {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-        }
-        .box img { width: 100%; height: 100%; object-fit: cover; }
-        .box-title { padding: 8px; text-align: center; font-size: 13px; font-weight: bold; }
+        :root { --primary: #007bff; --bg: #000000; --card: #121212; --text: #ffffff; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 80px; }
         
-        .badge {
-            position: absolute;
-            top: 5px; right: 5px;
-            background: rgba(255, 0, 0, 0.8);
-            font-size: 10px; padding: 2px 7px;
-            border-radius: 10px;
-        }
+        /* Header & Announcement */
+        header { background: #000; padding: 15px; border-bottom: 1px solid #333; font-weight: bold; font-size: 20px; text-align: center; }
+        .announcement { background: #ff4500; padding: 10px; font-weight: bold; text-align: center; font-size: 14px; }
 
-        /* Full Screen Reels Style Video */
-        #video-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #000;
-            z-index: 2000;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-        }
-        video { width: 100%; height: 100%; object-fit: contain; }
+        /* Grid - Same as yesterday */
+        .container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 12px; }
+        .box { background: var(--card); border-radius: 15px; overflow: hidden; border: 1px solid #222; position: relative; }
+        .box img { width: 100%; height: 180px; object-fit: cover; background: #1a1a1a; display: block; }
+        .box-info { padding: 10px; text-align: right; }
+        .box-title { font-weight: bold; font-size: 15px; margin-bottom: 4px; }
+        .view-count { font-size: 12px; color: #888; }
+        .live-badge { position: absolute; top: 10px; left: 10px; background: red; padding: 2px 8px; border-radius: 5px; font-size: 10px; font-weight: bold; }
 
-        .video-controls {
-            position: absolute;
-            bottom: 40px; left: 20px;
-            display: flex; flex-direction: column; gap: 20px;
-            z-index: 2100;
-        }
-        .icon-btn { 
-            background: rgba(0,0,0,0.5); 
-            color: white; border: none; 
-            padding: 10px; border-radius: 50%; 
-            font-size: 20px; cursor: pointer;
-        }
+        /* Leaderboard & Chat Pages */
+        .page { display: none; padding: 15px; }
+        .active { display: block; }
+        .leader-item { display: flex; justify-content: space-between; background: #111; margin: 8px 0; padding: 15px; border-radius: 10px; border: 1px solid #333; }
+        
+        #chat-box { height: 350px; overflow-y: auto; background: #080808; border: 1px solid #333; margin: 10px 0; padding: 15px; text-align: right; border-radius: 12px; }
+        .msg { background: #1a1a1a; padding: 10px; margin: 8px 0; border-radius: 10px; border-right: 4px solid var(--primary); }
 
-        /* Loading Spinner */
-        #loader {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            border: 4px solid #333;
-            border-top: 4px solid var(--primary-color);
-            border-radius: 50%;
-            width: 40px; height: 40px;
-            animation: spin 1s linear infinite;
-            display: none;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* Video Player Overlay */
+        #video-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:2000; display:none; flex-direction:column; justify-content: center; }
+        video { width: 100%; max-height: 90%; }
+        .close-btn { position:absolute; top:20px; left:20px; background:rgba(255,255,255,0.2); color:white; border:none; padding:12px 18px; border-radius:50%; z-index:2100; font-size: 20px; }
 
-        /* Admin & Leaderboard */
-        .panel { display: none; padding: 20px; }
-        .admin-card { 
-            background: #222; padding: 15px; 
-            border-radius: 10px; margin-bottom: 15px; 
-            border-right: 4px solid var(--primary-color);
-        }
-        input, select, button {
-            width: 100%; padding: 12px; margin: 8px 0;
-            border-radius: 8px; border: none; font-size: 16px;
-        }
-        button { background: var(--primary-color); color: white; font-weight: bold; }
+        /* Bottom Nav */
+        nav { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #333; }
+        nav span { cursor: pointer; font-size: 24px; opacity: 0.5; }
+        nav span.active-nav { opacity: 1; color: var(--primary); }
 
-        /* Bottom Navigation */
-        nav {
-            position: fixed; bottom: 0; width: 100%;
-            background: #000; display: flex;
-            justify-content: space-around; padding: 12px 0;
-            border-top: 1px solid #333; z-index: 1500;
-        }
+        /* Admin UI */
+        input, button { width: 100%; padding: 14px; margin: 8px 0; border-radius: 10px; border: 1px solid #333; background: #111; color: white; box-sizing: border-box; }
+        button { background: var(--primary); border: none; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <header>
-        <img id="app-logo" src="https://via.placeholder.com/150x50?text=MY+APP" alt="Logo">
-    </header>
+    <header>MY VIDEO APP</header>
+    <div id="ann-bar" class="announcement">לאָדט זיך...</div>
 
-    <div id="announcement-bar"></div>
-
-    <div style="padding: 10px 15px;">
-        <input type="text" id="search-box" placeholder="זוך עפעס..." oninput="searchApp()">
+    <div id="home-page" class="page active">
+        <div id="main-container" class="container"></div>
     </div>
 
-    <div id="home-page">
-        <div id="main-container" class="container layout-grid">
-            </div>
+    <div id="lead-page" class="page">
+        <h3 style="text-align: center;">🏆 טאַפּ ווידעאָס</h3>
+        <div id="leader-list"></div>
+    </div>
+
+    <div id="request-page" class="page">
+        <h3 style="text-align: center;">💬 ריקוועסטס & קאָמאַנדס</h3>
+        <div id="chat-box"></div>
+        <input type="text" id="user-msg" placeholder="שרייב עפעס...">
+        <button onclick="sendRequest()">שיקן ✉️</button>
+    </div>
+
+    <div id="settings-page" class="page">
+        <div id="login-area">
+            <input type="password" id="pass" placeholder="Admin Password">
+            <button onclick="checkAdmin()">Login</button>
+        </div>
+        <div id="admin-tools" style="display:none;">
+            <h4>אדמין פאַנעל</h4>
+            <input type="text" id="new-name" placeholder="נאמען">
+            <input type="text" id="new-url" placeholder="ווידעא לינק (.mp4)">
+            <input type="text" id="new-img" placeholder="בילד לינק (Poster)">
+            <button onclick="addBox()">לייג צו ווידעא +</button>
+            <hr>
+            <input type="text" id="new-ann" placeholder="טויש מעלדונג">
+            <button onclick="setAnn()">Update Announcement</button>
+            <button onclick="clearChat()" style="background:red;">ריין אויס טשעט</button>
+            <div id="admin-manage-list"></div>
+        </div>
     </div>
 
     <div id="video-overlay">
-        <div id="loader"></div>
-        <video id="main-video-player" playsinline loop onclick="pausePlay()"></video>
-        <button class="icon-btn" style="position:fixed; top:20px; right:20px;" onclick="closeVideo()">✕</button>
-        <div class="video-controls">
-            <button class="icon-btn" onclick="toggleMute()">🔊</button>
-            <button class="icon-btn" onclick="shareVideo()">🔗</button>
-            <div id="view-counter" style="font-size: 12px; text-shadow: 1px 1px 2px #000;">0 Views</div>
-        </div>
-    </div>
-
-    <div id="settings-page" class="panel">
-        <h2>סעטינגס & Leaderboard</h2>
-        
-        <div class="admin-card">
-            <h3>Top Contributors 🏆</h3>
-            <div id="leaderboard-list" style="font-size: 14px;">לאָדט זיך...</div>
-        </div>
-
-        <div id="login-form">
-            <input type="password" id="admin-pass" placeholder="אדמין פאַסוואָרד">
-            <button onclick="adminLogin()">Login</button>
-        </div>
-
-        <div id="mod-tools" style="display:none;">
-            <div class="admin-card">
-                <h3>Moderator Panel (Delete)</h3>
-                <div id="content-manager"></div>
-            </div>
-        </div>
-
-        <div id="master-tools" style="display:none;">
-            <div class="admin-card">
-                <h3>Master Admin Tools</h3>
-                <button onclick="changeLayout()">Switch Layout (Grid/Bubbles)</button>
-                <input type="text" id="announcement-input" placeholder="שרייב א מעלדונג">
-                <button onclick="updateAnnouncement()">Update Banner</button>
-                <hr>
-                <button onclick="addNewBox()">+ Add New Box</button>
-            </div>
-        </div>
+        <button class="close-btn" onclick="closeVideo()">✕</button>
+        <video id="player" controls playsinline loop></video>
     </div>
 
     <nav>
-        <button class="icon-btn" onclick="navTo('home')">🏠</button>
-        <button class="icon-btn" onclick="navTo('settings')">⚙️</button>
+        <span id="nav-home" class="active-nav" onclick="showPage('home')">🏠</span>
+        <span id="nav-lead" onclick="showPage('lead')">🏆</span>
+        <span id="nav-request" onclick="showPage('request')">💬</span>
+        <span id="nav-settings" onclick="showPage('settings')">⚙️</span>
     </nav>
 
     <script>
-        // --- 1. FIREBASE CONFIG (DYNAMISED BY GEMINI) ---
         const firebaseConfig = {
           apiKey: "AIzaSyAmKpAnoV_aG_3_rGMf4l_FzcbAWzwHTnY",
           authDomain: "flutter-ai-playground-8cfec.firebaseapp.com",
+          databaseURL: "https://flutter-ai-playground-8cfec-default-rtdb.firebaseio.com",
           projectId: "flutter-ai-playground-8cfec",
           storageBucket: "flutter-ai-playground-8cfec.firebasestorage.app",
           messagingSenderId: "989658103041",
@@ -228,166 +114,87 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        let appLayout = 'grid';
-        let isAdmin = false;
-        let isMaster = false;
-
-        // --- 2. DATA LOADING ---
-        function loadApp() {
+        function init() {
             // Load Announcement
-            db.ref('announcement').on('value', snap => {
-                const bar = document.getElementById('announcement-bar');
-                if(snap.val()) {
-                    bar.innerText = snap.val();
-                    bar.style.display = 'block';
-                } else {
-                    bar.style.display = 'none';
-                }
-            });
+            db.ref('announcement').on('value', s => { document.getElementById('ann-bar').innerText = s.val() || "Welcome"; });
 
-            // Load Boxes
+            // Load Boxes & Leaderboard
             db.ref('boxes').on('value', snap => {
                 const container = document.getElementById('main-container');
-                const manager = document.getElementById('content-manager');
-                container.innerHTML = '';
-                manager.innerHTML = '';
+                const leadList = document.getElementById('leader-list');
+                const adminList = document.getElementById('admin-manage-list');
+                container.innerHTML = ''; adminList.innerHTML = '';
+                let items = [];
 
                 snap.forEach(child => {
-                    const box = child.val();
-                    const boxId = child.key;
+                    let d = child.val(); d.id = child.key; d.views = d.views || 0;
+                    items.push(d);
 
-                    // Home Display
-                    if(box.visible || isMaster) {
-                        const div = document.createElement('div');
-                        div.className = 'box';
-                        div.innerHTML = `
-                            <img src="${box.image || 'https://via.placeholder.com/150'}">
-                            ${box.count ? `<div class="badge">${box.count}</div>` : ''}
-                            <div class="box-title">${box.name}</div>
-                            ${!box.visible ? '<div style="background:red; font-size:10px; text-align:center;">HIDDEN</div>' : ''}
-                        `;
-                        div.onclick = () => openVideo(box, boxId);
-                        container.appendChild(div);
-                    }
+                    const box = document.createElement('div');
+                    box.className = 'box';
+                    box.innerHTML = `<div class="live-badge">LIVE</div><img src="${d.image || ''}"><div class="box-info"><div class="box-title">${d.name}</div><div class="view-count">👁️ ${d.views}</div></div>`;
+                    box.onclick = () => {
+                        db.ref('boxes/'+d.id+'/views').transaction(v => (v||0)+1);
+                        document.getElementById('video-overlay').style.display='flex';
+                        document.getElementById('player').src = d.url;
+                        document.getElementById('player').play();
+                    };
+                    container.appendChild(box);
 
-                    // Admin Manager Display
-                    if(isAdmin) {
-                        const mDiv = document.createElement('div');
-                        mDiv.style = "display:flex; justify-content:space-between; padding:5px; border-bottom:1px solid #444;";
-                        mDiv.innerHTML = `
-                            <span>${box.name}</span>
-                            <button style="width:auto; padding:5px 10px; background:red;" onclick="deleteItem('${boxId}')">Delete</button>
-                        `;
-                        manager.appendChild(mDiv);
-                    }
+                    const adminItem = document.createElement('div');
+                    adminItem.innerHTML = `<p>${d.name} <button style="width:auto; padding:5px; background:red;" onclick="db.ref('boxes/${d.id}').remove()">Delete</button></p>`;
+                    adminList.appendChild(adminItem);
+                });
+
+                // Leaderboard
+                leadList.innerHTML = '';
+                items.sort((a,b) => b.views - a.views).forEach((item, i) => {
+                    const row = document.createElement('div');
+                    row.className = 'leader-item';
+                    row.innerHTML = `<span>#${i+1} ${item.name}</span> <span>${item.views} Views</span>`;
+                    leadList.appendChild(row);
                 });
             });
 
-            // Leaderboard
-            db.ref('users').orderByChild('uploads').limitToLast(5).on('value', snap => {
-                const list = document.getElementById('leaderboard-list');
-                let html = '<ul>';
-                snap.forEach(u => {
-                    html += `<li>${u.val().name}: ${u.val().uploads} uploads</li>`;
+            // Load Chat
+            db.ref('requests').on('value', snap => {
+                const chat = document.getElementById('chat-box');
+                chat.innerHTML = '';
+                snap.forEach(c => {
+                    const m = document.createElement('div');
+                    m.className = 'msg'; m.innerText = c.val().text;
+                    chat.appendChild(m);
                 });
-                list.innerHTML = html + '</ul>';
+                chat.scrollTop = chat.scrollHeight;
             });
         }
 
-        // --- 3. VIDEO FUNCTIONS ---
-        function openVideo(box, id) {
-            if(!box.url) return;
-            const overlay = document.getElementById('video-overlay');
-            const player = document.getElementById('main-video-player');
-            const loader = document.getElementById('loader');
-
-            overlay.style.display = 'flex';
-            loader.style.display = 'block';
-            player.src = box.url;
-            
-            player.oncanplay = () => loader.style.display = 'none';
-            player.play();
-
-            document.getElementById('view-counter').innerText = (box.views || 0) + " Views";
-            db.ref('boxes/' + id + '/views').set((box.views || 0) + 1);
+        function addBox() {
+            const name = document.getElementById('new-name').value;
+            const url = document.getElementById('new-url').value;
+            const img = document.getElementById('new-img').value;
+            if(name && url) db.ref('boxes').push({ name, url, image: img, views: 0 });
         }
 
-        function closeVideo() {
-            const player = document.getElementById('main-video-player');
-            player.pause();
-            document.getElementById('video-overlay').style.display = 'none';
+        function sendRequest() {
+            const t = document.getElementById('user-msg').value;
+            if(t) { db.ref('requests').push({ text: t }); document.getElementById('user-msg').value = ''; }
         }
 
-        function pausePlay() {
-            const player = document.getElementById('main-video-player');
-            player.paused ? player.play() : player.pause();
+        function setAnn() { db.ref('announcement').set(document.getElementById('new-ann').value); }
+        function clearChat() { if(confirm("מעקן טשעט?")) db.ref('requests').remove(); }
+        function closeVideo() { document.getElementById('video-overlay').style.display='none'; document.getElementById('player').pause(); }
+        
+        function showPage(p) {
+            document.querySelectorAll('.page').forEach(d => d.classList.remove('active'));
+            document.querySelectorAll('nav span').forEach(s => s.classList.remove('active-nav'));
+            document.getElementById(p + '-page').classList.add('active');
+            document.getElementById('nav-' + p).classList.add('active-nav');
         }
 
-        function toggleMute() {
-            const player = document.getElementById('main-video-player');
-            player.muted = !player.muted;
-        }
+        function checkAdmin() { if(document.getElementById('pass').value === '1234') document.getElementById('admin-tools').style.display = 'block'; }
 
-        // --- 4. ADMIN LOGIC ---
-        function adminLogin() {
-            const pass = document.getElementById('admin-pass').value;
-            if(pass === '1234') { // Master Admin
-                isMaster = true; isAdmin = true;
-                document.getElementById('master-tools').style.display = 'block';
-                document.getElementById('mod-tools').style.display = 'block';
-                document.getElementById('login-form').style.display = 'none';
-                loadApp();
-            } else if(pass === '5678') { // Moderator
-                isAdmin = true; isMaster = false;
-                document.getElementById('mod-tools').style.display = 'block';
-                document.getElementById('login-form').style.display = 'none';
-                loadApp();
-            } else {
-                alert("קאָד נישט ריכטיק");
-            }
-        }
-
-        function changeLayout() {
-            const container = document.getElementById('main-container');
-            appLayout = appLayout === 'grid' ? 'bubbles' : 'grid';
-            container.className = appLayout === 'grid' ? 'container layout-grid' : 'container layout-bubbles';
-        }
-
-        function updateAnnouncement() {
-            const txt = document.getElementById('announcement-input').value;
-            db.ref('announcement').set(txt);
-        }
-
-        function deleteItem(id) {
-            if(confirm("ביסטו זיכער דו ווילסט עס אויסמעקן?")) {
-                db.ref('boxes/' + id).remove();
-            }
-        }
-
-        function navTo(page) {
-            document.getElementById('home-page').style.display = page === 'home' ? 'block' : 'none';
-            document.getElementById('settings-page').style.display = page === 'settings' ? 'block' : 'none';
-        }
-
-        function shareVideo() {
-            const url = document.getElementById('main-video-player').src;
-            navigator.clipboard.writeText(url);
-            alert("לינק קאָפּירט!");
-        }
-
-        // Search logic
-        function searchApp() {
-            const query = document.getElementById('search-box').value.toLowerCase();
-            const boxes = document.querySelectorAll('.box');
-            boxes.forEach(b => {
-                const title = b.querySelector('.box-title').innerText.toLowerCase();
-                b.style.display = title.includes(query) ? 'block' : 'none';
-            });
-        }
-
-        // Start
-        loadApp();
-
+        init();
     </script>
 </body>
     </html>

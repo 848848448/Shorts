@@ -1,56 +1,151 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="yi" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Platform 2026</title>
+    <title>THE EMPIRE 2026</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
-    <div class="main-container">
-        <header>
-            <h1>PLATFORM<span>NEXT</span></h1>
-        </header>
-
-        <div class="content-grid">
-            <section id="video-section" class="box">
-                <h2><span>▶️</span> ווידעאָס</h2>
-                <div id="video-list"></div>
-            </section>
-            
-            <section id="music-section" class="box">
-                <h2><span>🎵</span> מוזיק</h2>
-                <div id="music-list"></div>
-            </section>
-
-            <section id="chat-section" class="box">
-                <h2><span>💬</span> טשעט</h2>
-                <div id="chat-display"></div>
-                <div class="chat-input-area">
-                    <input type="text" id="chat-input" placeholder="שרייב...">
-                    <button onclick="sendChatMessage()">Send</button>
-                </div>
-            </section>
-
-            <section id="admin-panel" class="box">
-                <h2><span>⚙️</span> אדמין</h2>
-                <input type="text" id="content-title" placeholder="נאמען">
-                <input type="file" id="content-file" accept="video/*,audio/*">
-                <select id="content-type" style="display:none;"><option value="videos">videos</option></select>
-                <button onclick="uploadContent()">Upload</button>
-                
-                <div id="progress-container" style="display: none;">
-                    <div class="progress-track"><div id="progress-bar"></div></div>
-                </div>
-            </section>
-        </div>
+    <div id="upload-progress-container" class="hidden">
+        <div id="upload-progress-bar">0%</div>
     </div>
 
+    <div id="app-container">
+        
+        <header>
+            <div class="header-top">
+                <div class="logo">THE EMPIRE</div>
+                <div class="header-icons">
+                    <i class="fas fa-search" onclick="toggleSearch()"></i>
+                    <i class="fas fa-cog" onclick="showPage('settings-page')"></i>
+                </div>
+            </div>
+            <div id="search-bar-container" class="hidden">
+                <input type="text" id="global-search" placeholder="זוך ווידעאס, מוזיק אדער חברים...">
+            </div>
+            
+            <div class="trending-bar">
+                <span>🔥 TRENDING:</span>
+                <marquee id="trending-text">ברוכים הבאים צו די גרעסטע פלאטפארמע!</marquee>
+            </div>
+        </header>
+
+        <main id="home-page" class="page">
+            <div class="status-wrapper">
+                <div class="status-list" id="status-list">
+                    <div class="status-item add-status" onclick="triggerStatusUpload()">
+                        <div class="plus-icon">+</div>
+                        <p>Status</p>
+                    </div>
+                    </div>
+            </div>
+
+            <div class="categories-grid">
+                <div class="cat-card shorts" onclick="showPage('shorts-page')">
+                    <i class="fas fa-play-circle"></i>
+                    <h3>SHORTS</h3>
+                </div>
+                <div class="cat-card music" onclick="showPage('music-page')">
+                    <i class="fas fa-music"></i>
+                    <h3>MUSIC</h3>
+                </div>
+                <div class="cat-card chat" onclick="showPage('chat-page')">
+                    <i class="fas fa-comments"></i>
+                    <h3>CHAT</h3>
+                    <span class="badge" id="chat-badge">0</span>
+                </div>
+                <div class="cat-card photos" onclick="showPage('photos-page')">
+                    <i class="fas fa-camera-retro"></i>
+                    <h3>PHOTOS</h3>
+                </div>
+            </div>
+
+            <div id="admin-banner" class="hidden"></div>
+        </main>
+
+        <section id="shorts-page" class="page hidden">
+            <div class="page-header">
+                <i class="fas fa-arrow-right" onclick="showPage('home-page')"></i>
+                <h2>Shorts</h2>
+            </div>
+            <div id="shorts-container" class="vertical-slider">
+                </div>
+            <button class="fab-upload" onclick="triggerUpload('video')"><i class="fas fa-plus"></i></button>
+        </section>
+
+        <section id="music-page" class="page hidden">
+            <div class="page-header">
+                <i class="fas fa-arrow-right" onclick="showPage('home-page')"></i>
+                <h2>Music</h2>
+            </div>
+            <div id="music-list"></div>
+            <div class="music-player-bar">
+                </div>
+            <button class="fab-upload" onclick="triggerUpload('audio')"><i class="fas fa-plus"></i></button>
+        </section>
+
+        <section id="chat-page" class="page hidden">
+            <div class="page-header">
+                <i class="fas fa-arrow-right" onclick="showPage('home-page')"></i>
+                <div class="chat-user-info">
+                    <h2 id="current-chat-title">General Chat</h2>
+                    <span id="online-count">0 online</span>
+                </div>
+            </div>
+            <div id="chat-messages"></div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="שרייב א מעסעדזש...">
+                <button onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </section>
+
+        <section id="settings-page" class="page hidden">
+            <div class="page-header">
+                <i class="fas fa-arrow-right" onclick="showPage('home-page')"></i>
+                <h2>סעטינגס</h2>
+            </div>
+            <div class="settings-list">
+                <div class="setting-item">
+                    <label>דיין ניקנעים:</label>
+                    <input type="text" id="user-nickname" placeholder="לייג דיין נאמען...">
+                </div>
+                <div class="setting-item">
+                    <label>קאָליר פונעם נאמען:</label>
+                    <input type="color" id="user-color" value="#38bdf8">
+                </div>
+                <button class="save-btn" onclick="saveUserSettings()">סייוו סעטינגס</button>
+                <hr>
+                <div class="setting-item admin-only hidden" id="admin-entry">
+                    <button class="admin-btn" onclick="showPage('admin-page')">CONTROL PANEL</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="admin-page" class="page hidden">
+            <div class="page-header">
+                <i class="fas fa-arrow-right" onclick="showPage('settings-page')"></i>
+                <h2>ADMIN CONTROL</h2>
+            </div>
+            <div class="admin-grid">
+                <button onclick="manageContent()">מעקן תוכן</button>
+                <button onclick="manageUsers()">בלאקן באניצער</button>
+                <button onclick="setGlobalBanner()">לייגן באנער/עדס</button>
+            </div>
+            <div id="admin-logs"></div>
+        </section>
+
+    </div>
+
+    <input type="file" id="file-upload-input" class="hidden" accept="video/*,audio/*,image/*">
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    
     <script src="config.js"></script>
     <script src="app.js"></script>
 </body>
-        </html>
+                        </html>

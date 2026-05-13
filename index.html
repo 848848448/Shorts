@@ -3,96 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE EMPIRE 2026</title>
+    <title>THE EMPIRE</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
     <div id="upload-progress-container" class="hidden">
-        <div id="upload-progress-bar">0%</div>
+        <div id="upload-progress-bar"></div>
     </div>
 
-    <div id="story-viewer" class="hidden">
-        <div class="story-header">
-            <div id="story-progress-container" class="progress-container"></div>
-            <div class="story-user-info">
-                <span id="story-username">Username</span>
-                <i class="fas fa-times" onclick="closeStory()" style="margin-right: auto; cursor: pointer; color: white;"></i>
-            </div>
-        </div>
-        <div class="story-nav nav-left" onclick="prevStory()"></div>
-        <div class="story-nav nav-right" onclick="nextStory()"></div>
-        <img id="story-img" src="">
-    </div>
+    <div class="online-users-bar" id="online-users-list"></div>
 
     <div id="app-container">
-        <header>
-            <div class="header-top">
-                <div class="logo">THE EMPIRE</div>
-                <div class="header-icons">
-                    <i class="fas fa-search" onclick="toggleSearch()"></i>
-                    <i class="fas fa-cog" onclick="showPage('settings-page')"></i>
-                </div>
-            </div>
-            <div id="search-bar-container" class="hidden">
-                <input type="text" id="global-search" placeholder="זוך...">
-            </div>
-            <div class="trending-bar">
-                <marquee>🔥 ברוכים הבאים צו די גרעסטע אימפּעריע! 🔥</marquee>
-            </div>
-        </header>
-
         <main id="home-page" class="page">
-            <div class="status-wrapper">
-                <div class="status-list" id="status-list">
-                    <div class="status-item" onclick="triggerUpload('status')">
-                        <div class="plus-icon"><i class="fas fa-plus"></i></div>
-                        <p>Status</p>
-                    </div>
-                </div>
-            </div>
-
+            <header style="padding:15px; border-bottom:1px solid #222;">
+                <h1 style="color:var(--accent); margin:0;">THE EMPIRE</h1>
+            </header>
             <div class="categories-grid">
-                <div class="cat-card" onclick="showPage('shorts-page')">
-                    <i class="fas fa-play-circle"></i>
-                    <h3>SHORTS</h3>
-                </div>
-                <div class="cat-card" onclick="showPage('music-page')">
-                    <i class="fas fa-music"></i>
-                    <h3>MUSIC</h3>
-                </div>
-                <div class="cat-card" onclick="showPage('chat-page')">
-                    <i class="fas fa-comments"></i>
-                    <h3>CHAT</h3>
-                </div>
-                <div class="cat-card" onclick="showPage('photos-page')">
-                    <i class="fas fa-camera-retro"></i>
-                    <h3>PHOTOS</h3>
-                </div>
+                <div class="cat-card" onclick="showPage('chat-page')"><i class="fas fa-comments"></i><h3>קאמיוניטי טשעט</h3></div>
+                <div class="cat-card" onclick="showPage('shorts-page')"><i class="fas fa-play-circle"></i><h3>שאָרץ</h3></div>
+                <div class="cat-card" onclick="showPage('music-page')"><i class="fas fa-music"></i><h3>מוזיק</h3></div>
+                <div class="cat-card" onclick="showPage('settings-page')"><i class="fas fa-cog"></i><h3>סעטינגס</h3></div>
             </div>
         </main>
 
-        <section id="chat-page" class="page hidden">
-            <div class="page-header"><i class="fas fa-arrow-right" onclick="showPage('home-page')"></i> <h2>Chat</h2></div>
-            <div id="chat-messages"></div>
-            <div class="chat-input-area">
-                <input type="text" id="chat-input" placeholder="שרייב...">
-                <button onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
+        <section id="private-chat-page" class="page hidden">
+            <header style="padding:15px; display:flex; align-items:center; gap:15px;">
+                <i class="fas fa-arrow-right" onclick="showPage('home-page')"></i>
+                <h2 id="private-chat-title" style="margin:0; font-size:1.1rem;"></h2>
+            </header>
+            <div id="private-messages-cont"></div>
+            <div style="position:fixed; bottom:0; width:100%; padding:15px; background:#111; display:flex; gap:10px;">
+                <input type="text" id="private-input" style="flex:1; padding:12px; border-radius:25px; border:none; background:#222; color:white;">
+                <button onclick="sendPrivateMsg()" style="background:var(--accent); border:none; padding:10px 20px; border-radius:50%;"><i class="fas fa-paper-plane"></i></button>
             </div>
         </section>
 
-        <section id="settings-page" class="page hidden">
-            <div class="settings-list">
-                <input type="text" id="user-nickname" placeholder="דיין נאמען">
-                <input type="color" id="user-color">
-                <button class="save-btn" onclick="saveUserSettings()">סייוו</button>
-                <div id="admin-entry" class="hidden">
-                    <button class="admin-btn" onclick="showPage('admin-page')">ADMIN PANEL</button>
-                </div>
-            </div>
-        </section>
-    </div>
+        </div>
 
     <input type="file" id="file-upload-input" class="hidden">
 
@@ -102,4 +50,4 @@
     <script src="config.js"></script>
     <script src="app.js"></script>
 </body>
-                        </html>
+    </html>

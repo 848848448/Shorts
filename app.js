@@ -1,78 +1,145 @@
-// --- 2026 PLATFORM CORE ENGINE ---
+// 1. גלאבאלע וועריאבלס
+let currentUser = {
+    nickname: localStorage.getItem('nickname') || 'Guest',
+    color: localStorage.getItem('userColor') || '#38bdf8',
+    isAdmin: false // מיר וועלן דאס טוישן שפעטער אינעם אדמין לאגין
+};
 
-// 1. הויפט אפלאוד פונקציע
-async function uploadContent() {
-    const title = document.getElementById('content-title').value;
-    const fileInput = document.getElementById('content-file');
-    const file = fileInput.files[0];
-    const type = "videos"; // דערווייל שטעלן מיר אלעס אלס ווידעא
-
-    if (!title || !file) return alert("שרייב א נאמען און קלייב אויס א פייל!");
-
-    const container = document.getElementById('progress-container');
-    const bar = document.getElementById('progress-bar');
-    container.style.display = 'block';
-
-    try {
-        const storageRef = firebase.storage().ref(`${type}/${Date.now()}_${file.name}`);
-        const uploadTask = storageRef.put(file);
-
-        uploadTask.on('state_changed', 
-            (snapshot) => {
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                bar.style.width = progress + '%';
-            }, 
-            (error) => alert("עראר: " + error.message), 
-            async () => {
-                const url = await uploadTask.snapshot.ref.getDownloadURL();
-                await firebase.database().ref(`content/${type}`).push({
-                    title: title,
-                    url: url,
-                    time: firebase.database.ServerValue.TIMESTAMP
-                });
-                alert("פארטיג! עס איז אפלאודעד.");
-                container.style.display = 'none';
-                document.getElementById('content-title').value = '';
-                fileInput.value = '';
-            }
-        );
-    } catch (err) {
-        alert("קאנעקשאן פראבלעם.");
-    }
+// 2. Page Navigation - סוויטשן צווישן בלעטער
+function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+    document.getElementById(pageId).classList.remove('hidden');
+    window.scrollTo(0, 0);
 }
 
-// 2. ווייזן ווידעאס (Compact Mode)
-firebase.database().ref('content/videos').on('value', (snap) => {
-    const list = document.getElementById('video-list');
-    list.innerHTML = '';
-    snap.forEach((child) => {
-        const item = child.val();
-        list.innerHTML += `
-            <div style="margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px;">
-                <video src="${item.url}" controls style="max-height: 80px;"></video>
-                <p style="font-size: 0.75rem; margin: 5px 0;">${item.title}</p>
-            </div>`;
-    });
-});
+// 3. זוך-באר טאגעל
+function toggleSearch() {
+    const bar = document.getElementById('search-bar-container');
+    bar.classList.toggle('hidden');
+}
 
-// 3. טשעט לאגיק (Real-time)
+// 4. ארויפלאדן סיסטעם (אויטאמאטיש אן קיין נאמען)
+function triggerUpload(type) {
+    const fileInput = document.getElementById('file-upload-input');
+    fileInput.accept = type === 'video' ? 'video/*' : type === 'audio' ? 'audio/*' : 'image/*';
+    fileInput.onchange = (e) => uploadToFirebase(e.target.files[0], type);
+    fileInput.click();
+}
+
+function uploadToFirebase(file, type) {
+    if (!file) return;
+
+    const storageRef = firebase.storage().ref(`${type}s/${Date.now()}_${file.name}`);
+    const uploadTask = storageRef.put(file);
+    const progressContainer = document.getElementById('upload-progress-container');
+    const progressBar = document.getElementById('upload-progress-bar');
+
+    progressContainer.classList.remove('hidden');
+
+    uploadTask.on('state_changed', 
+        (snapshot) => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            progressBar.style.width = progress + '%';
+            progressBar.innerText = Math.round(progress) + '%';
+        }, 
+        (error) => { console.error(error); alert("Upload Failed!"); }, 
+        () => {
+            uploadTask.snapshot.ref.getDownloadURL().then((url) => {
+                saveToDatabase(url, type, file.name);
+                progressContainer.classList.add('hidden');
+                progressBar.style.width = '0%';
+                alert(type.toUpperCase() + " ארויפגעלאדן הצלחה'דיג!");
+            });
+        }
+    );
+}
+
+function saveToDatabase(url, type, originalName) {
+    const dbPath = type === 'video' ? 'shorts' : type === 'audio' ? 'music' : 'photos';
+    db.ref(dbPath).push({
+        url: url,
+        name: originalName,
+        uploader: currentUser.nickname,
+        timestamp: Date.now(),
+        likes: 0
+    });
+}
+
+// 5. וואטסעפ טשעט לאגיק
 function sendChatMessage() {
     const input = document.getElementById('chat-input');
-    const msg = input.value;
-    if (msg) {
-        firebase.database().ref('chat').push({
-            text: msg,
-            time: firebase.database.ServerValue.TIMESTAMP
-        });
-        input.value = '';
+    const text = input.value.trim();
+    if (text === "") return;
+
+    db.ref('messages').push({
+        sender: currentUser.nickname,
+        color: currentUser.color,
+        text: text,
+        time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+    });
+    input.value = "";
+}
+
+// לייוו טשעט ריסיווער
+db.ref('messages').limitToLast(50).on('value', (snapshot) => {
+    const container = document.getElementById('chat-messages');
+    container.innerHTML = "";
+    snapshot.forEach((child) => {
+        const data = child.val();
+        const isMe = data.sender === currentUser.nickname;
+        container.innerHTML += `
+            <div class="message ${isMe ? 'sent' : 'received'}">
+                <span class="msg-info" style="color: ${data.color}">${data.sender}</span>
+                ${data.text}
+                <small style="display:block; font-size:0.6rem; opacity:0.7;">${data.time}</small>
+            </div>
+        `;
+    });
+    container.scrollTop = container.scrollHeight;
+});
+
+// 6. Shorts Renderer (YouTube Style)
+db.ref('shorts').on('value', (snapshot) => {
+    const container = document.getElementById('shorts-container');
+    container.innerHTML = "";
+    snapshot.forEach((child) => {
+        const v = child.val();
+        container.innerHTML += `
+            <div class="short-video-container">
+                <video src="${v.url}" loop onclick="this.paused ? this.play() : this.pause()"></video>
+                <div class="shorts-overlay" style="position:absolute; bottom:80px; right:20px; display:flex; flex-direction:column; gap:20px;">
+                    <i class="fas fa-heart" style="font-size:1.8rem;"></i>
+                    <i class="fas fa-comment" style="font-size:1.8rem;"></i>
+                    <i class="fas fa-share" style="font-size:1.8rem;"></i>
+                </div>
+                <div style="position:absolute; bottom:20px; right:20px;">
+                    <p>@${v.uploader}</p>
+                </div>
+            </div>
+        `;
+    });
+});
+
+// 7. פראפיל סעטינגס
+function saveUserSettings() {
+    const nick = document.getElementById('user-nickname').value;
+    const col = document.getElementById('user-color').value;
+    if (nick) {
+        localStorage.setItem('nickname', nick);
+        localStorage.setItem('userColor', col);
+        currentUser.nickname = nick;
+        currentUser.color = col;
+        alert("סעטינגס געסייווט!");
     }
 }
 
-firebase.database().ref('chat').limitToLast(5).on('value', (snap) => {
-    const display = document.getElementById('chat-display');
-    display.innerHTML = '';
-    snap.forEach((child) => {
-        display.innerHTML += `<p style="margin: 2px 0; background: rgba(255,255,255,0.05); padding: 5px; border-radius: 5px;">${child.val().text}</p>`;
-    });
-    display.scrollTop = display.scrollHeight;
+// 8. אדמין טשעק (פשוט'ע ווערסיע)
+document.getElementById('user-nickname').addEventListener('input', (e) => {
+    if (e.target.value === "MASTER_ADMIN") { // דאס איז דיין סוד
+        document.getElementById('admin-entry').classList.remove('hidden');
+    }
 });
+
+// Load Nickname on Start
+document.getElementById('user-nickname').value = currentUser.nickname;
+document.getElementById('user-color').value = currentUser.color;

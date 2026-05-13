@@ -13,8 +13,20 @@
         <div id="upload-progress-bar">0%</div>
     </div>
 
+    <div id="story-viewer" class="hidden">
+        <div class="story-header">
+            <div id="story-progress-container" class="progress-container"></div>
+            <div class="story-user-info">
+                <span id="story-username">Username</span>
+                <i class="fas fa-times" onclick="closeStory()" style="margin-right: auto; cursor: pointer;"></i>
+            </div>
+        </div>
+        <div class="story-nav nav-left" onclick="prevStory()"></div>
+        <div class="story-nav nav-right" onclick="nextStory()"></div>
+        <img id="story-img" src="" alt="Status">
+    </div>
+
     <div id="app-container">
-        
         <header>
             <div class="header-top">
                 <div class="logo">THE EMPIRE</div>
@@ -24,20 +36,18 @@
                 </div>
             </div>
             <div id="search-bar-container" class="hidden">
-                <input type="text" id="global-search" placeholder="זוך ווידעאס, מוזיק אדער חברים...">
+                <input type="text" id="global-search" placeholder="זוך...">
             </div>
-            
             <div class="trending-bar">
-                <span>🔥 TRENDING:</span>
-                <marquee id="trending-text">ברוכים הבאים צו די גרעסטע פלאטפארמע!</marquee>
+                <marquee id="trending-text">🔥 ברוכים הבאים צו די גרעסטע אימפּעריע! 🔥</marquee>
             </div>
         </header>
 
         <main id="home-page" class="page">
             <div class="status-wrapper">
                 <div class="status-list" id="status-list">
-                    <div class="status-item add-status" onclick="triggerStatusUpload()">
-                        <div class="plus-icon">+</div>
+                    <div class="status-item" onclick="triggerUpload('status')">
+                        <div class="plus-icon"><i class="fas fa-plus"></i></div>
                         <p>Status</p>
                     </div>
                     </div>
@@ -55,45 +65,18 @@
                 <div class="cat-card chat" onclick="showPage('chat-page')">
                     <i class="fas fa-comments"></i>
                     <h3>CHAT</h3>
-                    <span class="badge" id="chat-badge">0</span>
                 </div>
                 <div class="cat-card photos" onclick="showPage('photos-page')">
                     <i class="fas fa-camera-retro"></i>
                     <h3>PHOTOS</h3>
                 </div>
             </div>
-
-            <div id="admin-banner" class="hidden"></div>
         </main>
-
-        <section id="shorts-page" class="page hidden">
-            <div class="page-header">
-                <i class="fas fa-arrow-right" onclick="showPage('home-page')"></i>
-                <h2>Shorts</h2>
-            </div>
-            <div id="shorts-container" class="vertical-slider">
-                </div>
-            <button class="fab-upload" onclick="triggerUpload('video')"><i class="fas fa-plus"></i></button>
-        </section>
-
-        <section id="music-page" class="page hidden">
-            <div class="page-header">
-                <i class="fas fa-arrow-right" onclick="showPage('home-page')"></i>
-                <h2>Music</h2>
-            </div>
-            <div id="music-list"></div>
-            <div class="music-player-bar">
-                </div>
-            <button class="fab-upload" onclick="triggerUpload('audio')"><i class="fas fa-plus"></i></button>
-        </section>
 
         <section id="chat-page" class="page hidden">
             <div class="page-header">
                 <i class="fas fa-arrow-right" onclick="showPage('home-page')"></i>
-                <div class="chat-user-info">
-                    <h2 id="current-chat-title">General Chat</h2>
-                    <span id="online-count">0 online</span>
-                </div>
+                <h2>Chat</h2>
             </div>
             <div id="chat-messages"></div>
             <div class="chat-input-area">
@@ -103,49 +86,35 @@
         </section>
 
         <section id="settings-page" class="page hidden">
-            <div class="page-header">
-                <i class="fas fa-arrow-right" onclick="showPage('home-page')"></i>
-                <h2>סעטינגס</h2>
-            </div>
+            <div class="page-header"><i class="fas fa-arrow-right" onclick="showPage('home-page')"></i><h2>סעטינגס</h2></div>
             <div class="settings-list">
-                <div class="setting-item">
-                    <label>דיין ניקנעים:</label>
-                    <input type="text" id="user-nickname" placeholder="לייג דיין נאמען...">
-                </div>
-                <div class="setting-item">
-                    <label>קאָליר פונעם נאמען:</label>
-                    <input type="color" id="user-color" value="#38bdf8">
-                </div>
-                <button class="save-btn" onclick="saveUserSettings()">סייוו סעטינגס</button>
-                <hr>
-                <div class="setting-item admin-only hidden" id="admin-entry">
-                    <button class="admin-btn" onclick="showPage('admin-page')">CONTROL PANEL</button>
+                <label>ניקנעים:</label>
+                <input type="text" id="user-nickname">
+                <label>קאָליר:</label>
+                <input type="color" id="user-color">
+                <button class="save-btn" onclick="saveUserSettings()">סייוו</button>
+                <div id="admin-entry" class="hidden">
+                    <button class="admin-btn" onclick="showPage('admin-page')">ADMIN CONTROL</button>
                 </div>
             </div>
         </section>
 
         <section id="admin-page" class="page hidden">
-            <div class="page-header">
-                <i class="fas fa-arrow-right" onclick="showPage('settings-page')"></i>
-                <h2>ADMIN CONTROL</h2>
-            </div>
+            <div class="page-header"><i class="fas fa-arrow-right" onclick="showPage('settings-page')"></i><h2>Admin</h2></div>
             <div class="admin-grid">
-                <button onclick="manageContent()">מעקן תוכן</button>
-                <button onclick="manageUsers()">בלאקן באניצער</button>
-                <button onclick="setGlobalBanner()">לייגן באנער/עדס</button>
+                <button onclick="manageContent('messages')">מעקן טשעט</button>
+                <button onclick="manageContent('shorts')">מעקן שאָרץ</button>
+                <button onclick="manageContent('status')">מעקן סטעיטוסעס</button>
             </div>
-            <div id="admin-logs"></div>
         </section>
-
     </div>
 
-    <input type="file" id="file-upload-input" class="hidden" accept="video/*,audio/*,image/*">
+    <input type="file" id="file-upload-input" class="hidden">
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
-    
     <script src="config.js"></script>
     <script src="app.js"></script>
 </body>
-                        </html>
+    </html>

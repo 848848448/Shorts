@@ -1,0 +1,22 @@
+:root { --primary: #ff0050; --bg: #000; --card: #121212; }
+body { margin: 0; background: var(--bg); color: #fff; font-family: sans-serif; overflow: hidden; }
+
+.header { height: 60px; display: flex; align-items: center; padding: 0 15px; border-bottom: 1px solid #222; }
+.logo-circle { font-size: 24px; margin-left: 10px; }
+.logo-text { color: var(--primary); font-weight: bold; font-size: 20px; }
+
+.stories-bar { display: flex; gap: 12px; padding: 15px; overflow-x: auto; border-bottom: 1px solid #222; }
+.story-btn { min-width: 65px; height: 65px; border-radius: 50%; border: 3px solid var(--primary); background: #222; display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; }
+
+.grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
+.nav-card { background: var(--card); border: 1px solid #333; border-radius: 12px; height: 130px; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
+.nav-card i { font-size: 35px; font-style: normal; margin-bottom: 8px; }
+
+.reels-layer { display: none; position: fixed; inset: 0; background: #000; z-index: 1000; overflow-y: scroll; scroll-snap-type: y mandatory; }
+.reel-unit { height: 100vh; scroll-snap-align: start; position: relative; }
+.reel-unit video { width: 100%; height: 100%; object-fit: cover; }
+
+.bottom-nav { position: fixed; bottom: 0; width: 100%; height: 60px; background: #000; border-top: 1px solid #222; display: flex; justify-content: space-around; align-items: center; }
+.bottom-nav div { font-size: 25px; cursor: pointer; }
+.upload-plus { font-size: 35px !important; color: var(--primary); }
+.close-x { position: fixed; top: 20px; left: 20px; z-index: 2000; font-size: 30px; }

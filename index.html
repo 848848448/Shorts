@@ -10,6 +10,7 @@
 <body>
 
     <div id="upload-progress-container" class="hidden">
+        <div id="upload-text">לאדנט ארויף...</div>
         <div id="upload-progress-bar"></div>
     </div>
 
@@ -17,37 +18,78 @@
 
     <div id="app-container">
         <main id="home-page" class="page">
-            <header style="padding:15px; border-bottom:1px solid #222;">
-                <h1 style="color:var(--accent); margin:0;">THE EMPIRE</h1>
+            <header>
+                <h1 class="logo-text">THE EMPIRE</h1>
             </header>
+            
             <div class="categories-grid">
-                <div class="cat-card" onclick="showPage('chat-page')"><i class="fas fa-comments"></i><h3>קאמיוניטי טשעט</h3></div>
-                <div class="cat-card" onclick="showPage('shorts-page')"><i class="fas fa-play-circle"></i><h3>שאָרץ</h3></div>
-                <div class="cat-card" onclick="showPage('music-page')"><i class="fas fa-music"></i><h3>מוזיק</h3></div>
-                <div class="cat-card" onclick="showPage('settings-page')"><i class="fas fa-cog"></i><h3>סעטינגס</h3></div>
+                <div class="cat-card" onclick="showPage('chat-page')">
+                    <i class="fas fa-comments"></i>
+                    <h3>קאמיוניטי טשעט</h3>
+                </div>
+                <div class="cat-card" onclick="showPage('shorts-page')">
+                    <i class="fas fa-play-circle"></i>
+                    <h3>שאָרץ</h3>
+                </div>
+                <div class="cat-card" onclick="showPage('music-page')">
+                    <i class="fas fa-music"></i>
+                    <h3>מוזיק</h3>
+                </div>
+                <div class="cat-card" onclick="showPage('settings-page')">
+                    <i class="fas fa-cog"></i>
+                    <h3>סעטינגס</h3>
+                </div>
             </div>
         </main>
 
-        <section id="private-chat-page" class="page hidden">
-            <header style="padding:15px; display:flex; align-items:center; gap:15px;">
+        <section id="chat-page" class="page hidden">
+            <div class="page-header">
                 <i class="fas fa-arrow-right" onclick="showPage('home-page')"></i>
-                <h2 id="private-chat-title" style="margin:0; font-size:1.1rem;"></h2>
-            </header>
-            <div id="private-messages-cont"></div>
-            <div style="position:fixed; bottom:0; width:100%; padding:15px; background:#111; display:flex; gap:10px;">
-                <input type="text" id="private-input" style="flex:1; padding:12px; border-radius:25px; border:none; background:#222; color:white;">
-                <button onclick="sendPrivateMsg()" style="background:var(--accent); border:none; padding:10px 20px; border-radius:50%;"><i class="fas fa-paper-plane"></i></button>
+                <h2>קאמיוניטי טשעט</h2>
+            </div>
+            <div id="chat-messages"></div>
+            <div class="input-area">
+                <input type="text" id="chat-input" placeholder="שרייב א מעסעדזש...">
+                <button onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
             </div>
         </section>
 
-        </div>
+        <section id="private-chat-page" class="page hidden">
+            <div class="page-header">
+                <i class="fas fa-arrow-right" onclick="showPage('home-page')"></i>
+                <h2 id="private-chat-title"></h2>
+            </div>
+            <div id="private-messages-cont"></div>
+            <div class="input-area">
+                <input type="text" id="private-input" placeholder="שרייב פריוואט...">
+                <button onclick="sendPrivateMsg()"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </section>
+
+        <section id="settings-page" class="page hidden">
+            <div class="page-header">
+                <i class="fas fa-arrow-right" onclick="showPage('home-page')"></i>
+                <h2>סעטינגס</h2>
+            </div>
+            <div class="settings-form">
+                <label>דיין נאמען:</label>
+                <input type="text" id="user-nickname">
+                <label>קאליר:</label>
+                <input type="color" id="user-color">
+                <button onclick="saveUserSettings()">סייוו</button>
+                <div id="admin-entry" class="hidden">
+                    <button class="admin-btn">ADMIN PANEL</button>
+                </div>
+            </div>
+        </section>
+    </div>
 
     <input type="file" id="file-upload-input" class="hidden">
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
     <script src="config.js"></script>
     <script src="app.js"></script>
 </body>
-    </html>
+                                                                                  </html>

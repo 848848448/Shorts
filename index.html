@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
 </head>
 <body>
 
@@ -43,8 +44,8 @@
                     <option value="music">מוזיק</option>
                     <option value="text">נייעס</option>
                 </select>
-                <input type="text" id="content-title" placeholder="כותרת">
-                <input type="text" id="content-url" placeholder="לינק (URL)">
+                <input type="text" id="content-title" placeholder="נאמען פונעם פייל">
+                <input type="file" id="content-file" accept="video/*,audio/*">
                 <button onclick="uploadContent()" class="upload-btn">Upload Now</button>
             </div>
             
@@ -55,13 +56,14 @@
                 <p id="progress-text" style="color: white; text-align: center; font-size: 12px; margin-top: 5px;">0%</p>
             </div>
         </div>
-    </div> <script src="config.js"></script>
+    </div>
+
+    <script src="config.js"></script>
     <script src="videos.js"></script>
     <script src="music.js"></script>
     <script src="text.js"></script>
     <script src="chat.js"></script>
     <script src="admin.js"></script>
     <script src="main.js"></script>
-
 </body>
-    </html>
+</html>

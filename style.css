@@ -1,22 +1,15 @@
-:root { --primary: #ff0050; --bg: #000; }
-body { margin: 0; background: #000; color: #fff; font-family: -apple-system, sans-serif; }
+:root { --primary: #ff0050; }
+body { margin: 0; background: #000; color: #fff; font-family: sans-serif; overflow-x: hidden; }
 
-/* Stories Style */
-.stories-bar { display: flex; gap: 15px; padding: 15px; overflow-x: auto; border-bottom: 0.5px solid #222; }
-.story { min-width: 70px; height: 70px; border-radius: 50%; border: 3px solid var(--primary); background: #222; display: flex; align-items: center; justify-content: center; font-size: 30px; }
+/* Stories */
+.stories-bar { display: flex; gap: 15px; padding: 15px; overflow-x: auto; border-bottom: 1px solid #222; background: #000; }
+.story { min-width: 65px; height: 65px; border-radius: 50%; border: 3px solid var(--primary); display: flex; align-items: center; justify-content: center; font-size: 25px; cursor: pointer; }
 
-/* Grid for Music/Pics/Text */
+/* 4 Main Boxes */
 .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
-.nav-box { background: #121212; border: 1px solid #333; border-radius: 15px; height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; color: white; outline: none; }
-.nav-box i { font-size: 40px; font-style: normal; margin-bottom: 10px; }
+.nav-box { background: #121212; border: 1px solid #333; border-radius: 15px; height: 140px; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; position: relative; z-index: 10; }
+.nav-box i { font-size: 35px; font-style: normal; margin-bottom: 10px; pointer-events: none; }
 
-/* Real Instagram Reels Look */
-.reel-video { height: 100vh; width: 100%; scroll-snap-align: start; position: relative; display: flex; align-items: center; justify-content: center; }
-.reel-video video { width: 100%; height: 100%; object-fit: cover; }
-.reel-ui-right { position: absolute; bottom: 100px; right: 15px; display: flex; flex-direction: column; gap: 20px; align-items: center; z-index: 10; }
-.reel-ui-bottom { position: absolute; bottom: 100px; left: 15px; text-align: right; width: 70%; z-index: 10; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
-.action-icon { font-size: 28px; }
-
-/* Bottom Nav */
-.bottom-nav { position: fixed; bottom: 0; width: 100%; height: 65px; background: #000; border-top: 0.5px solid #222; display: flex; justify-content: space-around; align-items: center; z-index: 2000; }
-.bottom-nav div { font-size: 26px; cursor: pointer; }
+/* Bottom Menu */
+.bottom-nav { position: fixed; bottom: 0; width: 100%; height: 65px; background: #000; border-top: 1px solid #222; display: flex; justify-content: space-around; align-items: center; z-index: 100; }
+.bottom-nav div { font-size: 25px; cursor: pointer; padding: 10px; }

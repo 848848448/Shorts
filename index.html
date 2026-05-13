@@ -3,41 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE EMPIRE - PATCH 1</title>
+    <title>THE EMPIRE</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
-    <div id="main-menu">
-        <h1 style="text-align:center; color:#38bdf8;">THE EMPIRE</h1>
-        <div class="grid">
-            <button onclick="goTo('page1')">טשעט</button>
-            <button onclick="goTo('page2')">שאָרץ</button>
-            <button onclick="goTo('page3')">מוזיק</button>
-            <button onclick="goTo('page4')">סעטינגס</button>
-        </div>
+    <div id="upload-progress-container" class="hidden">
+        <div id="upload-text">לאדנט ארויף...</div>
+        <div id="upload-progress-bar"></div>
     </div>
 
-    <div id="page1" class="page hidden">
-        <h2>קאמיוניטי טשעט</h2>
-        <button onclick="goTo('main-menu')">צוריק</button>
-    </div>
+    <div id="app-viewport"></div>
 
-    <div id="page2" class="page hidden">
-        <h2>שאָרץ</h2>
-        <button onclick="goTo('main-menu')">צוריק</button>
-    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 
-    <div id="page3" class="page hidden">
-        <h2>מוזיק</h2>
-        <button onclick="goTo('main-menu')">צוריק</button>
-    </div>
-
-    <div id="page4" class="page hidden">
-        <h2>סעטינגס</h2>
-        <button onclick="goTo('main-menu')">צוריק</button>
-    </div>
-
-    <script src="app.js"></script>
+    <script src="config.js"></script>
+    <script src="main.js"></script>
+    <script src="chat.js"></script>
+    <script src="videos.js"></script>
+    <script src="music.js"></script>
+    <script src="admin.js"></script>
 </body>
-</html>
+        </html>

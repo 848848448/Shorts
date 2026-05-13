@@ -1,9 +1,8 @@
 :root {
     --bg-black: #000000;
-    --card-bg: rgba(28, 28, 30, 0.9);
+    --card-bg: #1c1c1e;
     --accent-blue: #38bdf8;
     --whatsapp-green: #25d366;
-    --text-white: #ffffff;
 }
 
 body {
@@ -11,36 +10,39 @@ body {
     overflow-y: auto !important; min-height: 100vh;
 }
 
-/* Story Viewer */
+#app-container { min-height: 100vh; display: flex; flex-direction: column; }
+
+/* Status Player */
 #story-viewer {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 3000;
     display: flex; align-items: center; justify-content: center;
 }
-.story-header { position: absolute; top: 0; width: 100%; padding: 15px; z-index: 2010; }
-.progress-container { display: flex; gap: 4px; margin-bottom: 10px; }
-.progress-bar { height: 2px; background: rgba(255,255,255,0.3); flex: 1; border-radius: 2px; overflow: hidden; }
-.progress-fill { height: 100%; background: white; width: 0%; transition: width 0.1s linear; }
-.story-nav { position: absolute; top: 0; height: 100%; width: 50%; z-index: 2005; }
-.nav-left { left: 0; } .nav-right { right: 0; }
+.story-header { position: absolute; top: 0; width: 100%; padding: 15px; z-index: 3010; }
+.progress-container { display: flex; gap: 4px; }
+.progress-bar { height: 2px; background: rgba(255,255,255,0.3); flex: 1; overflow: hidden; }
+.progress-fill { height: 100%; background: white; width: 0%; }
 #story-img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.story-nav { position: absolute; top: 0; height: 100%; width: 50%; z-index: 3005; }
+.nav-left { left: 0; } .nav-right { right: 0; }
 
-/* Grid & Layout */
-header { padding: 15px; background: #000; border-bottom: 1px solid #222; }
-.logo { font-size: 1.6rem; font-weight: 900; color: var(--accent-blue); }
-.status-wrapper { padding: 15px; display: flex; overflow-x: auto; gap: 12px; border-bottom: 1px solid #222; }
-.plus-icon { width: 60px; height: 60px; border-radius: 50%; border: 2px dashed #444; display: flex; align-items: center; justify-content: center; }
-
-.categories-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; padding-bottom: 100px; }
-.cat-card { background: var(--card-bg); height: 140px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid #333; }
-.cat-card i { font-size: 2rem; margin-bottom: 8px; color: var(--accent-blue); }
+/* Grid */
+.categories-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px;
+    padding-bottom: 120px; /* פלאץ פארן סקראול */
+}
+.cat-card {
+    background: var(--card-bg); height: 150px; border-radius: 20px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.cat-card i { font-size: 2.2rem; color: var(--accent-blue); margin-bottom: 10px; }
 
 /* Chat */
 #chat-messages { height: 70vh; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-.message { max-width: 80%; padding: 10px; border-radius: 15px; font-size: 0.9rem; }
+.message { max-width: 80%; padding: 10px; border-radius: 15px; background: #222; }
 .message.sent { align-self: flex-start; background: var(--whatsapp-green); }
-.message.received { align-self: flex-end; background: #222; }
-
-.chat-input-area { position: fixed; bottom: 0; width: 100%; padding: 10px; background: #111; display: flex; gap: 10px; }
-.chat-input-area input { flex: 1; padding: 10px; border-radius: 20px; border: none; background: #222; color: white; }
 
 .hidden { display: none !important; }
+
+/* Progress Bar */
+#upload-progress-container { position: fixed; top: 0; width: 100%; height: 5px; background: #222; z-index: 4000; }
+#upload-progress-bar { height: 100%; background: var(--accent-blue); width: 0%; transition: 0.3s; }

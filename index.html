@@ -1,31 +1,67 @@
 <!DOCTYPE html>
-<html lang="he">
+<html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מיין מעכטיגע פּלאַטפאָרמע</title>
+    <title>מיין פלאטפארמע</title>
     <link rel="stylesheet" href="style.css">
-    
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 </head>
 <body>
 
     <div class="main-container">
-        <div id="video-section" class="box"><h2>ווידעאָס</h2><div id="video-list"></div></div>
-        <div id="music-section" class="box"><h2>מוזיק</h2><div id="music-list"></div></div>
-        <div id="text-section" class="box"><h2>נייעס</h2><div id="text-content"></div></div>
-        <div id="chat-section" class="box"><h2>טשעט</h2><div id="chat-display"></div></div>
-    </div>
+        <div id="video-section" class="box">
+            <h2>ווידעאָס</h2>
+            <div id="video-list"></div>
+        </div>
+        
+        <div id="music-section" class="box">
+            <h2>מוזיק</h2>
+            <div id="music-list"></div>
+        </div>
 
-    <script src="config.js"></script>
+        <div id="text-section" class="box">
+            <h2>נייעס</h2>
+            <div id="text-content"></div>
+        </div>
+
+        <div id="chat-section" class="box">
+            <h2>טשעט</h2>
+            <div id="chat-display"></div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="שרייב א מעסעדזש...">
+                <button onclick="sendChatMessage()">Send</button>
+            </div>
+        </div>
+
+        <div id="admin-panel" class="box">
+            <h2>לייג ארויף אינהאלט</h2>
+            <div class="admin-inputs">
+                <select id="content-type">
+                    <option value="videos">ווידעא</option>
+                    <option value="music">מוזיק</option>
+                    <option value="text">נייעס</option>
+                </select>
+                <input type="text" id="content-title" placeholder="כותרת">
+                <input type="text" id="content-url" placeholder="לינק (URL)">
+                <button onclick="uploadContent()" class="upload-btn">Upload Now</button>
+            </div>
+            
+            <div id="progress-container" style="display: none; margin-top: 15px;">
+                <div style="background: #334155; width: 100%; height: 10px; border-radius: 10px;">
+                    <div id="progress-bar" style="background: #38bdf8; width: 0%; height: 100%; border-radius: 10px; transition: width 0.3s;"></div>
+                </div>
+                <p id="progress-text" style="color: white; text-align: center; font-size: 12px; margin-top: 5px;">0%</p>
+            </div>
+        </div>
+    </div> <script src="config.js"></script>
     <script src="videos.js"></script>
     <script src="music.js"></script>
     <script src="text.js"></script>
     <script src="chat.js"></script>
+    <script src="admin.js"></script>
     <script src="main.js"></script>
-    <script src="music.js"></script>
-</body>
-</html>
 
+</body>
+    </html>

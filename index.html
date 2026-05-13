@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מיין ענטערטעינמענט פלאטפארמע</title>
+    <title>Platform 2026</title>
     <link rel="stylesheet" href="style.css">
-    
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
@@ -14,50 +13,44 @@
 
     <div class="main-container">
         <header>
-            <h1>My Platform</h1>
+            <h1>PLATFORM<span>NEXT</span></h1>
         </header>
 
-        <section id="video-section" class="box">
-            <h2><span class="icon">▶️</span> ווידעאָס</h2>
-            <div id="video-list" class="grid-display"></div>
-        </section>
-        
-        <section id="music-section" class="box">
-            <h2><span class="icon">🎵</span> מוזיק</h2>
-            <div id="music-list" class="list-display"></div>
-        </section>
-
-        <section id="chat-section" class="box">
-            <h2><span class="icon">💬</span> קאמיוניטי טשעט</h2>
-            <div id="chat-display"></div>
-            <div class="chat-input-area">
-                <input type="text" id="chat-input" placeholder="שרייב א מעסעדזש...">
-                <button onclick="sendChatMessage()">Send</button>
-            </div>
-        </section>
-
-        <section id="admin-panel" class="box admin">
-            <h2><span class="icon">⚙️</span> אדמין אפלאוד</h2>
-            <div class="admin-inputs">
-                <select id="content-type">
-                    <option value="videos">ווידעא</option>
-                    <option value="music">מוזיק</option>
-                </select>
-                <input type="text" id="content-title" placeholder="נאמען פונעם פייל">
-                <input type="file" id="content-file" accept="video/*,audio/*">
-                <button onclick="uploadContent()" class="upload-btn">Upload & Publish</button>
-            </div>
+        <div class="content-grid">
+            <section id="video-section" class="box">
+                <h2><span>▶️</span> ווידעאָס</h2>
+                <div id="video-list"></div>
+            </section>
             
-            <div id="progress-container" style="display: none;">
-                <div class="progress-track">
-                    <div id="progress-bar"></div>
+            <section id="music-section" class="box">
+                <h2><span>🎵</span> מוזיק</h2>
+                <div id="music-list"></div>
+            </section>
+
+            <section id="chat-section" class="box">
+                <h2><span>💬</span> טשעט</h2>
+                <div id="chat-display"></div>
+                <div class="chat-input-area">
+                    <input type="text" id="chat-input" placeholder="שרייב...">
+                    <button onclick="sendChatMessage()">Send</button>
                 </div>
-                <p id="progress-text">0%</p>
-            </div>
-        </section>
+            </section>
+
+            <section id="admin-panel" class="box">
+                <h2><span>⚙️</span> אדמין</h2>
+                <input type="text" id="content-title" placeholder="נאמען">
+                <input type="file" id="content-file" accept="video/*,audio/*">
+                <select id="content-type" style="display:none;"><option value="videos">videos</option></select>
+                <button onclick="uploadContent()">Upload</button>
+                
+                <div id="progress-container" style="display: none;">
+                    <div class="progress-track"><div id="progress-bar"></div></div>
+                </div>
+            </section>
+        </div>
     </div>
 
     <script src="config.js"></script>
     <script src="app.js"></script>
 </body>
-</html>
+        </html>

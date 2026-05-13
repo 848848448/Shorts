@@ -1,149 +1,66 @@
-let currentUser = {
-    nickname: localStorage.getItem('nickname') || 'Guest',
-    color: localStorage.getItem('userColor') || '#38bdf8'
-};
-
-const storage = firebase.storage();
-
-function showPage(pageId) {
-    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
-    const target = document.getElementById(pageId);
-    if(target) target.classList.remove('hidden');
-    window.scrollTo(0,0);
+:root {
+    --bg-black: #000000;
+    --card-bg: #1c1c1e;
+    --accent-blue: #38bdf8;
+    --whatsapp-green: #25d366;
 }
 
-function toggleSearch() {
-    document.getElementById('search-bar-container').classList.toggle('hidden');
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+    margin: 0; font-family: sans-serif; background: var(--bg-black); color: white; direction: rtl;
+    overflow-y: auto; min-height: 100vh;
 }
 
-// --- Upload Logic ---
-function triggerUpload(type) {
-    const input = document.getElementById('file-upload-input');
-    input.accept = type === 'status' ? 'image/*' : (type === 'video' ? 'video/*' : '*/*');
-    input.onchange = (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        
-        const ref = storage.ref(`${type}s/${Date.now()}_${file.name}`);
-        const task = ref.put(file);
-        
-        document.getElementById('upload-progress-container').classList.remove('hidden');
-        
-        task.on('state_changed', 
-            (snap) => {
-                let prog = (snap.bytesTransferred / snap.totalBytes) * 100;
-                document.getElementById('upload-progress-bar').style.width = prog + '%';
-            }, 
-            (err) => { alert("Error: " + err.message); document.getElementById('upload-progress-container').classList.add('hidden'); }, 
-            () => {
-                task.snapshot.ref.getDownloadURL().then(url => {
-                    db.ref(type).push({ url, uploader: currentUser.nickname, time: Date.now() });
-                    document.getElementById('upload-progress-container').classList.add('hidden');
-                    alert("פערטיג!");
-                });
-            }
-        );
-    };
-    input.click();
+/* פאריכטונג: מאך זיכער אז די באהאלטענע זאכן שטערן נישט דעם טאטש */
+.hidden { display: none !important; pointer-events: none; }
+
+#app-container { min-height: 100vh; display: flex; flex-direction: column; position: relative; z-index: 1; }
+
+/* Story Viewer */
+#story-viewer {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999;
+    display: flex; align-items: center; justify-content: center;
 }
+.story-header { position: absolute; top: 0; width: 100%; padding: 15px; z-index: 10000; }
+.progress-container { display: flex; gap: 4px; }
+.progress-bar { height: 2px; background: rgba(255,255,255,0.3); flex: 1; }
+.progress-fill { height: 100%; background: white; width: 0%; }
+#story-img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.story-nav { position: absolute; top: 0; height: 100%; width: 50%; z-index: 9999; }
+.nav-left { left: 0; } .nav-right { right: 0; }
 
-// --- Stories ---
-let storyList = [];
-let sIdx = 0;
-let sTimer;
+/* Header */
+header { padding: 15px; background: #000; border-bottom: 1px solid #222; position: sticky; top: 0; z-index: 10; }
+.logo { font-size: 1.6rem; font-weight: 900; color: var(--accent-blue); }
 
-db.ref('status').on('value', snap => {
-    const list = document.getElementById('status-list');
-    list.innerHTML = `<div class="status-item" onclick="triggerUpload('status')"><div class="plus-icon"><i class="fas fa-plus"></i></div><p>Status</p></div>`;
-    storyList = [];
-    snap.forEach(c => storyList.push(c.val()));
-    if(storyList.length > 0) {
-        const lastImg = storyList[storyList.length-1].url;
-        list.innerHTML += `
-            <div class="status-item" onclick="openStories()">
-                <div style="width:60px; height:60px; border-radius:50%; border:2px solid #38bdf8; overflow:hidden; margin:0 auto;">
-                    <img src="${lastImg}" style="width:100%; height:100%; object-fit:cover;">
-                </div>
-                <p>Stories</p>
-            </div>`;
-    }
-});
+/* Status Wrapper */
+.status-wrapper { padding: 15px; display: flex; overflow-x: auto; gap: 12px; border-bottom: 1px solid #222; }
+.status-item { min-width: 70px; text-align: center; cursor: pointer; }
+.plus-icon { width: 60px; height: 60px; border-radius: 50%; border: 2px dashed #444; display: flex; align-items: center; justify-content: center; margin: 0 auto; }
 
-function openStories() {
-    if(storyList.length === 0) return;
-    sIdx = 0;
-    document.getElementById('story-viewer').classList.remove('hidden');
-    playStory();
+/* Grid */
+.categories-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px;
+    padding-bottom: 100px;
 }
-
-function playStory() {
-    clearInterval(sTimer);
-    const s = storyList[sIdx];
-    const img = document.getElementById('story-img');
-    img.src = s.url;
-    document.getElementById('story-username').innerText = s.uploader;
-    
-    const prog = document.getElementById('story-progress-container');
-    prog.innerHTML = storyList.map((_, i) => `<div class="progress-bar"><div class="progress-fill" id="f-${i}"></div></div>`).join('');
-    
-    for(let i=0; i<sIdx; i++) document.getElementById(`f-${i}`).style.width = "100%";
-    
-    let w = 0;
-    sTimer = setInterval(() => {
-        w += 1;
-        const fill = document.getElementById(`f-${sIdx}`);
-        if(fill) fill.style.width = w + "%";
-        if(w >= 100) nextStory();
-    }, 40);
+.cat-card {
+    background: var(--card-bg); height: 140px; border-radius: 20px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    border: 1px solid #333; cursor: pointer;
 }
+.cat-card i { font-size: 2rem; color: var(--accent-blue); margin-bottom: 10px; }
 
-function nextStory() {
-    if(sIdx < storyList.length - 1) { sIdx++; playStory(); } 
-    else closeStory();
-}
-function prevStory() {
-    if(sIdx > 0) { sIdx--; playStory(); }
-}
-function closeStory() {
-    clearInterval(sTimer);
-    document.getElementById('story-viewer').classList.add('hidden');
-}
+/* Chat */
+#chat-messages { height: 60vh; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; background: #000; }
+.message { max-width: 80%; padding: 10px; border-radius: 15px; background: #222; position: relative; }
+.message.sent { align-self: flex-start; background: var(--whatsapp-green); color: white; }
+.message.received { align-self: flex-end; background: #333; }
 
-// --- Chat ---
-function sendChatMessage() {
-    const input = document.getElementById('chat-input');
-    const txt = input.value.trim();
-    if(!txt) return;
-    db.ref('messages').push({ sender: currentUser.nickname, text: txt, color: currentUser.color, time: Date.now() });
-    input.value = "";
-}
+.chat-input-area { position: fixed; bottom: 0; width: 100%; padding: 15px; background: #111; display: flex; gap: 10px; z-index: 20; }
+.chat-input-area input { flex: 1; padding: 12px; border-radius: 25px; border: none; background: #222; color: white; outline: none; }
+.chat-input-area button { background: var(--accent-blue); border: none; padding: 10px 20px; border-radius: 50%; color: black; }
 
-db.ref('messages').limitToLast(50).on('value', snap => {
-    const cont = document.getElementById('chat-messages');
-    if(!cont) return;
-    cont.innerHTML = "";
-    snap.forEach(c => {
-        const d = c.val();
-        const isMe = d.sender === currentUser.nickname;
-        cont.innerHTML += `<div class="message ${isMe ? 'sent' : 'received'}"><b>${d.sender}:</b><br>${d.text}</div>`;
-    });
-    cont.scrollTop = cont.scrollHeight;
-});
-
-// --- Settings ---
-function saveUserSettings() {
-    const nick = document.getElementById('user-nickname').value;
-    const col = document.getElementById('user-color').value;
-    if(nick) {
-        currentUser.nickname = nick;
-        currentUser.color = col;
-        localStorage.setItem('nickname', nick);
-        localStorage.setItem('userColor', col);
-        if(nick === "MASTER_ADMIN") document.getElementById('admin-entry').classList.remove('hidden');
-        alert("געסייווט!");
-    }
-}
-
-// Init
-document.getElementById('user-nickname').value = currentUser.nickname;
-document.getElementById('user-color').value = currentUser.color;
+/* Progress Bar */
+#upload-progress-container { position: fixed; top: 0; width: 100%; height: 4px; background: #222; z-index: 10001; }
+#upload-progress-bar { height: 100%; background: var(--accent-blue); width: 0%; }

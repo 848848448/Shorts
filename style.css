@@ -14,7 +14,7 @@
     box-shadow: 0 8px 20px rgba(0,0,0,0.3);
     border: 1px solid rgba(255,255,255,0.05);
     transition: transform 0.2s ease;
-    min-height: 250px; /* דאָס מאַכט עס פיל קלענער */
+    min-height: 220px; /* דאָס מאַכט עס פיל קלענער */
     display: flex;
     flex-direction: column;
 }

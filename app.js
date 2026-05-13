@@ -1,55 +1,72 @@
-// --- באַניצער דאַטאַ ---
+// --- User Setup ---
 let currentUser = {
     nickname: localStorage.getItem('nickname') || 'Guest_' + Math.floor(Math.random()*1000),
-    color: localStorage.getItem('userColor') || '#38bdf8',
-    isAdmin: localStorage.getItem('isAdmin') === 'true'
+    color: localStorage.getItem('userColor') || '#38bdf8'
 };
 
 const storage = firebase.storage();
+const db = firebase.database();
 
-// --- אָנליין סטאַטוס סיסטעם ---
-const onlineRef = db.ref('.info/connected');
+// --- Navigation ---
+function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
+    window.scrollTo(0,0);
+}
+
+// --- Online Status ---
 const userStatusRef = db.ref('status_online/' + currentUser.nickname);
-
-onlineRef.on('value', (snap) => {
-    if (snap.val() === false) return;
-    userStatusRef.onDisconnect().remove().then(() => {
-        userStatusRef.set({ status: "online", last_seen: Date.now() });
-    });
+db.ref('.info/connected').on('value', (snap) => {
+    if (snap.val() === true) {
+        userStatusRef.onDisconnect().remove();
+        userStatusRef.set({ status: "online" });
+    }
 });
 
-// ווייזן ווער איז אָנליין
 db.ref('status_online').on('value', snap => {
     const list = document.getElementById('online-users-list');
-    if(!list) return;
     list.innerHTML = "";
     snap.forEach(child => {
-        list.innerHTML += `<div class="online-user" onclick="startPrivateChat('${child.key}')">
-            <span class="dot"></span> ${child.key}
-        </div>`;
+        list.innerHTML += `<div class="online-user" onclick="startPrivateChat('${child.key}')"><span class="dot"></span> ${child.key}</div>`;
     });
 });
 
-// --- פּריוואַטע טשעט לאָגיק ---
-let currentChatPartner = null;
+// --- Public Chat ---
+function sendChatMessage() {
+    const input = document.getElementById('chat-input');
+    if(!input.value.trim()) return;
+    db.ref('public_chat').push({ sender: currentUser.nickname, text: input.value });
+    input.value = "";
+}
 
-function startPrivateChat(partner) {
-    if(partner === currentUser.nickname) return;
-    currentChatPartner = partner;
+db.ref('public_chat').limitToLast(50).on('value', snap => {
+    const cont = document.getElementById('chat-messages');
+    cont.innerHTML = "";
+    snap.forEach(c => {
+        const d = c.val();
+        cont.innerHTML += `<div class="msg ${d.sender === currentUser.nickname ? 'sent' : ''}"><b>${d.sender}:</b><br>${d.text}</div>`;
+    });
+    cont.scrollTop = cont.scrollHeight;
+});
+
+// --- Private Chat ---
+let currentPartner = "";
+function startPrivateChat(name) {
+    if(name === currentUser.nickname) return;
+    currentPartner = name;
+    document.getElementById('private-chat-title').innerText = "טשעט מיט " + name;
     showPage('private-chat-page');
-    document.getElementById('private-chat-title').innerText = "שמועס מיט " + partner;
     loadPrivateMessages();
 }
 
 function loadPrivateMessages() {
-    const chatID = [currentUser.nickname, currentChatPartner].sort().join('_');
-    db.ref('private_messages/' + chatID).limitToLast(50).on('value', snap => {
+    const id = [currentUser.nickname, currentPartner].sort().join('_');
+    db.ref('private_chats/' + id).on('value', snap => {
         const cont = document.getElementById('private-messages-cont');
         cont.innerHTML = "";
-        snap.forEach(child => {
-            const d = child.val();
-            const isMe = d.sender === currentUser.nickname;
-            cont.innerHTML += `<div class="msg ${isMe ? 'sent' : 'received'}">${d.text}</div>`;
+        snap.forEach(c => {
+            const d = c.val();
+            cont.innerHTML += `<div class="msg ${d.sender === currentUser.nickname ? 'sent' : ''}">${d.text}</div>`;
         });
         cont.scrollTop = cont.scrollHeight;
     });
@@ -57,42 +74,21 @@ function loadPrivateMessages() {
 
 function sendPrivateMsg() {
     const input = document.getElementById('private-input');
-    if(!input.value.trim() || !currentChatPartner) return;
-    const chatID = [currentUser.nickname, currentChatPartner].sort().join('_');
-    db.ref('private_messages/' + chatID).push({
-        sender: currentUser.nickname,
-        text: input.value,
-        time: Date.now()
-    });
+    if(!input.value.trim()) return;
+    const id = [currentUser.nickname, currentPartner].sort().join('_');
+    db.ref('private_chats/' + id).push({ sender: currentUser.nickname, text: input.value });
     input.value = "";
 }
 
-// --- Upload מיט פּראָגרעס (Shorts/Status) ---
-function triggerUpload(type) {
-    const input = document.getElementById('file-upload-input');
-    input.onchange = (e) => {
-        const file = e.target.files[0];
-        if(!file) return;
-        const ref = storage.ref(`${type}s/${Date.now()}_${file.name}`);
-        const task = ref.put(file);
-        
-        document.getElementById('upload-progress-container').classList.remove('hidden');
-        task.on('state_changed', (snap) => {
-            let prog = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
-            document.getElementById('upload-progress-bar').style.width = prog + '%';
-        }, null, () => {
-            task.snapshot.ref.getDownloadURL().then(url => {
-                db.ref(type).push({ url, uploader: currentUser.nickname, time: Date.now() });
-                document.getElementById('upload-progress-container').classList.add('hidden');
-                alert("ארויפֿגעלאָדן!");
-            });
-        });
-    };
-    input.click();
+// --- Settings ---
+function saveUserSettings() {
+    currentUser.nickname = document.getElementById('user-nickname').value;
+    currentUser.color = document.getElementById('user-color').value;
+    localStorage.setItem('nickname', currentUser.nickname);
+    localStorage.setItem('userColor', currentUser.color);
+    alert("געסייווט!");
+    location.reload();
 }
 
-// --- Page Switcher ---
-function showPage(id) {
-    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
-    document.getElementById(id).classList.remove('hidden');
-                                               }
+document.getElementById('user-nickname').value = currentUser.nickname;
+document.getElementById('user-color').value = currentUser.color;

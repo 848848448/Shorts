@@ -1,37 +1,29 @@
 <!DOCTYPE html>
-<html lang="yi" dir="rtl">
+<html lang="he">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מיין מעכטיגע פּלאַטפאָרמע</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
 </head>
 <body>
-    <div class="stories-bar">
-        <div class="story" onclick="showReels()">🎬</div>
-        <div class="story" onclick="alert('Music')">🎵</div>
-        <div class="story" onclick="alert('Pics')">🖼️</div>
-        <div class="story" onclick="alert('Text')">✍️</div>
+
+    <div class="main-container">
+        <div id="video-section" class="box"><h2>ווידעאָס</h2><div id="video-list"></div></div>
+        <div id="music-section" class="box"><h2>מוזיק</h2><div id="music-list"></div></div>
+        <div id="text-section" class="box"><h2>נייעס</h2><div id="text-content"></div></div>
+        <div id="chat-section" class="box"><h2>טשעט</h2><div id="chat-display"></div></div>
     </div>
 
-    <div class="grid-container">
-        <div class="nav-box" onclick="showReels()"><i>🎬</i>ווידעאס</div>
-        <div class="nav-box" onclick="alert('Music')"><i>🎵</i>מוזיק</div>
-        <div class="nav-box" onclick="alert('Pics')"><i>🖼️</i>בילדער</div>
-        <div class="nav-box" onclick="alert('Text')"><i>✍️</i>טעקסט</div>
-    </div>
-
-    <nav class="bottom-nav">
-        <div onclick="location.reload()">🏠</div>
-        <div onclick="showReels()">🎬</div>
-        <div style="color:#ff0050; font-size:35px;" onclick="document.getElementById('f-up').click()">⊕</div>
-        <div onclick="alert('Text')">✍️</div>
-        <div onclick="alert('Settings')">⚙️</div>
-    </nav>
-
-    <input type="file" id="f-up" style="display:none" onchange="doUpload(this)">
-    <script src="script.js"></script>
+    <script src="config.js"></script>
+    <script src="videos.js"></script>
+    <script src="music.js"></script>
+    <script src="text.js"></script>
+    <script src="chat.js"></script>
+    <script src="main.js"></script>
 </body>
-    </html>
+</html>

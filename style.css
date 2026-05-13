@@ -1,26 +1,112 @@
+:root {
+    --main-bg: #050505;
+    --card-bg: rgba(255, 255, 255, 0.05);
+    --accent-color: #00d2ff;
+    --accent-gradient: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+    --text-color: #ffffff;
+    --border-color: rgba(255, 255, 255, 0.1);
+}
+
+body {
+    background-color: var(--main-bg);
+    color: var(--text-color);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+}
+
 .main-container {
-    display: grid;
-    /* דאָס וועט מאַכן מער קליינע קעסטלעך אין איין שורה */
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
-    gap: 12px; /* קלענערע פּלאַץ צווישן זיי */
     width: 100%;
-    max-width: 1400px; /* לאָזן די סייַט זיך אויסציען מער צו די זייטן */
+    max-width: 900px; /* ברייטער צו קענען האלטן 4 באקסעס */
+}
+
+header h1 {
+    text-align: center;
+    font-weight: 800;
+    letter-spacing: -1px;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 30px;
+}
+
+/* דא מאכן מיר די 4 באקסעס צוזאמען */
+.content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* 4 באקסעס אין א שורה */
+    gap: 15px;
+    margin-bottom: 20px;
 }
 
 .box {
     background: var(--card-bg);
-    border-radius: 15px; /* אַ ביסל ווייניקער רונדיג פֿאַר א קלענערע קעסטל */
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
     padding: 15px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-    border: 1px solid rgba(255,255,255,0.05);
-    transition: transform 0.2s ease;
-    min-height: 220px; /* דאָס מאַכט עס פיל קלענער */
-    display: flex;
-    flex-direction: column;
+    transition: transform 0.3s ease, border-color 0.3s ease;
 }
 
-h2 {
-    font-size: 1.1rem; /* קלענערע שריפֿט פֿאַר די קעפּלעך */
-    margin-bottom: 10px;
-    padding-bottom: 8px;
+.box:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent-color);
 }
+
+.box h2 {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #888;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* מאכן די ווידעא און מוזיק קליין אינעווייניג */
+#video-list, #music-list {
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+video {
+    width: 100%;
+    border-radius: 12px;
+}
+
+/* טשעט און אדמין - אביסל קלענער */
+#chat-display {
+    height: 100px;
+    font-size: 0.85rem;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 10px;
+}
+
+input, select, button {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid var(--border-color);
+    color: white;
+    padding: 8px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+button {
+    background: var(--accent-gradient);
+    color: black;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+}
+
+/* פראגרעס באר - דינער און מאדערן */
+.progress-track {
+    height: 4px;
+    background: #222;
+    border-radius: 10px;
+    }

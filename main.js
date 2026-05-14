@@ -1,70 +1,69 @@
-// main.js
 const viewport = document.getElementById('app-viewport');
 
-// באניצער דעטאלן
+// 1. באניצער סיסטעם - מאכט זיכער אז יעדער קען גראד טעקסטן
 let currentUser = {
-    nickname: localStorage.getItem('nickname') || 'User_' + Math.floor(Math.random()*999),
+    nickname: localStorage.getItem('nickname') || 'גאסט_' + Math.floor(Math.random()*9999),
     color: localStorage.getItem('userColor') || '#38bdf8'
 };
+localStorage.setItem('nickname', currentUser.nickname);
 
-// פונקציע צו טוישן בלעטער - דאס פרינט די HTML אויפן סקרין
+// 2. פונקציע צו טוישן בלעטער
 function loadPage(page) {
-    console.log("Loading page: " + page);
     viewport.innerHTML = ""; 
-    
-    if (page === 'home') {
-        renderHome();
-    } else if (page === 'chat') {
-        if (typeof renderChat === "function") renderChat();
-    } else if (page === 'videos') {
-        if (typeof renderVideos === "function") renderVideos();
-    } else if (page === 'music') {
-        if (typeof renderMusic === "function") renderMusic();
-    }
+    if (page === 'home') renderHome();
+    else if (page === 'chat') renderGroupsList(); // נייע גרופעס סיסטעם
+    else if (page === 'videos') renderVideos();
+    else if (page === 'music') renderMusic();
 }
 
+// 3. הויפט בלאט דעזיין
 function renderHome() {
     viewport.innerHTML = `
-        <div class="home-container">
-            <h1 class="main-logo">THE EMPIRE</h1>
+        <div style="padding: 40px 20px; text-align: center;">
+            <h1 style="color: var(--accent); font-size: 2.5rem; margin-bottom: 10px;">THE EMPIRE</h1>
+            <p style="opacity: 0.6; margin-bottom: 30px;">שלום עליכם, ${currentUser.nickname}</p>
+            
             <div class="grid">
+                <div class="menu-btn" onclick="loadPage('chat')">
+                    <i class="fas fa-users"></i>
+                    <span>גרופעס & טשעט</span>
+                </div>
                 <div class="menu-btn" onclick="loadPage('videos')">
                     <i class="fas fa-play-circle"></i>
                     <span>שאָרץ</span>
                 </div>
-                <div class="menu-btn" onclick="loadPage('chat')">
-                    <i class="fas fa-comments"></i>
-                    <span>קאמיוניטי טשעט</span>
+                <div class="menu-btn" onclick="loadPage('music')">
+                    <i class="fas fa-music"></i>
+                    <span>מוזיק</span>
                 </div>
                 <div class="menu-btn" onclick="loadPage('home')">
                     <i class="fas fa-cog"></i>
                     <span>סעטינגס</span>
-                </div>
-                <div class="menu-btn" onclick="loadPage('music')">
-                    <i class="fas fa-music"></i>
-                    <span>מוזיק</span>
                 </div>
             </div>
         </div>
     `;
 }
 
-// Upload Function (פאר אלע פיילס)
-function uploadFileToEmpire(file, type) {
+// 4. גלאבאלע Upload פונקציע (פאר בילדער, ווידעא, מוזיק)
+function uploadFileToEmpire(file, type, folder) {
     const barCont = document.getElementById('upload-progress-container');
     const bar = document.getElementById('upload-progress-bar');
     barCont.classList.remove('hidden');
     
-    const storageRef = firebase.storage().ref(`${type}s/${Date.now()}_${file.name}`);
+    const storageRef = firebase.storage().ref(`${folder}/${Date.now()}_${file.name}`);
     const uploadTask = storageRef.put(file);
 
     uploadTask.on('state_changed', 
         (snap) => { bar.style.width = (snap.bytesTransferred / snap.totalBytes * 100) + '%'; }, 
-        (err) => { alert(err.message); barCont.classList.add('hidden'); }, 
+        (err) => { alert("Upload Error: " + err.message); barCont.classList.add('hidden'); }, 
         () => {
             uploadTask.snapshot.ref.getDownloadURL().then(url => {
                 firebase.database().ref(type).push({
-                    url: url, uploader: currentUser.nickname, time: Date.now(), likes: 0
+                    url: url,
+                    uploader: currentUser.nickname,
+                    time: Date.now(),
+                    likes: 0
                 });
                 barCont.classList.add('hidden');
                 alert("Upload Success!");
@@ -73,7 +72,5 @@ function uploadFileToEmpire(file, type) {
     );
 }
 
-// אנהייבן דעם סייט
-window.onload = () => {
-    renderHome();
-};
+// אנהייבן דעם סייט גראד ביים לאדנט
+window.onload = renderHome;

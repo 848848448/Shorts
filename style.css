@@ -1,73 +1,81 @@
-/* RESET */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-}
+/* פולע 2026 מאדערן דעזיין */
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
 
-body {
-    background-color: #000;
-    color: #fff;
-    font-family: sans-serif;
-    direction: rtl;
-    min-height: 100vh;
-}
+body { background-color: #000; color: #fff; direction: rtl; height: 100vh; overflow: hidden; }
 
-/* הויפט בלאט קאנטעינער */
-.home-container {
-    padding: 50px 20px;
-    text-align: center;
-}
-
-.main-logo {
-    color: #38bdf8;
-    font-size: 2.8rem;
-    font-weight: bold;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-}
-
-/* די גריד סיסטעם - דאס וועט מאכן די קנעפלאך שיין */
-.grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* צוויי קאלומס */
-    gap: 20px;
-    padding: 10px;
-    margin-top: 30px;
-}
-
-.menu-btn {
-    background: #111;
-    border: 2px solid #222;
-    border-radius: 25px;
-    padding: 40px 10px;
+/* טשעט סקרין סטרוקטור */
+.chat-container {
     display: flex;
     flex-direction: column;
+    height: 100vh; /* קיין סקראול פארן גאנצן בלאט */
+}
+
+.messages-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* קליינע, מאדערנע מעסעדזש באבבלס */
+.message {
+    max-width: 75%;
+    padding: 8px 12px;
+    border-radius: 18px;
+    font-size: 0.95rem; /* קליינער און פראפעסיאנאל */
+    line-height: 1.4;
+    position: relative;
+}
+
+.my-message {
+    align-self: flex-start;
+    background: #007AFF; /* Apple Blue */
+    color: white;
+    border-bottom-left-radius: 4px;
+}
+
+.other-message {
+    align-self: flex-end;
+    background: #262626;
+    color: #efefef;
+    border-bottom-right-radius: 4px;
+}
+
+.msg-info { font-size: 0.7rem; opacity: 0.6; margin-bottom: 2px; display: block; }
+
+/* די אינפוט שורה - פונקטליך ביים דאק פון פאון */
+.input-area {
+    background: #121212;
+    padding: 10px 15px;
+    display: flex;
     align-items: center;
-    gap: 15px;
-    cursor: pointer;
-    transition: 0.3s;
+    gap: 10px;
+    border-top: 1px solid #222;
 }
 
-.menu-btn:active {
-    transform: scale(0.95);
-    background: #1a1a1a;
+.input-area input {
+    flex: 1;
+    background: #222;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 25px;
+    color: white;
+    outline: none;
+    font-size: 0.9rem;
 }
 
-.menu-btn i {
-    font-size: 2.5rem;
-    color: #38bdf8;
-}
-
-.menu-btn span {
-    font-weight: bold;
-    font-size: 1.1rem;
-}
-
-/* פאר די טשעט און גרופעס */
-.chat-wrapper {
+/* סענד באטן אויף די ריכטיגע זייט (רעכטס אין RTL) */
+.send-btn {
+    background: #007AFF;
+    color: white;
+    border: none;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
     display: flex;
-    flex-direction: column;
-    height: 100vh;
-    }
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}

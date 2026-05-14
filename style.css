@@ -1,71 +1,30 @@
-:root {
-    --bg: #000;
-    --accent: #38bdf8;
-    --text: #fff;
+body {
+    margin: 0; background-color: #000; color: #fff;
+    font-family: sans-serif; direction: rtl; overflow-x: hidden;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
-body { 
-    background: var(--bg); color: var(--text); font-family: sans-serif; direction: rtl; 
-    height: 100vh; overflow: hidden;
+#app-viewport {
+    width: 100%; min-height: 100vh; position: relative; z-index: 10;
 }
 
-/* Home Grid */
-.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; margin-top: 50px; }
+.main-logo {
+    text-align: right; padding: 30px 20px; color: #38bdf8; font-size: 2.2rem;
+}
+
+.grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px;
+}
+
 .menu-btn {
-    background: #111; border: 1px solid #222; padding: 35px 10px;
-    border-radius: 20px; display: flex; flex-direction: column; align-items: center; gap: 10px;
-    cursor: pointer;
-}
-.menu-btn i { font-size: 2rem; color: var(--accent); }
-
-/* SHORTS ENGINE - Instagram Style */
-.shorts-wrapper { 
-    height: 100vh; width: 100vw; position: fixed; top: 0; left: 0; background: #000; z-index: 1000;
+    background: #111; border: 1px solid #222; border-radius: 20px;
+    padding: 40px 10px; display: flex; flex-direction: column;
+    align-items: center; gap: 15px; cursor: pointer;
 }
 
-.shorts-header { 
-    position: absolute; top: 10px; width: 100%; padding: 20px; 
-    display: flex; justify-content: space-between; align-items: center; z-index: 1010;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
-}
+.menu-btn i { font-size: 2rem; color: #38bdf8; }
+.menu-btn span { font-weight: bold; font-size: 1.1rem; }
 
-.shorts-feed { 
-    height: 100vh; width: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; 
-}
-
-.short-video-container { 
-    height: 100vh; width: 100vw; scroll-snap-align: start; position: relative; display: flex; align-items: center; justify-content: center;
-}
-
-.short-video-container video { 
-    width: 100%; height: 100%; object-fit: cover; 
-}
-
-/* Side Buttons (Likes/Comments) */
-.video-actions { 
-    position: absolute; right: 15px; bottom: 120px; display: flex; flex-direction: column; gap: 25px; z-index: 1005;
-}
-.action-item { text-align: center; color: white; cursor: pointer; }
-.action-item i { font-size: 2.2rem; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.9)); }
-.action-item span { display: block; font-size: 0.8rem; margin-top: 5px; font-weight: bold; }
-
-/* Info Area */
-.video-info { 
-    position: absolute; bottom: 40px; left: 15px; width: 75%; z-index: 1005;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-}
-.video-info h3 { font-size: 1.1rem; margin-bottom: 5px; color: var(--accent); }
-.video-info p { font-size: 0.9rem; margin-bottom: 10px; }
-.follow-btn { 
-    background: var(--accent); color: #000; border: none; padding: 6px 18px; border-radius: 20px; font-weight: bold; 
-}
-
-/* Upload Progress Bar */
-#upload-progress-container { 
-    position: fixed; top: 0; width: 100%; height: 4px; background: rgba(255,255,255,0.1); z-index: 2000; 
-}
-#upload-progress-bar { background: var(--accent); height: 100%; width: 0%; transition: 0.3s; box-shadow: 0 0 10px var(--accent); }
-
-.hidden { display: none !important; }
+/* Progress Bar */
+#upload-progress-container { position: fixed; top: 0; width: 100%; height: 5px; z-index: 1000; }
+#upload-progress-bar { background: #38bdf8; height: 100%; width: 0%; transition: 0.3s; }
+.hidden { display: none; }

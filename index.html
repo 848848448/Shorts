@@ -3,231 +3,285 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Empire Entertainment 2026 - Master Build</title>
+    <title>Empire Platform</title>
     <style>
-        /* --- יסודות און קאָלירן (Modern & Light) --- */
+        /* דעזיין יסודות */
         :root {
-            --primary: #007AFF;
-            --bg: #F2F2F7;
-            --card: rgba(255, 255, 255, 0.9);
-            --text: #1C1C1E;
-            --glass: blur(20px) saturate(180%);
-            --shadow: 0 8px 30px rgba(0,0,0,0.04);
-            --radius: 22px;
+            --main-bg: #ffffff;
+            --box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            --border-radius: 12px;
+            --primary-color: #007bff;
         }
 
-        /* Dark Mode */
-        @media (prefers-color-scheme: dark) {
-            :root { --bg: #000000; --card: rgba(28, 28, 30, 0.9); --text: #FFFFFF; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            color: #333;
         }
 
-        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; overflow-x: hidden; transition: background 0.5s; }
-
-        /* --- Header & Logo --- */
+        /* לאגא און העדער */
         header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 25px; background: var(--card); backdrop-filter: var(--glass);
-            position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid rgba(0,0,0,0.05);
-        }
-        .logo { font-size: 24px; font-weight: 800; cursor: pointer; letter-spacing: -1px; }
-        .logo span { color: var(--primary); }
-
-        /* --- Page Management --- */
-        .page { display: none; padding: 20px; animation: slideUp 0.4s ease; padding-bottom: 100px; max-width: 600px; margin: 0 auto; }
-        .active-page { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* --- Ad Banner (Global Admin Controlled) --- */
-        .hero-ad {
-            width: 100%; min-height: 90px; background: linear-gradient(135deg, #e0e0e0, #ffffff);
-            border-radius: var(--radius); margin-bottom: 25px; display: flex; align-items: center;
-            justify-content: center; font-size: 14px; color: #888; border: 1px solid rgba(0,0,0,0.05);
-            text-align: center; padding: 10px; box-sizing: border-box;
+            background: var(--main-bg);
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
-        /* --- Dashboard Grid (Even Boxes) --- */
-        .main-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
-        .grid-card {
-            background: var(--card); padding: 30px 15px; border-radius: var(--radius);
-            text-align: center; box-shadow: var(--shadow); border: 1px solid rgba(255,255,255,0.2);
-            cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        .grid-card:active { transform: scale(0.95); }
-        .grid-card i { font-size: 35px; display: block; margin-bottom: 12px; }
-        .grid-card b { font-size: 16px; font-weight: 600; }
 
-        /* --- Settings & Admin Styles --- */
-        .list-container { background: var(--card); border-radius: var(--radius); overflow: hidden; margin-top: 10px; }
-        .list-row { padding: 18px 20px; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        .admin-box { background: #fff5f5; border: 1.5px solid #ffcfcf; padding: 20px; border-radius: var(--radius); margin-top: 15px; }
-        .switch-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-
-        /* --- Chat UI --- */
-        .chat-box { height: 350px; background: var(--card); border-radius: var(--radius); padding: 15px; overflow-y: auto; margin-bottom: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .bubble { padding: 12px 16px; border-radius: 18px; max-width: 80%; font-size: 15px; line-height: 1.4; }
-        .received { background: #E9E9EB; color: #000; align-self: flex-start; }
-        .sent { background: var(--primary); color: #fff; align-self: flex-end; }
-
-        /* --- Media Player UI --- */
-        .player-container { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: var(--radius); overflow: hidden; margin-bottom: 15px; position: relative; }
-        .video-placeholder { color: white; display: flex; align-items: center; justify-content: center; height: 100%; }
-
-        /* --- Bottom Navigation --- */
-        nav {
-            position: fixed; bottom: 0; width: 100%; background: var(--card);
-            display: flex; justify-content: space-around; padding: 15px 0;
-            backdrop-filter: var(--glass); border-top: 1px solid rgba(0,0,0,0.05); z-index: 1000;
+        /* עדס פלאץ - פראפעסיאנאל */
+        .ad-space {
+            background: #fff;
+            margin: 20px auto;
+            width: 90%;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #ccc;
+            border-radius: var(--border-radius);
+            font-weight: bold;
+            overflow: hidden;
         }
-        .nav-item { font-size: 26px; cursor: pointer; opacity: 0.3; transition: 0.3s; }
-        .nav-item.active { opacity: 1; transform: translateY(-3px); color: var(--primary); }
+
+        /* הויפט בלאט באקסלעך */
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .box {
+            background: var(--main-bg);
+            aspect-ratio: 1 / 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            cursor: pointer;
+            transition: transform 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .box:hover { transform: scale(1.05); }
+        .box i { font-size: 40px; margin-bottom: 10px; }
+
+        /* Shorts ווידעא סיסטעם */
+        #video-feed {
+            display: none;
+            height: 100vh;
+            background: #000;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 2000;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* אפלאודProgress Bar */
+        .progress-container {
+            width: 100%;
+            background: #ddd;
+            display: none;
+            margin-top: 10px;
+        }
+        .progress-bar { width: 0%; height: 10px; background: #28a745; }
+
+        /* סעטינגס - ריין ווייס מסודר */
+        .settings-page {
+            display: none;
+            background: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .settings-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <div onclick="showPage('settings')">⚙️</div>
-    <div class="logo" onclick="showPage('home')">E<span>▶️</span>M<span>⏸️</span>PIRE</div>
-    <div onclick="alert('Search...')">🔍</div>
+    <div class="logo">▶️⏸️ EMPIRE</div>
+    <div id="admin-link" onclick="showPage('admin')">⚙️</div>
 </header>
 
-<!-- הויפּט בלאַט (Dashboard) -->
-<div id="home" class="page active-page">
-    <div class="hero-ad" id="displayAd">דיין עד פּלאַץ (קאָנטראָלירט דורך אַדמין)</div>
-    <div class="main-grid">
-        <div class="grid-card" onclick="showPage('chat')"><i>💬</i><b>טעקסט</b></div>
-        <div class="grid-card" onclick="showPage('video')"><i>🎥</i><b>ווידעאָ</b></div>
-        <div class="grid-card" onclick="showPage('music')"><i>🎵</i><b>מוזיק</b></div>
-        <div class="grid-card" onclick="showPage('gallery')"><i>🖼️</i><b>בילדער</b></div>
-        <div class="grid-card" onclick="showPage('status')"><i>⭕</i><b>סטאַטוס</b></div>
-        <div class="grid-card" onclick="showPage('channels')"><i>📢</i><b>טשענעלס</b></div>
+<div id="home-page">
+    <div class="ad-space" id="main-ad">דא קומען דיינע עדס</div>
+    
+    <div class="main-grid" id="grid">
+        <div class="box" onclick="showPage('shorts')">🎬 <span>Shorts</span></div>
+        <div class="box" onclick="showPage('chat')">💬 <span>WhatsApp</span></div>
+        <div class="box" onclick="showPage('music')">🎵 <span>Music</span></div>
+        <div class="box" onclick="showPage('status')">⭕ <span>Status</span></div>
+        <div class="box" onclick="showPage('channels')">📢 <span>Channels</span></div>
+        <div class="box" onclick="showPage('settings')">🛠️ <span>Settings</span></div>
     </div>
 </div>
 
-<!-- טשעט (Ghost Mode) -->
-<div id="chat" class="page">
-    <h3>מעסעדזשעס</h3>
-    <div class="chat-box" id="chatArea">
-        <div class="bubble received">שלום עליכם! דאָס איז דיין Ghost Mode טשעט.</div>
-    </div>
-    <div style="display:flex; gap:10px;">
-        <input type="text" id="chatInput" placeholder="שרייב א מעסעדזש..." style="flex:1; padding:15px; border-radius:15px; border:1px solid #ddd; outline:none;">
-        <button onclick="sendMessage()" style="padding:15px; border-radius:15px; border:none; background:var(--primary); color:white;">שיק</button>
+<div id="video-feed">
+    <video id="main-video" onclick="togglePlay()" loop></video>
+    <div style="position:absolute; bottom:20px; left:20px; color:white;">
+        <button onclick="nextVideo()">Next ⬇️</button>
+        <button onclick="closePage()">Close ❌</button>
     </div>
 </div>
-
-<!-- ווידעאָ / Shorts -->
-<div id="video" class="page">
-    <h3>ווידעאָ פֿיד</h3>
-    <div class="player-container">
-        <div class="video-placeholder">ווידעאָ וועט שפּילן דאָ (Direct Link)</div>
-    </div>
-    <button style="width:100%; padding:15px; border-radius:15px; border:none; background:var(--primary); color:white; font-weight:600;">נעקסטע ווידעאָ</button>
-</div>
-
-<!-- סעטינגס -->
-<div id="settings" class="page">
-    <h3>סעטינגס</h3>
-    <div class="list-container">
-        <div class="list-row" onclick="toggleLanguage()">שפּראַך (Yiddish / English)</div>
-        <div class="list-row">נאָטיפֿיקאַציעס</div>
-        <div class="list-row" onclick="showPage('feedback')">פֿידבּעק & רעקוועסטס</div>
-        <div class="list-row" style="color:red; font-weight:bold;" onclick="checkAdminAccess()">אַדמין קאָנטראָל 🔒</div>
-    </div>
-</div>
-
-<!-- אַדמין קאַמאַנד צענטער -->
-<div id="admin" class="page">
-    <h3>Admin Command Center</h3>
-    <div class="admin-box">
-        <div class="switch-container">
-            <span>לאָגין מיט אימעיל (Magic Link)</span>
-            <input type="checkbox" id="loginMode" onchange="console.log('Login mode toggled')">
-        </div>
-        <div class="switch-container">
-            <span>ווידעאָ רעוויואַל Queue</span>
-            <button onclick="alert('Checking Queue...')">Review (0)</button>
-        </div>
-        <div style="margin-top:10px;">
-            <label>טוישן הויפּט עד:</label>
-            <input type="text" id="adControl" style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ddd;" onchange="updateGlobalAd()">
-        </div>
-        <button onclick="reportScamAlert()" style="margin-top:20px; width:100%; padding:12px; border:none; background:#000; color:white; border-radius:10px;">Scam Alert (Global)</button>
-    </div>
-</div>
-
-<!-- פֿידבּעק -->
-<div id="feedback" class="page">
-    <h3>Feedback</h3>
-    <textarea placeholder="שרייב דאָ דיין בקשה..." style="width:100%; height:120px; border-radius:15px; padding:15px; border:1px solid #ddd;"></textarea>
-    <button style="width:100%; padding:15px; margin-top:10px; border-radius:15px; border:none; background:var(--primary); color:white;">שיק בקשה</button>
-</div>
-
-<nav>
-    <div class="nav-item active" onclick="showPage('home')">🏠</div>
-    <div class="nav-item" onclick="showPage('chat')">💬</div>
-    <div class="nav-item" onclick="showPage('video')">🎥</div>
-    <div class="nav-item" onclick="showPage('settings')">⚙️</div>
-</nav>
 
 <script>
-    // --- Master Config ---
-    let adminPassword = "1234"; // דאָס קענסטו טוישן
-    let currentDir = "rtl";
-
-    // --- Navigation Logic ---
+    // פונקציעס צו טוישן בלעטער
     function showPage(pageId) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-        document.getElementById(pageId).classList.add('active-page');
-        
-        // Sync Nav Bar
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        // (Simple sync based on index)
-        const navs = document.querySelectorAll('.nav-item');
-        if(pageId === 'home') navs[0].classList.add('active');
-        if(pageId === 'chat') navs[1].classList.add('active');
-        if(pageId === 'video') navs[2].classList.add('active');
-        if(pageId === 'settings') navs[3].classList.add('active');
+        document.getElementById('home-page').style.display = 'none';
+        if(pageId === 'shorts') document.getElementById('video-feed').style.display = 'block';
+        if(pageId === 'settings') document.getElementById('settings-page').style.display = 'block';
     }
 
-    // --- Admin Access ---
-    function checkAdminAccess() {
-        let pass = prompt("לייג אריין דעם אַדמין קאָד:");
-        if (pass === adminPassword) {
-            showPage('admin');
+    function closePage() {
+        location.reload(); // פשוט צוריק צום הויפט בלאט
+    }
+
+    // ווידעא פייל מענעדזשער לאגיק
+    let videoList = [];
+    function handleUpload(event) {
+        const file = event.target.files[0];
+        const progress = document.querySelector('.progress-bar');
+        document.querySelector('.progress-container').style.display = 'block';
+        
+        let width = 0;
+        let interval = setInterval(() => {
+            if (width >= 100) {
+                clearInterval(interval);
+                alert("ווידעא ארויפגעלאדן געהעריג!");
+            } else {
+                width++;
+                progress.style.width = width + '%';
+            }
+        }, 30);
+    }
+            </script>
+            <div id="settings-page" class="settings-page">
+    <h2 style="text-align:center;">Settings</h2>
+    <div class="settings-item"><span>ניק-נעם</span> <input type="text" placeholder="דיין נאָמען"></div>
+    <div class="settings-item"><span>אימעיל Verification</span> <button>Confirm Email</button></div>
+    <div class="settings-item" onclick="alert('שיק דיין פידבעק צו: admin@empire.com')"><span>Feedback & Suggestions</span> ⬅️</div>
+    <div class="settings-item" onclick="alert('שיק דיין רעקוועסט פֿאַר מוזיק/ווידעאָ')"><span>Request Content</span> ⬅️</div>
+    <div class="settings-item" style="color:red; font-weight:bold;" onclick="location.reload()"><span>Logout</span></div>
+    <button onclick="closePage()" style="width:100%; padding:15px; margin-top:20px;">Back to Home</button>
+</div>
+
+<div id="admin-panel" style="display:none; background:#f4f4f4; min-height:100vh; padding:20px; z-index:3000; position:fixed; top:0; width:100%;">
+    <h2>Admin Dashboard 🔐</h2>
+    <div style="background:white; padding:15px; border-radius:10px; margin-bottom:15px;">
+        <h3>Review Queue (באשטעטיגן זאכן)</h3>
+        <div id="approval-list">נישטא קיין נייע אפּלאָודס דערווייל...</div>
+    </div>
+    
+    <div style="background:white; padding:15px; border-radius:10px; margin-bottom:15px;">
+        <h3>Master Controls</h3>
+        <button onclick="toggleUploads()">לעש אויס/צינד אן Uploads</button>
+        <button onclick="systemShutdown()" style="background:red; color:white;">SYSTEM SHUTDOWN</button>
+    </div>
+
+    <div style="background:white; padding:15px; border-radius:10px;">
+        <h3>Branding & Design</h3>
+        <input type="text" id="new-name" placeholder="טויש נאָמען פונעם סייט">
+        <button onclick="updateBranding()">Update</button>
+    </div>
+    <br>
+    <button onclick="closeAdmin()" style="width:100%; padding:10px;">Exit Admin</button>
+</div>
+
+<div id="chat-page" style="display:none; background:#e5ddd5; min-height:100vh; padding:10px;">
+    <div style="background:#075e54; color:white; padding:15px; margin:-10px -10px 10px -10px;">WhatsApp Chats</div>
+    <div id="chat-messages" style="height:70vh; overflow-y:auto; background:white; padding:10px; border-radius:10px;">
+        <p><b>מערכת:</b> ברוכים הבאים צו דיין טשעט!</p>
+    </div>
+    <div style="display:flex; gap:5px; margin-top:10px;">
+        <input type="text" id="chat-input" style="flex:1; padding:10px; border-radius:20px; border:none;" placeholder="שרייב א מעסעדזש...">
+        <button onclick="sendMessage()" style="border-radius:50%; width:45px; height:45px; background:#128c7e; color:white; border:none;">Send</button>
+    </div>
+    <button onclick="closePage()" style="margin-top:10px;">Back</button>
+</div>
+
+<script>
+    // אדמין פאסווארט לאגיק
+    function showAdmin() {
+        let pw = prompt("לייג אריין אדמין פאסווארט:");
+        if(pw === "1234") { // דו קענסט עס טוישן צו וואס דו ווילסט
+            document.getElementById('admin-panel').style.display = 'block';
         } else {
-            alert("צוטריט אָפּגעזאָגט!");
+            alert("פאַלשע פאַסוואָרט!");
         }
     }
 
-    // --- Content Control ---
-    function updateGlobalAd() {
-        let text = document.getElementById('adControl').value;
-        document.getElementById('displayAd').innerText = text || "דיין עד פּלאַץ (קאָנטראָלירט דורך אַדמין)";
+    // טוישן סימבאל און נאמען
+    function updateBranding() {
+        let name = document.getElementById('new-name').value;
+        if(name) {
+            document.querySelector('.logo').innerText = name;
+            alert("נאָמען געטוישט געהעריג!");
+        }
     }
 
-    function reportScamAlert() {
-        alert("Scam Alert! א נאָטיפֿיקאַציע איז געשיקט געווארן צום אַדמין פּאַנעל.");
+    // סיסטעם Shutdown
+    function systemShutdown() {
+        if(confirm("ביסטו זיכער דו ווילסט אפשטעלן די גאנצע סיסטעם?")) {
+            document.body.innerHTML = "<h1 style='text-align:center; margin-top:20%;'>The System is currently OFFLINE for maintenance.</h1>";
+        }
     }
 
-    // --- Chat Logic ---
+    // טשעט לאגיק
     function sendMessage() {
-        let msg = document.getElementById('chatInput').value;
-        if(msg.trim() === "") return;
-        let div = document.createElement('div');
-        div.className = "bubble sent";
-        div.innerText = msg;
-        document.getElementById('chatArea').appendChild(div);
-        document.getElementById('chatInput').value = "";
-        document.getElementById('chatArea').scrollTop = document.getElementById('chatArea').scrollHeight;
+        let msg = document.getElementById('chat-input').value;
+        if(msg) {
+            let chat = document.getElementById('chat-messages');
+            chat.innerHTML += `<p style='background:#dcf8c6; padding:8px; border-radius:10px; margin:5px 0; text-align:left;'><b>דו:</b> ${msg}</p>`;
+            document.getElementById('chat-input').value = "";
+            chat.scrollTop = chat.scrollHeight;
+        }
     }
 
-    // --- Language Toggle ---
-    function toggleLanguage() {
-        currentDir = (currentDir === "rtl") ? "ltr" : "rtl";
-        document.body.dir = currentDir;
-        alert(currentDir === "rtl" ? "שפּראַך געטוישט צו ייִדיש" : "Language switched to English");
+    // פונקציע צו עפענען די ספעציפישע בלעטער
+    function showPage(pageId) {
+        document.getElementById('home-page').style.display = 'none';
+        if(pageId === 'shorts') document.getElementById('video-feed').style.display = 'block';
+        if(pageId === 'settings') document.getElementById('settings-page').style.display = 'block';
+        if(pageId === 'chat') document.getElementById('chat-page').style.display = 'block';
+        if(pageId === 'admin') showAdmin();
+    }
+
+    function closeAdmin() {
+        document.getElementById('admin-panel').style.display = 'none';
+        document.getElementById('home-page').style.display = 'block';
     }
 </script>
 
 </body>
-    </html>
+</html>

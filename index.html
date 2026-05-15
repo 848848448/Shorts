@@ -78,12 +78,45 @@
         /* Chat UI */
         #chat-ui { display: flex; flex-direction: column; height: 100%; }
         #chat-messages { flex-grow: 1; overflow-y: auto; padding: 10px; background: #f0f2f5; display: flex; flex-direction: column; gap: 8px; }
-        .message { max-width: 80%; padding: 8px 12px; border-radius: 12px; font-size: 14px; position: relative; }
-        .msg-me { align-self: flex-end; background: #dcf8c6; }
-        .msg-them { align-self: flex-start; background: white; }
-        .chat-input-bar { display: flex; gap: 10px; padding: 10px; border-top: 1px solid #ddd; align-items: center; }
-        .chat-input-bar input { flex-grow: 1; border: 1px solid #ccc; border-radius: 20px; padding: 8px 15px; }
+       .message {
+    max-width: 75%;
+    padding: 8px 12px;
+    margin: 5px 10px;
+    border-radius: 10px;
+    font-size: 15px;
+    position: relative;
+    line-height: 1.4;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+}
 
+.msg-me {
+    align-self: flex-end;
+    background: #dcf8c6; /* וואטסעפפ גרין פאר דיינע מעסעדזשעס */
+    border-top-right-radius: 0;
+}
+
+.msg-them {
+    align-self: flex-start;
+    background: #ffffff; /* ווייס פאר יענעם'ס מעסעדזשעס */
+    border-top-left-radius: 0;
+} 
+        .chat-input-bar {
+    display: flex;
+    padding: 10px;
+    background: #f0f0f0;
+    align-items: center;
+    gap: 10px;
+    border-top: 1px solid #ddd;
+}
+
+.chat-input-bar input {
+    flex-grow: 1;
+    padding: 12px 18px;
+    border-radius: 25px; /* דאָס מאַכט עס שיין רונדיג */
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 16px;
+}
         /* Video Player */
         #video-feed { height: 100%; display: flex; flex-direction: column; align-items: center; background: #000; border-radius: 15px; position: relative; }
         video { height: 100%; max-width: 100%; }
@@ -154,7 +187,7 @@
                         <div class="grid-item" onclick="showPage('music')"><i class="fas fa-music"></i>Music</div>
                         <div class="grid-item" onclick="showPage('status')"><i class="fas fa-circle-notch"></i>Status</div>
                     </div>
-                </div>
+               mesdiv>
 
                 <div id="page-shorts" class="page">
                     <div id="video-feed">
@@ -183,12 +216,21 @@
             </div>
         </div>
 
-        <div id="page-groups" class="page">
-            <div style="background: #075e54; color: white; padding: 15px; font-size: 20px; font-weight: bold;">גרופעס</div>
-            <div style="padding: 10px;">
-                <button onclick="createGroup()" style="width: 100%; padding: 12px; background: #25d366; color: white; border: none; border-radius: 5px; font-weight: bold; margin-bottom: 15px;">עפן א נייע גרופע</button>
-                <div id="groups-list" style="text-align: center; margin-top: 20px; color: #999;">
-                    דו ביסט נאכנישט אין קיין גרופעס
+        <div id="page-groups" class="page" style="display:none;">
+            <div style="background: #075e54; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 20px; font-weight: bold;">גרופעס</span>
+                <i class="fas fa-search"></i>
+            </div>
+            
+            <div style="background: white; height: calc(100vh - 120px); overflow-y: auto;">
+                <div onclick="createGroup()" style="display: flex; align-items: center; padding: 15px; border-bottom: 1px solid #f2f2f2; cursor: pointer;">
+                    <div style="width: 45px; height: 45px; background: #25d366; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; margin-right: 15px;">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <b style="font-size: 16px; color: #111;">עפענען א נייע גרופע</b>
+                </div>
+                <div id="groups-list">
+                    <div style="text-align: center; padding: 40px; color: #999;">נאכנישט אין קיין גרופעס</div>
                 </div>
             </div>
         </div>
@@ -321,11 +363,36 @@
         }
 
         function createGroup() {
-            let gName = prompt("נאמען פאר די גרופע:");
-            if(gName) {
-                state.msgs.push({sender: "System", text: `גרופע "${gName}" איז געעפנט געווארן!`});
-                save(); renderMsgs();
-            }
+    let gName = prompt("לייג אריין דעם נאמען פון די נייע גרופע:");
+    if (!gName) return;
+
+    let list = document.getElementById('groups-list');
+    
+    // אויב עס שטייט נאך "נאכנישט אין קיין גרופעס", מעק עס אויס
+    if (list.innerText.includes("נאכנישט")) {
+        list.innerHTML = '';
+    }
+
+    // לייג צו די נייע גרופע מיט די WhatsApp סטיל שורה
+    let groupHTML = `
+        <div onclick="showPage('chat')" style="display: flex; align-items: center; padding: 12px 15px; border-bottom: 1px solid #f2f2f2; cursor: pointer; background: white;">
+            <div style="width: 50px; height: 50px; background: #dfe5e7; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                <i class="fas fa-users" style="color: white; font-size: 20px;"></i>
+            </div>
+            <div style="flex-grow: 1;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                    <b style="font-size: 16px; color: #111;">${gName}</b>
+                    <small style="color: #06d755; font-size: 12px;">יעצט</small>
+                </div>
+                <div style="color: #666; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    דריק דא צו אנהייבן שמועסן אין די גרופע...
+                </div>
+            </div>
+        </div>
+    `;
+    
+    list.innerHTML = groupHTML + list.innerHTML;
+    save(); // סעיוו די טוישונגען
         }
 
         // Shorts

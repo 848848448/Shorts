@@ -287,12 +287,12 @@
             save(); 
         }
 
-        function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
-
+function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
+        
         // Login
-        function finishLogin() {
+    function finishLogin() {
             let n = document.getElementById('user-nickname').value;
-            if(!n) return alert("לייג א נאמען");
+            if(!n) return alert("ביטע שרייב א נאמען");
             state.nick = n;
             save();
             document.getElementById('login-screen').style.display = 'none';

@@ -330,7 +330,11 @@
 
         // Upload Simulation
         function simulateUpload() {
+            let fileInput = document.getElementById('up-file');
             let bar = document.getElementById('up-bar');
+            
+            if (!fileInput.files[0]) return alert("ביטע קלייב אויס א פייל קודם");
+
             document.getElementById('up-progress').style.display = 'block';
             let w = 0;
             let int = setInterval(() => {
@@ -338,10 +342,26 @@
                 bar.style.width = w + '%';
                 if(w >= 100) {
                     clearInterval(int);
-                    alert("Upload Success! אדמין וועט עס איבערקוקן.");
+                    
+                    // דא פאסט זיך די חכמה: עס לייגט עס גלייך אריין אין די דאטאבייס
+                    let fileName = fileInput.files[0].name;
+                    state.msgs.push({sender: state.nick, text: `נאר וואס ארויפגעלייגט א נייע פייל: ${fileName}`});
+                    
+                    // אויב עס איז א ווידעא, לייג עס אריין אין די ווידעא ליסטע
+                    if(fileInput.files[0].type.includes('video')) {
+                        let videoUrl = URL.createObjectURL(fileInput.files[0]);
+                        state.videos = state.videos || [];
+                        state.videos.push(videoUrl);
+                        alert("דיין ווידעא איז Live!");
+                    } else {
+                        alert("דיין פייל איז ארויף פערפעקט!");
+                    }
+
+                    save(); // סעיווען אין דאטאבייס
                     document.getElementById('up-progress').style.display = 'none';
+                    bar.style.width = '0%';
                 }
-            }, 200);
+            }, 150);
         }
     </script>
 </body>

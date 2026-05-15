@@ -246,11 +246,31 @@
 
         // Navigation
         function showPage(id) {
+            // פארמאכט אלע בלעטער
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-            document.getElementById('page-' + id).classList.add('active');
-            document.getElementById('page-title').innerText = id.charAt(0).toUpperCase() + id.slice(1);
-            if(window.innerWidth < 768) toggleMenu();
+            
+            // עפנט דעם ריכטיגן בלאט
+            const targetPage = document.getElementById('page-' + id);
+            if (targetPage) targetPage.classList.add('active');
+            
+            // טוישט דעם קעפל
+            document.getElementById('page-title').innerText = id.toUpperCase();
+
+            // דאס איז די חכמה: אויב מען עפנט Shorts, שפיל די נייע ווידעא!
+            if (id === 'shorts') {
+                const v = document.getElementById('player');
+                if (state.videos && state.videos.length > 0) {
+                    v.src = state.videos[state.videos.length - 1]; // נעמט די פייל וואס דו האסט יעצט ארויפגעלייגט
+                    v.load();
+                    v.play();
+                }
+            }
+            
+            if (window.innerWidth < 768) {
+                document.getElementById('sidebar').classList.remove('open');
+            }
+            save(); 
         }
 
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }

@@ -102,7 +102,7 @@
 </head>
 <body>
 
-    <div id="login-screen">
+<div id="login-screen" style="display: none;">
         <div class="login-card">
             <i class="fas fa-play-circle" style="font-size: 50px; color: #1a73e8; margin-bottom: 20px;"></i>
             <h2>ברוך הבא</h2>
@@ -299,10 +299,13 @@ function toggleMenu() { document.getElementById('sidebar').classList.toggle('ope
         }
 
         window.onload = () => {
-            if(state.nick) document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('site-name-display').innerText = state.name;
-            document.getElementById('like-num').innerText = state.likes;
-            if(state.adUrl) document.getElementById('ad-container').innerHTML = `<img src="${state.adUrl}">`;
+            // דאס פארזיכערט אז די לאגין באקס בלייבט פארמאכט
+            const login = document.getElementById('login-screen');
+            if (login) login.style.display = 'none';
+            
+            if (state.name) {
+                document.getElementById('site-name-display').innerText = state.name;
+            }
             renderMsgs();
         };
 

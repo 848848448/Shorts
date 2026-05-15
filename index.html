@@ -92,17 +92,16 @@
         .empty-state { text-align: center; padding: 50px 20px; color: #70757a; }
 
         /* Login Screen */
-        #login-screen { position: fixed; inset: 0; background: white; z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-        .login-card { width: 100%; max-width: 320px; text-align: center; }
+      login-card .login-card { width: 100%; max-width: 320px; text-align: center; }
         .login-btn { width: 100%; padding: 12px; background: var(--blue-accent); color: white; border: none; border-radius: 8px; margin-top: 10px; font-weight: bold; cursor: pointer; }
-
+#login-screen { display: none !important; visibility: hidden !important; pointer-events: none !important; z-index: -9999 !important; }
         /* Admin Controls */
         .admin-section { border: 1px solid #eee; padding: 15px; border-radius: 8px; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-<div id="login-screen" style="display: none; pointer-events: none; visibility: hidden;">
+<div id="login-screen" style="display: none !important;"></div>
         <div class="login-card">
             <i class="fas fa-play-circle" style="font-size: 50px; color: #1a73e8; margin-bottom: 20px;"></i>
             <h2>ברוך הבא</h2>
@@ -277,16 +276,9 @@
                 };
             }
             
-            if (window.innerWidth < 768) toggleMenu();
-            save(); 
-        }
-            
-            if (window.innerWidth < 768) {
-                document.getElementById('sidebar').classList.remove('open');
-            }
-            save(); 
-        }
-
+if (window.innerWidth < 768) toggleMenu();
+            save();
+    
 function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
         
         // Login

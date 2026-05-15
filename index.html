@@ -127,11 +127,13 @@
                 <div class="menu-item active" onclick="showPage('home')"><i class="fas fa-home"></i> הויפט בלאט</div>
                 <div class="menu-item" onclick="showPage('shorts')"><i class="fas fa-bolt"></i> Shorts <span class="badge-new">NEW</span></div>
                 <div class="menu-item" onclick="showPage('chat')"><i class="fas fa-comments"></i> טשעטס</div>
-                <div class="menu-item" onclick="showPage('status')"><i class="fas fa-circle-notch"></i> סטעטוס</div>
-                <div class="menu-item" onclick="showPage('music')"><i class="fas fa-music"></i> מוזיק</div>
+               
+            <div class="menu-item" onclick="showPage('music')"><i class="fas fa-music"></i> מוזיק</div>
                 <div class="menu-item" onclick="showPage('channels')"><i class="fas fa-bullhorn"></i> קאנאלן</div>
                 <div class="menu-item" onclick="showPage('upload')"><i class="fas fa-upload"></i> ארויפלאדן</div>
                 <div class="menu-item" onclick="showPage('admin')"><i class="fas fa-user-shield"></i> אדמין סעטינגס</div>
+                <div class="menu-item" onclick="showPage('status')"><i class="fas fa-circle-notch"></i> Status</div>
+<div class="menu-item" onclick="showPage('groups')"><i class="fas fa-users"></i> Groups</div>
             </div>
         </nav>
 
@@ -164,6 +166,32 @@
                     </div>
                 </div>
 
+                <div id="page-status" class="page">
+            <div style="background: #075e54; color: white; padding: 15px; font-size: 20px; font-weight: bold;">סטאטוס</div>
+            <div style="padding: 20px; background: #f0f2f5; height: 100%;">
+                <div style="display: flex; align-items: center; background: white; padding: 10px; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    <div style="width: 50px; height: 50px; background: #25d366; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; margin-right: 15px;">+</div>
+                    <div>
+                        <b style="display: block;">מיין סטאטוס</b>
+                        <small style="color: #666;">לייג צו א נייע אפדעיט</small>
+                    </div>
+                </div>
+                <p style="margin-top: 20px; color: #666; font-size: 14px;">לעצטע אפדעיטס</p>
+                <div id="status-list" style="text-align: center; margin-top: 40px; color: #999;">
+                    דערווייל זענען נישטא קיין נייע סטאטוסן
+                </div>
+            </div>
+        </div>
+
+        <div id="page-groups" class="page">
+            <div style="background: #075e54; color: white; padding: 15px; font-size: 20px; font-weight: bold;">גרופעס</div>
+            <div style="padding: 10px;">
+                <button onclick="createGroup()" style="width: 100%; padding: 12px; background: #25d366; color: white; border: none; border-radius: 5px; font-weight: bold; margin-bottom: 15px;">עפן א נייע גרופע</button>
+                <div id="groups-list" style="text-align: center; margin-top: 20px; color: #999;">
+                    דו ביסט נאכנישט אין קיין גרופעס
+                </div>
+            </div>
+        </div>
                 <div id="page-chat" class="page">
                     <div id="chat-ui">
                         <div style="padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between;">

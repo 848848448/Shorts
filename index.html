@@ -284,10 +284,11 @@
         function renderMsgs() {
             let container = document.getElementById('chat-messages');
             container.innerHTML = state.msgs.map(m => `
-                <div class="message ${m.sender === state.nick ? 'msg-me' : 'msg-them'}">
-                    <small>${m.sender}</small><br>${m.text}
-                </div>
-            `).join('');
+            <div class="message ${m.sender === state.nick ? 'msg-me' : 'msg-them'}">
+                <small style="font-weight:bold; display:block;">${m.sender}</small>
+                ${m.text}
+            </div>
+        `).join('');
             container.scrollTop = container.scrollHeight;
         }
 

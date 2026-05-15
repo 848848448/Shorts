@@ -1,286 +1,420 @@
 <!DOCTYPE html>
-<html lang="yi" dir="rtl">
+<html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Empire Platform</title>
+    <title id="site-title-tag">מיין אימפעריע</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* דעזיין יסודות */
         :root {
-            --main-bg: #ffffff;
-            --box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            --border-radius: 12px;
-            --primary-color: #007bff;
+            --primary-bg: #ffffff;
+            --sidebar-bg: #ffffff;
+            --border-color: #e0e0e0;
+            --text-main: #3c4043;
+            --blue-accent: #1a73e8;
+            --hover-bg: #f1f3f4;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
             margin: 0;
-            padding: 0;
-            color: #333;
-        }
-
-        /* לאגא און העדער */
-        header {
-            background: var(--main-bg);
-            padding: 15px;
+            background-color: var(--primary-bg);
+            color: var(--text-main);
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #ddd;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* עדס פלאץ - פראפעסיאנאל */
-        .ad-space {
-            background: #fff;
-            margin: 20px auto;
-            width: 90%;
-            height: 150px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px dashed #ccc;
-            border-radius: var(--border-radius);
-            font-weight: bold;
+            height: 100vh;
             overflow: hidden;
         }
 
-        /* הויפט בלאט באקסלעך */
-        .main-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 20px;
-            padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .box {
-            background: var(--main-bg);
-            aspect-ratio: 1 / 1;
+        /* Sidebar Style (Firebase Idea) */
+        #sidebar {
+            width: 260px;
+            border-left: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
+            background: var(--sidebar-bg);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            display: flex;
             align-items: center;
-            justify-content: center;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
+            gap: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo-icon { color: var(--blue-accent); font-size: 24px; }
+
+        .menu-group {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .group-label {
+            padding: 10px 25px;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #70757a;
+            font-weight: bold;
+        }
+
+        .menu-item {
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
             cursor: pointer;
-            transition: transform 0.2s;
-            text-decoration: none;
-            color: inherit;
+            font-size: 14px;
         }
 
-        .box:hover { transform: scale(1.05); }
-        .box i { font-size: 40px; margin-bottom: 10px; }
+        .menu-item:hover { background: var(--hover-bg); }
+        .menu-item i { width: 20px; text-align: center; color: #5f6368; }
 
-        /* Shorts ווידעא סיסטעם */
-        #video-feed {
-            display: none;
-            height: 100vh;
-            background: #000;
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 2000;
+        .badge-new {
+            background: #e8f0fe;
+            color: var(--blue-accent);
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-right: auto;
         }
 
-        video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* אפלאודProgress Bar */
-        .progress-container {
-            width: 100%;
-            background: #ddd;
-            display: none;
-            margin-top: 10px;
-        }
-        .progress-bar { width: 0%; height: 10px; background: #28a745; }
-
-        /* סעטינגס - ריין ווייס מסודר */
-        .settings-page {
-            display: none;
-            background: #fff;
-            min-height: 100vh;
+        /* Main Content */
+        #main-content {
+            flex-grow: 1;
+            overflow-y: auto;
+            position: relative;
             padding: 20px;
         }
-        .settings-item {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
+
+        .ad-space {
+            width: 100%;
+            height: 90px;
+            background: #f8f9fa;
+            border: 1px dashed #ccc;
+            margin-bottom: 20px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: center;
+            border-radius: 8px;
         }
+
+        /* Grid Layout for Home */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .grid-box {
+            background: white;
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .grid-box:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .grid-box i { font-size: 30px; margin-bottom: 10px; display: block; color: var(--blue-accent); }
+
+        /* Pages (Hidden by default) */
+        .page { display: none; height: 100%; }
+        .page.active { display: block; }
+
+        /* Video / Shorts Style */
+        .video-container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: black;
+            height: 80vh;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        video { width: 100%; height: 100%; object-fit: cover; }
+
+        .video-overlay {
+            position: absolute;
+            bottom: 20px;
+            right: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            color: white;
+            text-align: center;
+        }
+
+        .action-btn { cursor: pointer; font-size: 24px; }
+        .action-btn.liked { color: #ff4757; }
+
+        /* Admin Styles */
+        .admin-locked {
+            padding: 50px;
+            text-align: center;
+        }
+
+        input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin: 10px;
+        }
+
+        .btn-prime {
+            background: var(--blue-accent);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Chat Styles */
+        #chat-window {
+            height: 70vh;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        #messages { flex-grow: 1; overflow-y: auto; padding: 15px; background: #efe7dd; }
+        .msg { background: white; padding: 8px 12px; border-radius: 8px; margin-bottom: 8px; width: fit-content; }
+        .input-area { display: flex; padding: 10px; border-top: 1px solid #ccc; }
+
     </style>
 </head>
 <body>
 
-<header>
-    <div class="logo">▶️⏸️ EMPIRE</div>
-    <div id="admin-link" onclick="showPage('admin')">⚙️</div>
-</header>
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-play-circle logo-icon"></i>
+            <span id="display-site-name" style="font-weight: bold; font-size: 18px;">אימפעריע</span>
+        </div>
 
-<div id="home-page">
-    <div class="ad-space" id="main-ad">דא קומען דיינע עדס</div>
-    
-    <div class="main-grid" id="grid">
-        <div class="box" onclick="showPage('shorts')">🎬 <span>Shorts</span></div>
-        <div class="box" onclick="showPage('chat')">💬 <span>WhatsApp</span></div>
-        <div class="box" onclick="showPage('music')">🎵 <span>Music</span></div>
-        <div class="box" onclick="showPage('status')">⭕ <span>Status</span></div>
-        <div class="box" onclick="showPage('channels')">📢 <span>Channels</span></div>
-        <div class="box" onclick="showPage('settings')">🛠️ <span>Settings</span></div>
-    </div>
-</div>
+        <div class="menu-group">
+            <div class="menu-item" onclick="navigateTo('home')">
+                <i class="fas fa-home"></i> הויפט בלאט
+            </div>
+        </div>
 
-<div id="video-feed">
-    <video id="main-video" onclick="togglePlay()" loop></video>
-    <div style="position:absolute; bottom:20px; left:20px; color:white;">
-        <button onclick="nextVideo()">Next ⬇️</button>
-        <button onclick="closePage()">Close ❌</button>
-    </div>
-</div>
+        <div class="menu-group">
+            <div class="group-label">קאמוניקאציע</div>
+            <div class="menu-item" onclick="navigateTo('shorts')">
+                <i class="fas fa-bolt"></i> Shorts <span class="badge-new">NEW</span>
+            </div>
+            <div class="menu-item" onclick="navigateTo('chats')">
+                <i class="fas fa-comments"></i> טשעטס
+            </div>
+            <div class="menu-item" onclick="navigateTo('status')">
+                <i class="fas fa-circle-notch"></i> סטעטוס
+            </div>
+            <div class="menu-item" onclick="navigateTo('channels')">
+                <i class="fas fa-bullhorn"></i> קאנאלן
+            </div>
+        </div>
 
-<script>
-    // פונקציעס צו טוישן בלעטער
-    function showPage(pageId) {
-        document.getElementById('home-page').style.display = 'none';
-        if(pageId === 'shorts') document.getElementById('video-feed').style.display = 'block';
-        if(pageId === 'settings') document.getElementById('settings-page').style.display = 'block';
-    }
+        <div class="menu-group">
+            <div class="group-label">מעדיע</div>
+            <div class="menu-item" onclick="navigateTo('music')">
+                <i class="fas fa-music"></i> מוזיק
+            </div>
+            <div class="menu-item" onclick="navigateTo('upload')">
+                <i class="fas fa-cloud-upload-alt"></i> ארויפלאדן
+            </div>
+        </div>
 
-    function closePage() {
-        location.reload(); // פשוט צוריק צום הויפט בלאט
-    }
+        <div style="margin-top: auto;" class="menu-group">
+            <div class="group-label">Project Admin</div>
+            <div class="menu-item" onclick="navigateTo('admin')">
+                <i class="fas fa-user-shield"></i> Admin Settings
+            </div>
+            <div class="menu-item" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </div>
+        </div>
+    </nav>
 
-    // ווידעא פייל מענעדזשער לאגיק
-    let videoList = [];
-    function handleUpload(event) {
-        const file = event.target.files[0];
-        const progress = document.querySelector('.progress-bar');
-        document.querySelector('.progress-container').style.display = 'block';
-        
-        let width = 0;
-        let interval = setInterval(() => {
-            if (width >= 100) {
-                clearInterval(interval);
-                alert("ווידעא ארויפגעלאדן געהעריג!");
+    <main id="main-content">
+        <div id="ad-banner" class="ad-space">דיין עד דא</div>
+
+        <div id="page-home" class="page active">
+            <div class="grid-container" id="home-grid">
+                <div class="grid-box" onclick="navigateTo('shorts')"><i class="fas fa-bolt"></i>Shorts</div>
+                <div class="grid-box" onclick="navigateTo('chats')"><i class="fas fa-comments"></i>Chats</div>
+                <div class="grid-box" onclick="navigateTo('music')"><i class="fas fa-music"></i>Music</div>
+                <div class="grid-box" onclick="navigateTo('upload')"><i class="fas fa-upload"></i>Upload</div>
+            </div>
+        </div>
+
+        <div id="page-shorts" class="page">
+            <div class="video-container" ondblclick="handleLike()">
+                <video id="main-video" src="" loop autoplay></video>
+                <div class="video-overlay">
+                    <div class="action-btn" id="like-btn" onclick="handleLike()"><i class="fas fa-heart"></i><div id="like-count">0</div></div>
+                    <div class="action-btn"><i class="fas fa-comment"></i></div>
+                    <div class="action-btn" onclick="nextVideo()"><i class="fas fa-step-forward"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-chats" class="page">
+            <div id="chat-window">
+                <div id="messages"></div>
+                <div class="input-area">
+                    <input type="text" id="msg-input" placeholder="שרייב א מעסעדזש...">
+                    <button class="btn-prime" onclick="sendMsg()">שיק</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-upload" class="page">
+            <h3>ארויפלאדן נייע תוכן</h3>
+            <input type="file" id="file-picker">
+            <div style="width: 100%; background: #eee; height: 10px; margin: 10px 0; border-radius: 5px;">
+                <div id="progress-bar" style="width: 0%; height: 100%; background: #2ecc71; border-radius: 5px; transition: 0.3s;"></div>
+            </div>
+            <button class="btn-prime" onclick="startUpload()">Upload Now</button>
+        </div>
+
+        <div id="page-admin" class="page">
+            <div id="admin-lock" class="admin-locked">
+                <i class="fas fa-lock" style="font-size: 40px; color: #ccc;"></i>
+                <h4>Admin Login</h4>
+                <input type="password" id="admin-pass" placeholder="Password">
+                <button class="btn-prime" onclick="unlockAdmin()">Unlock</button>
+            </div>
+            <div id="admin-panel" style="display: none;">
+                <h3>Admin Command Center</h3>
+                <div class="menu-group">
+                    <p>Change Site Name: <input type="text" id="new-site-name"> <button onclick="updateBranding()">Update</button></p>
+                    <p>Emergency Shutdown: <button style="background: red; color: white;" onclick="systemShutdown()">SHUTDOWN</button></p>
+                </div>
+                <h4>Review Queue (Pending Uploads)</h4>
+                <div id="approval-list">No pending items.</div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Database Logic (LocalStorage)
+        let db = JSON.parse(localStorage.getItem('empireDB')) || {
+            siteName: "אימפעריע",
+            messages: [],
+            videos: [],
+            likes: 0,
+            isAdmin: false,
+            currentView: 'home'
+        };
+
+        function saveDB() {
+            localStorage.setItem('empireDB', JSON.stringify(db));
+        }
+
+        // Navigation Engine (A-Z Memory)
+        function navigateTo(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            const target = document.getElementById('page-' + pageId);
+            if(target) target.classList.add('active');
+            
+            db.currentView = pageId;
+            saveDB();
+            window.location.hash = pageId;
+
+            if(pageId === 'shorts') loadVideo();
+        }
+
+        // Handle Refresh
+        window.onload = () => {
+            const lastHash = window.location.hash.replace('#', '') || db.currentView;
+            document.getElementById('display-site-name').innerText = db.siteName;
+            document.getElementById('site-title-tag').innerText = db.siteName;
+            navigateTo(lastHash);
+            renderMessages();
+        };
+
+        // Video System
+        function loadVideo() {
+            const v = document.getElementById('main-video');
+            v.src = db.videos.length > 0 ? db.videos[0] : "https://www.w3schools.com/html/mov_bbb.mp4";
+            document.getElementById('like-count').innerText = db.likes;
+        }
+
+        function handleLike() {
+            db.likes++;
+            document.getElementById('like-btn').classList.add('liked');
+            document.getElementById('like-count').innerText = db.likes;
+            saveDB();
+            setTimeout(() => document.getElementById('like-btn').classList.remove('liked'), 500);
+        }
+
+        // Chat System
+        function sendMsg() {
+            const input = document.getElementById('msg-input');
+            if(!input.value) return;
+            db.messages.push(input.value);
+            input.value = "";
+            saveDB();
+            renderMessages();
+        }
+
+        function renderMessages() {
+            const container = document.getElementById('messages');
+            container.innerHTML = db.messages.map(m => `<div class="msg">${m}</div>`).join('');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Upload Logic
+        function startUpload() {
+            const bar = document.getElementById('progress-bar');
+            let width = 0;
+            const interval = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(interval);
+                    alert("פייל געשיקט צום אדמין פאר איבערקוקן!");
+                    bar.style.width = '0%';
+                } else {
+                    width += 5;
+                    bar.style.width = width + '%';
+                }
+            }, 100);
+        }
+
+        // Admin Security
+        function unlockAdmin() {
+            const pass = document.getElementById('admin-pass').value;
+            if(pass === '1234') {
+                document.getElementById('admin-lock').style.display = 'none';
+                document.getElementById('admin-panel').style.display = 'block';
             } else {
-                width++;
-                progress.style.width = width + '%';
+                alert("Wrong Password!");
             }
-        }, 30);
-    }
-            </script>
-            <div id="settings-page" class="settings-page">
-    <h2 style="text-align:center;">Settings</h2>
-    <div class="settings-item"><span>ניק-נעם</span> <input type="text" placeholder="דיין נאָמען"></div>
-    <div class="settings-item"><span>אימעיל Verification</span> <button>Confirm Email</button></div>
-    <div class="settings-item" onclick="alert('שיק דיין פידבעק צו: admin@empire.com')"><span>Feedback & Suggestions</span> ⬅️</div>
-    <div class="settings-item" onclick="alert('שיק דיין רעקוועסט פֿאַר מוזיק/ווידעאָ')"><span>Request Content</span> ⬅️</div>
-    <div class="settings-item" style="color:red; font-weight:bold;" onclick="location.reload()"><span>Logout</span></div>
-    <button onclick="closePage()" style="width:100%; padding:15px; margin-top:20px;">Back to Home</button>
-</div>
-
-<div id="admin-panel" style="display:none; background:#f4f4f4; min-height:100vh; padding:20px; z-index:3000; position:fixed; top:0; width:100%;">
-    <h2>Admin Dashboard 🔐</h2>
-    <div style="background:white; padding:15px; border-radius:10px; margin-bottom:15px;">
-        <h3>Review Queue (באשטעטיגן זאכן)</h3>
-        <div id="approval-list">נישטא קיין נייע אפּלאָודס דערווייל...</div>
-    </div>
-    
-    <div style="background:white; padding:15px; border-radius:10px; margin-bottom:15px;">
-        <h3>Master Controls</h3>
-        <button onclick="toggleUploads()">לעש אויס/צינד אן Uploads</button>
-        <button onclick="systemShutdown()" style="background:red; color:white;">SYSTEM SHUTDOWN</button>
-    </div>
-
-    <div style="background:white; padding:15px; border-radius:10px;">
-        <h3>Branding & Design</h3>
-        <input type="text" id="new-name" placeholder="טויש נאָמען פונעם סייט">
-        <button onclick="updateBranding()">Update</button>
-    </div>
-    <br>
-    <button onclick="closeAdmin()" style="width:100%; padding:10px;">Exit Admin</button>
-</div>
-
-<div id="chat-page" style="display:none; background:#e5ddd5; min-height:100vh; padding:10px;">
-    <div style="background:#075e54; color:white; padding:15px; margin:-10px -10px 10px -10px;">WhatsApp Chats</div>
-    <div id="chat-messages" style="height:70vh; overflow-y:auto; background:white; padding:10px; border-radius:10px;">
-        <p><b>מערכת:</b> ברוכים הבאים צו דיין טשעט!</p>
-    </div>
-    <div style="display:flex; gap:5px; margin-top:10px;">
-        <input type="text" id="chat-input" style="flex:1; padding:10px; border-radius:20px; border:none;" placeholder="שרייב א מעסעדזש...">
-        <button onclick="sendMessage()" style="border-radius:50%; width:45px; height:45px; background:#128c7e; color:white; border:none;">Send</button>
-    </div>
-    <button onclick="closePage()" style="margin-top:10px;">Back</button>
-</div>
-
-<script>
-    // אדמין פאסווארט לאגיק
-    function showAdmin() {
-        let pw = prompt("לייג אריין אדמין פאסווארט:");
-        if(pw === "1234") { // דו קענסט עס טוישן צו וואס דו ווילסט
-            document.getElementById('admin-panel').style.display = 'block';
-        } else {
-            alert("פאַלשע פאַסוואָרט!");
         }
-    }
 
-    // טוישן סימבאל און נאמען
-    function updateBranding() {
-        let name = document.getElementById('new-name').value;
-        if(name) {
-            document.querySelector('.logo').innerText = name;
-            alert("נאָמען געטוישט געהעריג!");
+        function updateBranding() {
+            const name = document.getElementById('new-site-name').value;
+            if(!name) return;
+            db.siteName = name;
+            document.getElementById('display-site-name').innerText = name;
+            document.getElementById('site-title-tag').innerText = name;
+            saveDB();
         }
-    }
 
-    // סיסטעם Shutdown
-    function systemShutdown() {
-        if(confirm("ביסטו זיכער דו ווילסט אפשטעלן די גאנצע סיסטעם?")) {
-            document.body.innerHTML = "<h1 style='text-align:center; margin-top:20%;'>The System is currently OFFLINE for maintenance.</h1>";
+        function systemShutdown() {
+            if(confirm("ביסטו זיכער דו ווילסט אפשטעלן די גאנצע סיסטעם?")) {
+                document.body.innerHTML = "<h1 style='text-align:center; margin-top:20%; color:red;'>SYSTEM OFFLINE</h1>";
+            }
         }
-    }
 
-    // טשעט לאגיק
-    function sendMessage() {
-        let msg = document.getElementById('chat-input').value;
-        if(msg) {
-            let chat = document.getElementById('chat-messages');
-            chat.innerHTML += `<p style='background:#dcf8c6; padding:8px; border-radius:10px; margin:5px 0; text-align:left;'><b>דו:</b> ${msg}</p>`;
-            document.getElementById('chat-input').value = "";
-            chat.scrollTop = chat.scrollHeight;
+        function logout() {
+            if(confirm("Logout?")) window.location.reload();
         }
-    }
 
-    // פונקציע צו עפענען די ספעציפישע בלעטער
-    function showPage(pageId) {
-        document.getElementById('home-page').style.display = 'none';
-        if(pageId === 'shorts') document.getElementById('video-feed').style.display = 'block';
-        if(pageId === 'settings') document.getElementById('settings-page').style.display = 'block';
-        if(pageId === 'chat') document.getElementById('chat-page').style.display = 'block';
-        if(pageId === 'admin') showAdmin();
-    }
-
-    function closeAdmin() {
-        document.getElementById('admin-panel').style.display = 'none';
-        document.getElementById('home-page').style.display = 'block';
-    }
-</script>
+    </script>
 </body>
-</html>
+    </html>

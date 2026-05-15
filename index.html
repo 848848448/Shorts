@@ -337,10 +337,10 @@
                 bar.style.width = w + '%';
                 if (w >= 100) {
                     clearInterval(int);
-                    state.videos.unshift('https://www.w3schools.com/html/mov_bbb.mp4'); 
+                    state.videos.push('https://www.w3schools.com/html/mov_bbb.mp4'); 
                     save();
                     alert("ארויפגעלאדן מיט הצלחה!");
-                    showPage('page-shorts');
+                    showPage('shorts');
                 }
             }, 200);
         }

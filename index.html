@@ -220,7 +220,7 @@
                     </div>
                 </div>
                 
-                <div id="page-upload" class="page">
+                <div id="page-upload" class="page" style="display: block;">
                     <h3>ארויפלאדן</h3>
                     <input type="file" id="up-file" style="margin: 20px 0;">
                     <button class="login-btn" onclick="simulateUpload()">Upload Now</button>
@@ -231,7 +231,6 @@
 
             </div>
         </main>
-    </div>
 
     <script>
         let state = JSON.parse(localStorage.getItem('myEmpire')) || {
@@ -336,13 +335,16 @@
             let int = setInterval(() => {
                 w += 10;
                 bar.style.width = w + '%';
-                if(w >= 100) {
+                if (w >= 100) {
                     clearInterval(int);
-                    alert("Upload Success! אדמין וועט עס איבערקוקן.");
-                    document.getElementById('up-progress').style.display = 'none';
+                    state.videos.unshift('https://www.w3schools.com/html/mov_bbb.mp4'); 
+                    save();
+                    alert("ארויפגעלאדן מיט הצלחה!");
+                    showPage('page-shorts');
                 }
             }, 200);
         }
+            
     </script>
 </body>
     </html>

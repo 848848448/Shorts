@@ -571,6 +571,28 @@ function handleChatFile(input) {
                 document.getElementById('admin-auth').style.display = 'none';
                 document.getElementById('admin-real-panel').style.display = 'block';
             }
+            // געפוקסטע לייוו בלאט רעגולירער - ברענגט צוריק אלע טעקסטן און בלעטער געהעריג
+function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => {
+        p.classList.remove('active');
+        p.style.display = 'none'; 
+    });
+
+    let targetPage = document.getElementById(pageId);
+    if (targetPage) {
+        targetPage.classList.add('active');
+        if (pageId === 'page-chat' || pageId === 'page-groups') {
+            targetPage.style.display = 'flex';
+        } else {
+            targetPage.style.display = 'block';
+        }
+    }
+}
+
+// לאדנט אויטאָמאַטיש די גרופעס גלייך ביים עפענען דעם סייט
+window.addEventListener('DOMContentLoaded', () => {
+    showPage('page-groups');
+});
         }
 
         function saveAdminSettings() {

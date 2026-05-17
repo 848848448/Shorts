@@ -75,16 +75,21 @@
         .page { display: none; height: 100%; }
         .page.active { display: block; }
 
-/* נייע טשאַט סטרוקטור - האַלט די אינפּוט שורה גאַנץ אינטן פונעם פֿאָון */
+/* נייע טשאַט סטרוקטור - באַהאַלטן נאָרמאַלערהייט און פולע הויך פונעם פֿאָון */
 #page-chat {
-    display: flex;
+    display: none; /* דאָס באַהאַלט דעם טשאַט פונעם הויפּט בלאַט! */
     flex-direction: column;
-    height: 100vh; /* פולע הויך פונעם פאָון עקראַן */
+    height: 100vh;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: #e5ddd5;
+    z-index: 999;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
-
 #chat-ui {
     display: flex;
     flex-direction: column;

@@ -67,7 +67,40 @@
 </head>
 <body>
 
-    <div id="page-groups" class="page active">
+    <body>
+
+    <div id="page-home" class="page active">
+        <div class="main-header">
+            <h1>הויפּט בלאַט</h1>
+            <div class="header-icons">
+                <i class="fas fa-bell"></i>
+                <i class="fas fa-user-circle"></i>
+            </div>
+        </div>
+        <div class="content-body" style="padding: 20px; display: flex; flex-direction: column; gap: 20px;">
+            <div style="background: linear-gradient(135deg, #075e54, #128c7e); color: white; padding: 25px; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                <h2>שלום עליכם! 👋</h2>
+                <p style="margin-top: 8px; opacity: 0.9; font-size: 14px;">ברוכים הבאים צו דיין פֿולע דיגיטאַל ענטערטעינמענט פּלאַטפאָרם</p>
+            </div>
+
+            <div style="display: flex; gap: 15px; justify-content: space-between;">
+                <button class="action-btn" style="flex: 1; justify-content: center; background: #075e54;" onclick="showPage('page-groups')">
+                    <i class="fas fa-comment-alt"></i> טשאַט גרופּעס
+                </button>
+                <button class="action-btn" style="flex: 1; justify-content: center; background: #e1306c;" onclick="showPage('page-shorts')">
+                    <i class="fas fa-film"></i> Shorts קליפּס
+                </button>
+            </div>
+        </div>
+        <div class="nav-footer">
+            <div class="nav-item active" onclick="showPage('page-home')"><i class="fas fa-home"></i>היים</div>
+            <div class="nav-item" onclick="showPage('page-groups')"><i class="fas fa-comment-alt"></i>טשאט</div>
+            <div class="nav-item" onclick="showPage('page-shorts')"><i class="fas fa-film"></i>Shorts</div>
+            <div class="nav-item" onclick="showPage('page-audio')"><i class="fas fa-music"></i>מוזיק</div>
+        </div>
+    </div>
+
+    <div id="page-groups" class="page">
         <div class="main-header">
             <h1>שמועסן און גרופעס</h1>
             <div class="header-icons">

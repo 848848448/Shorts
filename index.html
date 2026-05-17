@@ -3,398 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Digital Platform - Mobile First</title>
-    
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
-
+    <title>WhatsApp Chat Only</title>
     <style>
-        /* 📱 מאָביל-פירסט סטילינג: צווינגט די פאון סייז אויף יעדן סקרין */
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        body { 
-            background-color: #111; 
+        /* 📱 פולע מאָביל פירסט סטרוקטור - קיין סקראָלן אינדרויסן פונעם סקרין */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body, html { 
+            background-color: #000; 
             color: #fff; 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: Arial, sans-serif;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
         }
 
-        /* דער הויפּט קאַנטיינער וואָס האָט פּונקט די סייז פֿון א פֿאָון */
-        .phone-container {
+        /* דער הויפט פאון קאַנטיינער */
+        .wrapper {
             width: 100%;
             max-width: 480px;
             height: 100vh;
-            background: #000;
-            position: relative;
+            background: #0b141a;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 0 20px rgba(0,0,0,0.8);
-            overflow: hidden;
+            position: relative;
         }
 
-        .main-content {
+        /* 🔝 די שורה גאַנץ אויבן: מיט אן ארויסגיין קנעפּל און גרופּעס אָפּציעס */
+        .chat-header {
+            background: #202c33;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+            border-bottom: 1px solid #2f3b43;
+        }
+        .header-right { display: flex; align-items: center; gap: 10px; }
+        .back-btn { background: none; border: none; color: #007fff; font-size: 20px; cursor: pointer; font-weight: bold; }
+        .chat-title { font-size: 16px; font-weight: bold; }
+        
+        /* קנעפּלעך צו עפילן / טוישן גרופּעס */
+        .group-selectors {
+            display: flex;
+            gap: 8px;
+            padding: 8px 15px;
+            background: #111b21;
+            border-bottom: 1px solid #222c32;
+            overflow-x: auto;
+        }
+        .group-btn {
+            background: #202c33; border: 1px solid #374248; color: #aebac1;
+            padding: 6px 12px; border-radius: 15px; font-size: 13px; cursor: pointer; white-space: nowrap;
+        }
+        .group-btn.active { background: #005c4b; color: #fff; border-color: #00a884; }
+
+        /* 💬 דער פלאץ וווּ די מעסעדזשעס לויפן */
+        .chat-box {
             flex: 1;
             overflow-y: auto;
-            position: relative;
-            height: calc(100% - 65px);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-bottom: 20px;
         }
+        .msg { padding: 8px 12px; border-radius: 8px; max-width: 75%; font-size: 15px; word-wrap: break-word; }
+        .msg.me { background: #005c4b; align-self: flex-start; text-align: right; }
+        .msg.them { background: #202c33; align-self: flex-end; text-align: right; }
 
-        /* 🛡️ ערשטע-מאָל לאָגין פארעם אָווערליי */
-        #welcomeFormOverlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 9999; display: none;
-            align-items: center; justify-content: center; padding: 20px;
+        /* 📌 פונקטליכע אונטערשטע שורה: זיצט FIXED גאַנץ אונטן פונעם פֿאָון סקרין */
+        .chat-footer {
+            background: #202c33;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 60px;
         }
-        .form-card {
-            background: #16161c; padding: 25px; border-radius: 16px;
-            width: 100%; text-align: center; border: 1px solid #2a2a35;
+        .file-manager-btn {
+            background: none; border: none; color: #8696a0; font-size: 24px; cursor: pointer; padding: 0 5px;
         }
-        .form-card h2 { margin-bottom: 10px; font-size: 24px; color: #fff; }
-        .form-card p { color: #aaa; font-size: 14px; margin-bottom: 20px; }
-        .form-card input {
-            width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 8px;
-            border: 1px solid #333; background: #222; color: #fff; text-align: right; font-size: 16px;
+        .input-text-field {
+            flex: 1;
+            padding: 12px;
+            background: #2a3942;
+            border: none;
+            color: #fff;
+            border-radius: 8px;
+            font-size: 15px;
+            text-align: right;
+            outline: none;
         }
-        .form-card button {
-            width: 100%; padding: 14px; border-radius: 8px; border: none;
-            background: #007fff; color: #fff; font-weight: bold; font-size: 16px; cursor: pointer;
+        .send-action-btn {
+            background: #00a884; border: none; width: 40px; height: 40px; 
+            border-radius: 50%; color: #fff; font-size: 18px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
         }
-
-        /* 📸 Shorts ווידעא סקרין (Instagram סטייל) */
-        .shorts-screen { display: block; height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; }
-        .short-video-wrapper {
-            position: relative; width: 100%; height: 100%; scroll-snap-align: start; background: #000;
-        }
-        video { width: 100%; height: 100%; object-fit: cover; }
-        
-        /* קנעפּל ארויפצולייגן א ווידעא גלייך פונעם פייל מענעדזשער */
-        .upload-video-action-btn {
-            position: absolute; top: 15px; left: 15px; z-index: 100;
-            background: rgba(0, 0, 0, 0.6); border: 1px solid #444; color: #fff;
-            padding: 10px 15px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer;
-        }
-
-        .video-overlay-data {
-            position: absolute; bottom: 20px; right: 15px; z-index: 10;
-            display: flex; flex-direction: column; gap: 15px; text-align: right;
-        }
-        .video-author { font-weight: bold; font-size: 16px; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); }
-        .interaction-btn { 
-            background: rgba(0,0,0,0.5); border: none; color: #fff; 
-            width: 45px; height: 45px; border-radius: 50%; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; font-size: 18px;
-        }
-
-        /* 💬 WhatsApp Style Chat סקרין */
-        .chat-screen { display: none; flex-direction: column; height: 100%; background: #0b141a; }
-        .chat-status { font-size: 13px; color: #8696a0; padding: 8px 15px; background: #202c33; text-align: right; }
-        .chat-messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; }
-        .message { padding: 10px 14px; border-radius: 12px; max-width: 80%; width: fit-content; font-size: 15px; line-height: 1.4; }
-        .message.sent { background: #005c4b; align-self: flex-start; color: #fff; }
-        .message.received { background: #202c33; align-self: flex-end; color: #fff; }
-        
-        /* 💬 פאראכטעטע און פונקטליכע טעקסט באָקס פארן פאון */
-        .chat-input-area {
-            background: #202c33; padding: 10px; display: flex; align-items: center; gap: 8px;
-        }
-        .chat-input-area input[type="text"] {
-            flex: 1; padding: 12px; background: #2a3942; border: none; color: #fff; 
-            border-radius: 8px; font-size: 15px; text-align: right; outline: none;
-        }
-
-        /* 🎵 YouTube Music Style סקרין */
-        .music-screen { display: none; padding: 20px; text-align: center; height: 100%; overflow-y: auto; }
-        .audio-player-ui {
-            background: #111; padding: 20px; border-radius: 16px; margin-top: 20px; border: 1px solid #222;
-        }
-
-        /* ⚙️ Secret Admin Dashboard Overlay */
-        #adminDashboard {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: #111; z-index: 5000; display: none; padding: 20px; overflow-y: auto;
-        }
-        .admin-card { background: #1c1c24; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #2d2d3a; text-align: right; }
-
-        /* 🎛️ Bottom Navigation Tabs פונקציע */
-        .nav-tabs {
-            height: 65px; background: #111; display: flex; justify-content: space-around;
-            align-items: center; border-top: 1px solid #222; z-index: 999;
-        }
-        .tab-btn { color: #888; background: none; border: none; font-size: 13px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-        .tab-btn.active { color: #007fff; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="phone-container">
-
-        <div id="welcomeFormOverlay">
-            <div class="form-card">
-                <h2>ברוכים הבאים!</h2>
-                <p>ביטע לייגט אריין אייערע אינפארמאציע אנצוהויבן:</p>
-                <form id="firstTimeForm">
-                    <input type="text" id="userNickname" placeholder="Nickname" required>
-                    <input type="tel" id="userPhone" placeholder="Phone Number" required>
-                    <input type="email" id="userEmail" placeholder="Email Address" required>
-                    <button type="submit">אריינגיין אינעם סייט</button>
-                </form>
+    <div class="wrapper">
+        
+        <div class="chat-header">
+            <div class="header-right">
+                <button class="back-btn" onclick="alert('ארויסגיין באָטן געקליקט!')">➔</button>
+                <div class="chat-title" id="activeChatName">הויפט גרופע</div>
             </div>
+            <span style="color: #8696a0; font-size: 13px;" id="typingIndicator"></span>
         </div>
 
-        <div class="main-content">
+        <div class="group-selectors">
+            <button class="group-btn active" onclick="changeGroup('main', 'הויפט גרופע')">👥 הויפט גרופע</button>
+            <button class="group-btn" onclick="changeGroup('group2', 'שמועסן גרופע 2')">👥 גרופע 2</button>
+            <button class="group-btn" onclick="alert('עפענען א נייע גרופע!')">➕ נייע גרופע</button>
+        </div>
+
+        <div class="chat-box" id="messagesContainer">
+            <div class="msg them"><b>משה:</b> שלום עליכם! דא קומען די מעסעדזשעס.</div>
+            <div class="msg me">עליכם השלום! דא שרייבסטו.</div>
+        </div>
+
+        <div class="chat-footer">
+            <button class="file-manager-btn" onclick="document.getElementById('fileInput').click()">📎</button>
+            <input type="file" id="fileInput" style="display: none;">
             
-            <div id="shortsTab" class="shorts-screen">
-                <button class="upload-video-action-btn" onclick="triggerDirectVideoUpload()">➕ Upload Video</button>
-                <input type="file" id="directVideoFileInput" accept="video/*" style="display: none;" onchange="uploadVideoFromShortsScreen(this)">
-                
-                <div class="short-video-wrapper" id="shortsVideoContainer">
-                    <video src="" loop muted playsinline id="fallbackVideo"></video>
-                    <div class="video-overlay-data">
-                        <span class="video-author" id="videoAuthor">@system</span>
-                        <button class="interaction-btn">❤️</button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="chatTab" class="chat-screen">
-                <div id="chatStatus" class="chat-status"></div>
-                <div class="chat-messages" id="chatMessagesBox"></div>
-                <div class="chat-input-area">
-                    <button class="interaction-btn" onclick="triggerChatFileSelect()">📎</button>
-                    <input type="file" id="chatFileInput" style="display: none;" onchange="uploadChatFile(this)">
-                    <input type="text" id="chatMessageInput" placeholder="שרייב א מעסעדזש..." oninput="broadcastTypingStatus()">
-                    <button class="interaction-btn" onclick="sendTextMessage()">➡️</button>
-                </div>
-            </div>
-
-            <div id="musicTab" class="music-screen">
-                <h2>מוזיק פלייער</h2>
-                <div class="audio-player-ui">
-                    <h3 id="currentTrackTitle">קלייב אויס א ניגון</h3>
-                    <audio id="mainAudioPlayer" controls style="width: 100%; margin-top: 15px;"></audio>
-                </div>
-            </div>
-
-            <div id="adminDashboard">
-                <button onclick="switchTab('shorts')" style="background: red; color: white; padding: 8px 12px; border: none; border-radius: 6px; float: left; cursor: pointer; font-weight: bold;">X</button>
-                <h2 style="margin-bottom: 20px; text-align: right;">קאנטראל פאנעל</h2>
-                <div class="admin-card">
-                    <h3>רשימת המעמבערס (געכאפט דורך די פארעם)</h3>
-                    <div id="adminUsersList" style="margin-top: 10px; font-size: 14px;"></div>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="nav-tabs">
-            <button class="tab-btn" onclick="switchTab('admin')"><span>⚙️</span>Admin</button>
-            <button class="tab-btn" onclick="switchTab('chat')"><span>💬</span>Chats</button>
-            <button class="tab-btn" onclick="switchTab('music')"><span>🎵</span>Music</button>
-            <button class="tab-btn active" onclick="switchTab('shorts')"><span>📸</span>Shorts</button>
+            <input type="text" id="messageInputField" placeholder="שרייב א מעסעדזש...">
+            <button class="send-action-btn">➡️</button>
         </div>
 
     </div>
 
-    <script>
-        // 1. Firebase קאָנפֿיגוראַציע
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            databaseURL: "YOUR_DATABASE_URL",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const storage = firebase.storage();
-
-        const pipedreamUrl = "https://eo2ws38ucniphqy.m.pipedream.net";
-
-        // 2. אָנפֿירן מיט'ן סייט-סטעיט און פֿאַרעם
-        window.addEventListener('DOMContentLoaded', () => {
-            // היטן דעם סטעיט ביי א רעפֿרעש
-            const savedTab = localStorage.getItem('active_tab') || 'shorts';
-            switchTab(savedTab);
-
-            const isRegistered = localStorage.getItem('site_member_registered');
-            if (!isRegistered) {
-                document.getElementById('welcomeFormOverlay').style.display = 'flex';
-            }
-
-            document.getElementById('firstTimeForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const nickname = document.getElementById('userNickname').value;
-                const phone = document.getElementById('userPhone').value;
-                const email = document.getElementById('userEmail').value;
-                const userData = { nickname, phone, email, timestamp: Date.now() };
-
-                fetch(pipedreamUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(userData)
-                }).catch(err => console.error(err));
-
-                db.ref('site_members').push(userData);
-                localStorage.setItem('site_member_registered', 'true');
-                localStorage.setItem('current_user_nickname', nickname);
-                document.getElementById('welcomeFormOverlay').style.display = 'none';
-            });
-
-            loadShorts();
-            loadMessages();
-        });
-
-        function switchTab(tabName) {
-            document.getElementById('shortsTab').style.display = tabName === 'shorts' ? 'block' : 'none';
-            document.getElementById('musicTab').style.display = tabName === 'music' ? 'block' : 'none';
-            document.getElementById('chatTab').style.display = tabName === 'chat' ? 'flex' : 'none';
-            document.getElementById('adminDashboard').style.display = tabName === 'admin' ? 'block' : 'none';
-            
-            localStorage.setItem('active_tab', tabName);
-
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.innerText.toLowerCase().includes(tabName));
-            if (activeBtn) activeBtn.classList.add('active');
-
-            const video = document.querySelector('#shortsTab video');
-            if (tabName !== 'shorts' && video) video.pause();
-        }
-
-        // 3. 📸 Shorts פֿייל מענעדזשער אַרויפֿלאָדן לאָגיק גראָד פֿונעם סקרין
-        function triggerDirectVideoUpload() {
-            document.getElementById('directVideoFileInput').click();
-        }
-
-        function uploadVideoFromShortsScreen(input) {
-            const file = input.files[0];
-            if (!file) return;
-            alert("די ווידעא לאדט זיך יעצט ארויף צום Firebase סטארעדזש...");
-            
-            const storageRef = storage.ref('shorts/' + Date.now() + '_' + file.name);
-            storageRef.put(file).then(snapshot => snapshot.ref.getDownloadURL())
-            .then(downloadURL => {
-                db.ref('shorts_videos').push({
-                    url: downloadURL,
-                    title: '@' + (localStorage.getItem('current_user_nickname') || 'user'),
-                    likes: 0,
-                    views: 0
-                });
-                alert("ווידעא ארויף געהעריג!");
-            }).catch(err => alert("פעלער ביים ארויפלאדן: " + err.message));
-        }
-
-        function loadShorts() {
-            db.ref('shorts_videos').on('value', snapshot => {
-                const container = document.getElementById('shortsTab');
-                // האלטן דעם אפלאוד קנעפּל שטענדיק אויבן
-                container.innerHTML = `
-                    <button class="upload-video-action-btn" onclick="triggerDirectVideoUpload()">➕ Upload Video</button>
-                    <input type="file" id="directVideoFileInput" accept="video/*" style="display: none;" onchange="uploadVideoFromShortsScreen(this)">
-                `;
-                
-                snapshot.forEach(child => {
-                    const id = child.key;
-                    const videoData = child.val();
-                    const wrapper = document.createElement('div');
-                    wrapper.className = 'short-video-wrapper';
-                    wrapper.innerHTML = `
-                        <video src="${videoData.url}" loop muted playsinline onclick="this.paused ? this.play() : this.pause()"></video>
-                        <div class="video-overlay-data">
-                            <span class="video-author">${videoData.title || '@user'}</span>
-                            <button class="interaction-btn" onclick="db.ref('shorts_videos/${id}/likes').set((this.innerText.includes('❤️') ? ${videoData.likes || 0} : ${videoData.likes || 0} + 1))">❤️ ${videoData.likes || 0}</button>
-                        </div>
-                    `;
-                    container.appendChild(wrapper);
-                });
-            });
-        }
-
-        // 4. 💬 WhatsApp Style Chat לאָגיק מיט פֿייל מענעדזשער קנעפּל
-        function triggerChatFileSelect() {
-            document.getElementById('chatFileInput').click();
-        }
-
-        function uploadChatFile(input) {
-            const file = input.files[0];
-            if (!file) return;
-            const user = localStorage.getItem('current_user_nickname') || 'Guest';
-            const storageRef = storage.ref('chat_media/' + Date.now() + '_' + file.name);
-            
-            document.getElementById('chatStatus').innerText = "שיקט פייל פונעם פייל מענעדזשער...";
-            
-            storageRef.put(file).then(snapshot => snapshot.ref.getDownloadURL())
-            .then(downloadURL => {
-                db.ref('chat_messages').push({ sender: user, mediaUrl: downloadURL, fileType: file.type, timestamp: Date.now() });
-                document.getElementById('chatStatus').innerText = "";
-            });
-        }
-
-        function sendTextMessage() {
-            const msgInput = document.getElementById('chatMessageInput');
-            const text = msgInput.value.trim();
-            if (!text) return;
-            const user = localStorage.getItem('current_user_nickname') || 'Guest';
-            db.ref('chat_messages').push({ sender: user, message: text, timestamp: Date.now() });
-            msgInput.value = '';
-        }
-
-        function loadMessages() {
-            db.ref('chat_messages').on('value', snapshot => {
-                const box = document.getElementById('chatMessagesBox');
-                box.innerHTML = '';
-                const user = localStorage.getItem('current_user_nickname') || 'Guest';
-                
-                snapshot.forEach(child => {
-                    const data = child.val();
-                    const isMe = data.sender === user;
-                    const msgDiv = document.createElement('div');
-                    msgDiv.className = `message ${isMe ? 'sent' : 'received'}`;
-                    
-                    if (data.message) {
-                        msgDiv.innerHTML = `<strong>${data.sender}:</strong><br>${data.message}`;
-                    } else if (data.mediaUrl) {
-                        if (data.fileType.startsWith('image/')) {
-                            msgDiv.innerHTML = `<strong>${data.sender}:</strong><br><img src="${data.mediaUrl}" style="max-width:100%; border-radius:8px; margin-top:5px;">`;
-                        } else if (data.fileType.startsWith('video/')) {
-                            msgDiv.innerHTML = `<strong>${data.sender}:</strong><br><video src="${data.mediaUrl}" controls style="max-width:100%; border-radius:8px; margin-top:5px;"></video>`;
-                        } else {
-                            msgDiv.innerHTML = `<strong>${data.sender}:</strong><br><a href="${data.mediaUrl}" target="_blank" style="color:#007fff;">📁 פייל</a>`;
-                        }
-                    }
-                    box.appendChild(msgDiv);
-                });
-                box.scrollTop = box.scrollHeight;
-            });
-        }
-
-        function broadcastTypingStatus() {
-            const user = localStorage.getItem('current_user_nickname') || 'Guest';
-            db.ref('typing_status').set({ user: user, isTyping: true });
-            setTimeout(() => db.ref('typing_status').set(null), 1500);
-        }
-
-        db.ref('typing_status').on('value', snapshot => {
-            const data = snapshot.val();
-            const currentStatus = document.getElementById('chatStatus');
-            if (data && data.user !== localStorage.getItem('current_user_nickname')) {
-                currentStatus.innerText = `${data.user} טייפּט יעצט...`;
-            } else { currentStatus.innerText = ''; }
-        });
-
-        // Admin רשימה קאָנטראָל
-        db.ref('site_members').on('value', snapshot => {
-            const listDiv = document.getElementById('adminUsersList');
-            listDiv.innerHTML = '';
-            snapshot.forEach(child => {
-                const u = child.val();
-                listDiv.innerHTML += `<p style="border-bottom:1px solid #333; padding:8px 0;">👤 <b>${u.nickname}</b><br>📞 ${u.phone} | ✉️ ${u.email}</p>`;
-            });
-        });
-    </script>
 </body>
     </html>

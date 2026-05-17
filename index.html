@@ -75,50 +75,109 @@
         .page { display: none; height: 100%; }
         .page.active { display: block; }
 
-        /* Chat UI */
-        #chat-ui { display: flex; flex-direction: column; height: 100%; }
-        #chat-messages { flex-grow: 1; overflow-y: auto; padding: 10px; background: #f0f2f5; display: flex; flex-direction: column; gap: 8px; }
-       .message {
+/* נייע טשאַט סטרוקטור - האַלט די אינפּוט שורה גאַנץ אינטן פונעם פֿאָון */
+#page-chat {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* פולע הויך פונעם פאָון עקראַן */
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+#chat-ui {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+#chat-messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    background: #e5ddd5;
+    padding: 15px;
+    gap: 8px;
+}
+
+/* מעסעדזש באַבּלס - רעכטס פֿאַר מיר, לינקס פֿאַר יענעם */
+.message {
     max-width: 75%;
     padding: 8px 12px;
-    margin: 5px 10px;
     border-radius: 10px;
     font-size: 15px;
-    position: relative;
     line-height: 1.4;
     box-shadow: 0 1px 1px rgba(0,0,0,0.1);
-    direction: rtl; /* דאס וועט רוקן די טעקסט צו די רעכטע זייט */
-    text-align: right; /* מאכט זיכער אז די שורות הייבן זיך אן פון רעכטס */
-       }
+    direction: rtl;
+    text-align: right;
+    word-wrap: break-word;
+}
 
+/* מיין מעסעדזש - גרין און רעכטס */
 .msg-me {
+    background-color: #d9fdd3;
     align-self: flex-end;
-    background: #dcf8c6; /* וואטסעפפ גרין פאר דיינע מעסעדזשעס */
     border-top-right-radius: 0;
 }
 
+/* יענעמס מעסעדזש - ווייס און לינקס */
 .msg-them {
+    background-color: #ffffff;
     align-self: flex-start;
-    background: #ffffff; /* ווייס פאר יענעם'ס מעסעדזשעס */
     border-top-left-radius: 0;
-} 
-        .chat-input-bar {
+}
+
+/* סיסטעם מעסעדזש - אינמיטן */
+.message.system {
+    background-color: #cfe2ff;
+    color: #084298;
+    align-self: center;
+    font-size: 13px;
+    border-radius: 5px;
+    padding: 4px 8px;
+    max-width: 90%;
+}
+
+/* די אינפּוט שורה - זיצט פֿעסט גאַנץ אינטן שטענדיג */
+.chat-input-bar {
     display: flex;
-    padding: 10px;
-    background: #f0f0f0;
     align-items: center;
-    gap: 10px;
-    border-top: 1px solid #ddd;
+    padding: 8px 10px;
+    background: #f0f0f0;
+    gap: 8px;
+    box-shadow: 0 -1px 3px rgba(0,0,0,0.05);
 }
 
 .chat-input-bar input {
     flex-grow: 1;
-    padding: 12px 18px;
-    border-radius: 25px; /* דאָס מאַכט עס שיין רונדיג */
-    border: 1px solid #ccc;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-size: 15px;
+    direction: rtl;
     outline: none;
-    font-size: 16px;
+    background: white;
 }
+
+/* קלוגע Scroll-to-Bottom קנעפּל (באניפירט ווען מען איז אויבן) */
+#scroll-badge {
+    position: fixed;
+    bottom: 70px;
+    right: 15px;
+    background: white;
+    color: #333;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    cursor: pointer;
+    z-index: 99;
+                    }
         /* Video Player */
         #video-feed { height: 100%; display: flex; flex-direction: column; align-items: center; background: #000; border-radius: 15px; position: relative; }
         video { height: 100%; max-width: 100%; }
@@ -237,19 +296,34 @@
             </div>
         </div>
                 <div id="page-chat" class="page">
-                    <div id="chat-ui">
-                        <div style="padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between;">
-                            <b>צירקלען / גרופעס</b>
-                            <button onclick="createGroup()" style="font-size: 12px;">+ נייע גרופע</button>
-                        </div>
-                        <div id="chat-messages"></div>
-                        <div class="chat-input-bar">
-                            <i class="fas fa-plus" onclick="alert('קלייב אויס א פוקטשער אדער ווידעא')"></i>
-                            <input type="text" id="chat-input" placeholder="שרייב עפעס...">
-                            <i class="fas fa-paper-plane" onclick="sendChatMessage()"></i>
-                            <i class="fas fa-microphone"></i>
-                        </div>
-                    </div>
+    <div style="background-color: #075e54; color: white; padding: 10px 15px; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); direction: rtl;">
+        <button onclick="showPage('page-groups')" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer; padding: 0 5px;">
+            <i class="fas fa-arrow-right"></i>
+        </button>
+        <div style="flex-grow: 1; text-align: right;">
+            <b id="chat-title" style="font-size: 17px; display: block; margin-bottom: 2px;">שמועס</b>
+            <span id="chat-status" style="font-size: 12px; color: #dcf8c6; display: block; height: 14px;"></span>
+        </div>
+    </div>
+
+    <div id="chat-ui">
+        <div id="chat-messages"></div>
+
+        <div id="scroll-badge" style="display: none;" onclick="scrollToBottomActual()">
+            <i class="fas fa-chevron-down"></i>
+        </div>
+
+        <div class="chat-input-bar">
+            <i class="fas fa-plus" onclick="document.getElementById('chat-file-input').click()" style="color: #007af5; font-size: 22px; cursor: pointer; padding: 5px;"></i>
+            <input type="file" id="chat-file-input" style="display: none;" onchange="handleChatFile(this)">
+            
+            <input type="text" id="chat-input" placeholder="שרייב א מעסעדזש..." oninput="handleTypingNotification()">
+            
+            <i class="fas fa-microphone" id="voice-btn" onclick="toggleVoiceRecord()" style="color: #555; font-size: 20px; cursor: pointer; padding: 5px;"></i>
+            
+            <i class="fas fa-paper-plane" onclick="sendMsg()" style="color: #075e54; font-size: 20px; cursor: pointer; padding: 5px; margin-right: 5px;"></i>
+        </div>
+    </div>
                 </div>
 
                 <div id="page-music" class="page">
@@ -343,26 +417,87 @@
             renderMsgs();
         };
 
-        // Chat
-        function sendChatMessage() {
-            let val = document.getElementById('chat-input').value;
-            if(!val) return;
-            state.msgs.push({sender: state.nick, text: val});
-            document.getElementById('chat-input').value = "";
-            save();
-            renderMsgs();
+        // Chat System
+function sendMsg() {
+    let input = document.getElementById('chat-input');
+    let val = input.value.trim();
+    if (!val) return;
+
+    // צולייגן דעם מעסעדזש צום סטעיט
+    state.msgs.push({
+        sender: state.nick,
+        text: val,
+        time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+    });
+
+    input.value = '';
+    save();
+    renderMsgs();
+    scrollToBottomActual(); // אויטאָמאַטיש אַראָפּסקראָולן ווען איך שיק
+}
+
+function renderMsgs() {
+    let container = document.getElementById('chat-messages');
+    if (!container) return;
+
+    // קוקן אויב דער באַניצער איז געווען גאַנץ אינטן איידערן רענדערן
+    let isAtBottom = container.scrollHeight - container.clientHeight <= container.scrollTop + 50;
+
+    container.innerHTML = state.msgs.map(m => {
+        // באַשטימען צי דאָס איז מיין מעסעדזש אָדער יענעמס
+        let isMe = m.sender === state.nick;
+        let msgClass = isMe ? 'msg-me' : 'msg-them';
+        
+        if (m.sender === 'system') {
+            return `<div class="message system">${m.text}</div>`;
         }
 
-        function renderMsgs() {
-            let container = document.getElementById('chat-messages');
-            container.innerHTML = state.msgs.map(m => `
-            <div class="message ${m.sender === state.nick ? 'msg-me' : 'msg-them'}">
-                <small style="font-weight:bold; display:block;">${m.sender}</small>
-                ${m.text}
+        return `
+            <div class="message ${msgClass}">
+                <div style="font-size: 12px; color: ${isMe ? '#075e54' : '#34b7f1'}; font-weight: bold; margin-bottom: 2px;">${m.sender}</div>
+                <div>${m.text}</div>
+                <div style="font-size: 10px; color: #777; text-align: left; margin-top: 4px;">${m.time || ''}</div>
             </div>
-        `).join('');
-            container.scrollTop = container.scrollHeight;
-        }
+        `;
+    }).join('');
+
+    // קלוגע סקראָול לאָגיק
+    if (isAtBottom) {
+        scrollToBottomActual();
+    } else {
+        // אויב דער באַניצער איז אויבן, ווייז דעם נייעם מעסעדזש קנעפּל (Notification)
+        document.getElementById('scroll-badge').style.display = 'flex';
+    }
+}
+
+function scrollToBottomActual() {
+    let container = document.getElementById('chat-messages');
+    if (container) {
+        container.scrollTop = container.scrollHeight;
+        document.getElementById('scroll-badge').style.display = 'none';
+    }
+}
+
+// קוקן אויב מען סקראָולט מאַנועל אראפ, צו באַהאַלטן דעם באַדזש
+document.getElementById('chat-messages')?.addEventListener('scroll', function() {
+    let container = this;
+    let isAtBottom = container.scrollHeight - container.clientHeight <= container.scrollTop + 20;
+    if (isAtBottom) {
+        document.getElementById('scroll-badge').style.display = 'none';
+    }
+});
+
+// שיקן מיט Enter קנעפּל
+document.getElementById('chat-input')?.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        sendMsg();
+    }
+});
+
+// פונקציעס פֿאַר די נייע פיטשערס (Placeholder לאָגיק צו פֿאַרמיידן ערראָרס)
+function handleTypingNotification() {}
+function toggleVoiceRecord() {}
+function handleChatFile(input) {}
 
         function createGroup() {
     let gName = prompt("לייג אריין דעם נאמען פון די נייע גרופע:");

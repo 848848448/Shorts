@@ -501,7 +501,28 @@ document.getElementById('chat-input')?.addEventListener('keypress', function(e) 
 // פונקציעס פֿאַר די נייע פיטשערס (Placeholder לאָגיק צו פֿאַרמיידן ערראָרס)
 function handleTypingNotification() {}
 function toggleVoiceRecord() {}
-function handleChatFile(input) {}
+function handleChatFile(input) {
+    let file = input.files[0];
+    if (!file) return;
+
+    let reader = new FileReader();
+    reader.onload = function(e) {
+        let fileUrl = e.target.result;
+        let fileType = file.type.startsWith('image/') ? 'image' : file.type.startsWith('video/') ? 'video' : 'file';
+
+        state.msgs.push({
+            sender: state.nick,
+            text: file.name,
+            fileUrl: fileUrl,
+            fileType: fileType,
+            time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+        });
+
+        save();
+        renderMsgs();
+    };
+    reader.readAsDataURL(file);
+        }
 
         function createGroup() {
     let gName = prompt("לייג אריין דעם נאמען פון די נייע גרופע:");

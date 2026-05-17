@@ -4,486 +4,394 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Digital Entertainment Platform</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+    
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
-        body, html { height: 100%; background-color: #f0f2f5; overflow: hidden; }
-
-        /* Pages Structure */
-        .page { display: none; height: 100%; width: 100%; flex-direction: column; }
-        .page.active { display: flex; }
-
-        /* Global Header (WhatsApp Style) */
-        .main-header { background-color: #075e54; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .main-header h1 { font-size: 20px; font-weight: bold; }
-        .header-icons i { margin-right: 15px; cursor: pointer; font-size: 18px; }
-
-        /* Groups Page Setup */
-        .content-body { flex-grow: 1; overflow-y: auto; background: white; }
-        .create-btn-container { padding: 15px; border-bottom: 1px solid #ddd; background: #f9f9f9; }
-        .action-btn { background: #075e54; color: white; border: none; padding: 10px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-        .list-item { display: flex; align-items: center; padding: 15px 20px; border-bottom: 1px solid #eee; cursor: pointer; transition: background 0.2s; }
-        .list-item:hover { background: #f5f5f5; }
-        .list-avatar { width: 45px; height: 45px; background: #ddd; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #555; font-size: 20px; margin-left: 15px; }
-        .list-details { flex-grow: 1; }
-        .list-details b { font-size: 16px; color: #333; }
-        .list-details p { font-size: 13px; color: #777; margin-top: 3px; }
-
-        /* Chat Page Layout (WhatsApp Full Screen) */
-        #page-chat { position: fixed; top: 0; left: 0; height: 100vh; width: 100%; background: #e5ddd5; z-index: 999; }
-        .chat-messages { flex-grow: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: #000; color: #fff; font-family: Arial, sans-serif; overflow-x: hidden; }
         
-        /* Chat Bubbles */
-        .msg-bubble { max-width: 75%; padding: 8px 12px; border-radius: 8px; position: relative; font-size: 15px; line-height: 1.4; word-wrap: break-word; box-shadow: 0 1px 1px rgba(0,0,0,0.1); }
-        .msg-bubble.me { background-color: #d9fdd3; align-self: flex-start; }
-        .msg-bubble.other { background-color: white; align-self: flex-end; }
-        .msg-sender { font-size: 12px; font-weight: bold; color: #075e54; margin-bottom: 3px; display: block; }
-        .msg-time { font-size: 10px; color: #777; text-align: left; margin-top: 4px; display: block; }
-        .msg-media { max-width: 100%; border-radius: 5px; margin-top: 5px; display: block; }
+        /* 🛡️ 1. First-Time Welcome Form Overlay */
+        #welcomeFormOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 9999; display: none;
+            align-items: center; justify-content: center;
+        }
+        .form-card {
+            background: #111; padding: 30px; border-radius: 12px;
+            width: 90%; max-width: 400px; text-align: center; border: 1px solid #333;
+        }
+        .form-card input {
+            width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 6px;
+            border: 1px solid #444; background: #222; color: #fff; text-align: right;
+        }
+        .form-card button {
+            width: 100%; padding: 12px; border-radius: 6px; border: none;
+            background: #007fff; color: #fff; font-weight: bold; cursor: pointer;
+        }
 
-        /* Fixed Bottom Input Area */
-        .chat-input-bar { background: #f0f0f0; padding: 10px; display: flex; align-items: center; gap: 10px; border-top: 1px solid #ddd; }
-        .chat-input-bar input[type="text"] { flex-grow: 1; border: none; padding: 10px 15px; border-radius: 20px; font-size: 15px; outline: none; }
-        .chat-input-bar i { color: #555; font-size: 20px; cursor: pointer; padding: 5px; }
-        .chat-input-bar i:hover { color: #075e54; }
+        /* 📱 Main App Layout & Navigation */
+        .app-container { display: flex; flex-direction: column; height: 100vh; }
+        .main-content { flex: 1; overflow-y: auto; padding-bottom: 90px; }
+        .nav-tabs {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 65px;
+            background: #111; display: flex; justify-content: space-around;
+            align-items: center; border-top: 1px solid #222; z-index: 999;
+        }
+        .tab-btn { color: #888; background: none; border: none; font-size: 14px; cursor: pointer; padding: 10px; }
+        .tab-btn.active { color: #007fff; font-weight: bold; }
 
-        /* Scroll Badge */
-        #scroll-badge { position: absolute; bottom: 70px; left: 20px; background: white; width: 35px; height: 35px; border-radius: 50%; display: none; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); cursor: pointer; z-index: 10; }
+        /* 📸 Instagram Style Shorts Section */
+        .shorts-container { display: none; height: 100%; scroll-snap-type: y mandatory; overflow-y: scroll; }
+        .short-video-wrapper {
+            position: relative; width: 100%; height: calc(100vh - 65px);
+            scroll-snap-align: start; background: #000;
+        }
+        video { width: 100%; height: 100%; object-fit: cover; }
+        .video-overlay-data {
+            position: absolute; bottom: 40px; right: 20px; z-index: 10;
+            display: flex; flex-direction: column; gap: 15px; text-align: right;
+        }
+        .interaction-btn { background: rgba(0,0,0,0.6); border: none; color: #fff; padding: 10px; border-radius: 50%; cursor: pointer; }
 
-        /* Shorts Interface (Instagram Style) */
-        .shorts-container { flex-grow: 1; background: black; display: flex; flex-direction: column; overflow-y: scroll; snap-type: y mandatory; }
-        .short-video-wrapper { min-height: 100%; width: 100%; snap-align: start; position: relative; display: flex; align-items: center; justify-content: center; }
-        .short-video-wrapper video { width: 100%; height: 100%; object-fit: cover; }
-        .shorts-actions { position: absolute; bottom: 40px; right: 20px; display: flex; flex-direction: column; gap: 20px; color: white; align-items: center; }
-        .shorts-actions i { font-size: 28px; cursor: pointer; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-        .shorts-actions span { font-size: 12px; }
+        /* 🎵 YouTube Music Player Style Section */
+        .music-container { display: none; padding: 20px; text-align: center; }
+        .audio-player-ui {
+            background: #111; padding: 20px; border-radius: 12px;
+            margin-top: 20px; border: 1px solid #222;
+        }
+        
+        /* 💬 WhatsApp Style Chat Section */
+        .chat-container { display: none; flex-direction: column; height: calc(100vh - 65px); }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .message { padding: 10px 15px; border-radius: 8px; max-width: 75%; width: fit-content; }
+        .message.sent { background: #005c4b; align-self: flex-start; }
+        .message.received { background: #202c33; align-self: flex-end; }
+        .chat-input-area {
+            background: #111; padding: 10px; display: flex; align-items: center; gap: 10px;
+            border-top: 1px solid #222;
+        }
+        .chat-input-area input[type="text"] {
+            flex: 1; padding: 10px; background: #222; border: 1px solid #333; color: #fff; border-radius: 6px;
+        }
 
-        /* Navigation Footer */
-        .nav-footer { background: white; border-top: 1px solid #eee; height: 60px; display: flex; justify-content: space-around; align-items: center; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #777; cursor: pointer; font-size: 12px; text-decoration: none; }
-        .nav-item.active { color: #075e54; }
-        .nav-item i { font-size: 20px; margin-bottom: 3px; }
+        /* 📊 Secret Admin Dashboard Overlay */
+        #adminDashboard {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #111; z-index: 5000; display: none; padding: 20px; overflow-y: auto;
+        }
+        .admin-card { background: #222; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #333; }
     </style>
 </head>
 <body>
 
-    <body>
-
-    <div id="page-home" class="page active">
-        <div class="main-header">
-            <h1>הויפּט בלאַט</h1>
-            <div class="header-icons">
-                <i class="fas fa-bell"></i>
-                <i class="fas fa-user-circle"></i>
-            </div>
-        </div>
-        <div class="content-body" style="padding: 20px; display: flex; flex-direction: column; gap: 20px;">
-            <div style="background: linear-gradient(135deg, #075e54, #128c7e); color: white; padding: 25px; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-                <h2>שלום עליכם! 👋</h2>
-                <p style="margin-top: 8px; opacity: 0.9; font-size: 14px;">ברוכים הבאים צו דיין פֿולע דיגיטאַל ענטערטעינמענט פּלאַטפאָרם</p>
-            </div>
-
-            <div style="display: flex; gap: 15px; justify-content: space-between;">
-                <button class="action-btn" style="flex: 1; justify-content: center; background: #075e54;" onclick="showPage('page-groups')">
-                    <i class="fas fa-comment-alt"></i> טשאַט גרופּעס
-                </button>
-                <button class="action-btn" style="flex: 1; justify-content: center; background: #e1306c;" onclick="showPage('page-shorts')">
-                    <i class="fas fa-film"></i> Shorts קליפּס
-                </button>
-            </div>
-        </div>
-        <div class="nav-footer">
-            <div class="nav-item active" onclick="showPage('page-home')"><i class="fas fa-home"></i>היים</div>
-            <div class="nav-item" onclick="showPage('page-groups')"><i class="fas fa-comment-alt"></i>טשאט</div>
-            <div class="nav-item" onclick="showPage('page-shorts')"><i class="fas fa-film"></i>Shorts</div>
-            <div class="nav-item" onclick="showPage('page-audio')"><i class="fas fa-music"></i>מוזיק</div>
+    <div id="welcomeFormOverlay">
+        <div class="form-card">
+            <h2>ברוכים הבאים!</h2>
+            <p>ביטע לייגט אריין אייערע אינפארמאציע קודם:</p>
+            <form id="firstTimeForm">
+                <input type="text" id="userNickname" placeholder="Nickname" required>
+                <input type="tel" id="userPhone" placeholder="Phone Number" required>
+                <input type="email" id="userEmail" placeholder="Email Address" required>
+                <button type="submit">אריינגיין אינעם סייט</button>
+            </form>
         </div>
     </div>
 
-    <div id="page-groups" class="page">
-        <div class="main-header">
-            <h1>שמועסן און גרופעס</h1>
-            <div class="header-icons">
-                <i class="fas fa-search"></i>
-                <i class="fas fa-ellipsis-v" onclick="showPage('page-admin')"></i>
-            </div>
-        </div>
-        <div class="create-btn-container">
-            <button class="action-btn" onclick="createGroup()">
-                <i class="fas fa-users"></i> נייע גרופע
-            </button>
-        </div>
-        <div id="groups-list" class="content-body">
-            </div>
-        <div class="nav-footer">
-            <div class="nav-item active" onclick="showPage('page-groups')"><i class="fas fa-comment-alt"></i>טשאט</div>
-            <div class="nav-item" onclick="showPage('page-shorts')"><i class="fas fa-film"></i>Shorts</div>
-            <div class="nav-item" onclick="showPage('page-audio')"><i class="fas fa-music"></i>מוזיק</div>
-        </div>
-    </div>
-
-    <div id="page-chat" class="page">
-        <div class="main-header">
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <i class="fas fa-arrow-right" onclick="showPage('page-groups')"></i>
-                <div>
-                    <h1 id="chat-title">גרופע שמועס</h1>
-                    <span id="chat-status" style="font-size: 12px; color: #d9fdd3; display: block; height: 14px;"></span>
+    <div class="app-container">
+        <div class="main-content">
+            
+            <div id="shortsTab" class="shorts-container" style="display: block;">
+                <div class="short-video-wrapper">
+                    <video src="" loop muted playsinline></video>
+                    <div class="video-overlay-data">
+                        <span id="videoAuthor">@username</span>
+                        <button class="interaction-btn" onclick="likeVideo()">❤️ <span id="likeCount">0</span></button>
+                        <button class="interaction-btn">👁️ <span id="viewCount">0</span></button>
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <div id="chat-messages" class="chat-messages">
+
+            <div id="musicTab" class="music-container">
+                <h2>מוזיק פלייער</h2>
+                <div class="audio-player-ui">
+                    <h3 id="currentTrackTitle">קלייב אויס א ניגון</h3>
+                    <audio id="mainAudioPlayer" controls style="width: 100%; margin-top: 15px;"></audio>
+                    <button class="interaction-btn" style="margin-top: 10px;" onclick="toggleFavorite()">⭐ צולייגן צו ליבסטע</button>
+                </div>
+                <div id="musicList" style="margin-top: 20px; text-align: right;"></div>
             </div>
 
-        <div id="scroll-badge" onclick="scrollToBottomActual()"><i class="fas fa-chevron-down"></i></div>
-
-        <div class="chat-input-bar">
-            <i class="fas fa-plus" onclick="document.getElementById('chat-file-input').click()"></i>
-            <input type="file" id="chat-file-input" style="display: none;" onchange="handleChatFile(this)">
-            <input type="text" id="chat-input" placeholder="שרייב א מעסעדזש..." oninput="handleTypingNotification()" onkeypress="checkEnter(event)">
-            <i class="fas fa-microphone" onclick="toggleVoiceRecord()"></i>
-            <i class="fas fa-paper-plane" onclick="sendMsg()"></i>
-        </div>
-    </div>
-
-    <div id="page-shorts" class="page">
-        <div class="main-header">
-            <h1>Shorts קליפּס</h1>
-            <i class="fas fa-plus-circle" onclick="showPage('page-upload')"></i>
-        </div>
-        <div id="shorts-container" class="shorts-container">
+            <div id="chatTab" class="chat-container">
+                <div id="chatStatus" style="font-size: 12px; color: #888; padding: 5px 15px; text-align: right;"></div>
+                <div class="chat-messages" id="chatMessagesBox"></div>
+                <div class="chat-input-area">
+                    <button class="interaction-btn" onclick="triggerChatFileSelect()">📎</button>
+                    <input type="file" id="chatFileInput" style="display: none;" onchange="uploadChatFile(this)">
+                    
+                    <input type="text" id="chatMessageInput" placeholder="שרייב א מעסעדזש..." oninput="broadcastTypingStatus()">
+                    <button class="interaction-btn" onclick="sendTextMessage()">➡️</button>
+                </div>
             </div>
-        <div class="nav-footer">
-            <div class="nav-item" onclick="showPage('page-groups')"><i class="fas fa-comment-alt"></i>טשאט</div>
-            <div class="nav-item active" onclick="showPage('page-shorts')"><i class="fas fa-film"></i>Shorts</div>
-            <div class="nav-item" onclick="showPage('page-audio')"><i class="fas fa-music"></i>מוזיק</div>
-        </div>
-    </div>
 
-    <div id="page-upload" class="page">
-        <div class="main-header">
-            <i class="fas fa-arrow-right" onclick="showPage('page-shorts')"></i>
-            <h1>ארויפלאדן ווידעא</h1>
         </div>
-        <div class="content-body" style="padding: 30px; display: flex; flex-direction: column; gap: 20px; align-items: center;">
-            <input type="file" id="upload-file-input" accept="video/*" style="padding: 10px; border: 1px dashed #ccc; width: 100%;">
-            <button class="action-btn" style="width: 100%; justify-content: center;" onclick="uploadShortVideo()">Upload Now</button>
-        </div>
-    </div>
 
-    <div id="page-audio" class="page">
-        <div class="main-header">
-            <h1>YouTube Music סטיל</h1>
-        </div>
-        <div class="content-body" style="padding: 20px; text-align: center;">
-            <div style="width: 200px; height: 200px; background: #ddd; margin: 40px auto; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                <i class="fas fa-music" style="font-size: 60px; color: #999;"></i>
+        <div id="adminDashboard">
+            <button onclick="closeAdminPanel()" style="background: red; color: white; padding: 10px; border: none; border-radius: 50%; float: left; cursor: pointer;">X</button>
+            <h2 style="margin-bottom: 20px;">Admin Dashboard קאנטראל פאנעל</h2>
+            
+            <div class="admin-card">
+                <h3>ארויפלאדן א נייע ווידעא (Shorts) פונעם File Manager</h3>
+                <input type="file" id="adminVideoUpload" accept="video/*" style="margin-top: 10px;">
+                <input type="text" id="adminVideoTitle" placeholder="ווידעא נאמען" style="width:100%; padding:8px; margin-top:10px; background:#111; color:#fff; border:1px solid #444;">
+                <button onclick="uploadVideoFromAdmin()" style="margin-top:10px; padding:8px 15px; background:green; color:white; border:none; border-radius:4px; cursor:pointer;">Upload Video</button>
             </div>
-            <h3>מוזיק פלייער קומט באלד</h3>
-            <p style="color: #777; margin-top: 10px;">א פולע סיסטעם פאר אוידיא פיילס און פלייליסטס</p>
-        </div>
-        <div class="nav-footer">
-            <div class="nav-item" onclick="showPage('page-groups')"><i class="fas fa-comment-alt"></i>טשאט</div>
-            <div class="nav-item" onclick="showPage('page-shorts')"><i class="fas fa-film"></i>Shorts</div>
-            <div class="nav-item active" onclick="showPage('page-audio')"><i class="fas fa-music"></i>מוזיק</div>
-        </div>
-    </div>
 
-    <div id="page-admin" class="page">
-        <div class="main-header">
-            <i class="fas fa-arrow-right" onclick="showPage('page-groups')"></i>
-            <h1>אדמין קאנטראל</h1>
+            <div class="admin-card">
+                <h3>רשימת המעמבערס (געכאפט דורך די פארעם)</h3>
+                <div id="adminUsersList" style="margin-top: 10px; text-align: right; font-size: 14px;"></div>
+            </div>
         </div>
-        <div class="content-body" style="padding: 20px; display: flex; flex-direction: column; gap: 15px;">
-            <input type="password" id="admin-key" placeholder="אריינשטעלן אדמין שליסל" style="padding: 12px; border: 1px solid #ccc; border-radius: 5px;">
-            <button class="action-btn" onclick="checkAdmin()">קאנטראלירן סיסטעם</button>
+
+        <div class="nav-tabs">
+            <button class="tab-btn" onclick="switchTab('admin')">⚙️ Admin</button>
+            <button class="tab-btn" onclick="switchTab('chat')">💬 Chats</button>
+            <button class="tab-btn" onclick="switchTab('music')">🎵 Music</button>
+            <button class="tab-btn active" onclick="switchTab('shorts')">📸 Shorts</button>
         </div>
     </div>
 
     <script>
-        // App State Management
-        let state = {
-            nick: "משה'לע",
-            currentGroup: null,
-            groups: [],
-            msgs: [],
-            shorts: [],
-            likes: 0,
-            isAdmin: false
-        };
+        // 1. Firebase קאָנפֿיגוראַציע (לייג אריין דיינע ריכטיגע דעטאלן דא)
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    databaseURL: "YOUR_DATABASE_URL",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID"
+};
+// איניציאליזירן Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const storage = firebase.storage();
 
-        // Load Database from LocalStorage on launch
-        function load() {
-            let localGroups = localStorage.getItem('app_groups');
-            let localMsgs = localStorage.getItem('app_msgs');
-            let localShorts = localStorage.getItem('app_shorts');
+// 2. די Pipedream וועבהוק לינק פאר דיינע SMS מעלדונגען
+const pipedreamUrl = "https://eo2ws38ucniphqy.m.pipedream.net";
+
+// 3. קאָנטראָל פֿאַר די ערשטע-מאָל לאָגין פארעם
+window.addEventListener('DOMContentLoaded', () => {
+    const isRegistered = localStorage.getItem('site_member_registered');
+    if (!isRegistered) {
+        document.getElementById('welcomeFormOverlay').style.display = 'flex';
+    }
+    
+    // סובמיט לאגיק פונעם פארעם
+    document.getElementById('firstTimeForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const nickname = document.getElementById('userNickname').value;
+        const phone = document.getElementById('userPhone').value;
+        const email = document.getElementById('userEmail').value;
+        
+        const userData = { nickname, phone, email, timestamp: Date.now() };
+        
+        // א) שיקן די דאטא גראד צו דיין Pipedream פאר א בליץ SMS
+        fetch(pipedreamUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(userData)
+        }).then(() => console.log('SMS trigger sent!'))
+          .catch(err => console.error('Error sending SMS:', err));
+          
+        // ב) היטן אינעם Firebase דאטאבעיס פאר'ן Admin Dashboard
+        db.ref('site_members').push(userData);
+        
+        // ג) סייוון אויפ'ן טעלעפון פונעם באניצער אז ער איז שוין רעגיסטרירט
+        localStorage.setItem('site_member_registered', 'true');
+        localStorage.setItem('current_user_nickname', nickname);
+        
+        // ד) פארמאכן דעם פענצטער און אריינגיין אינעם סייט
+        document.getElementById('welcomeFormOverlay').style.display = 'none';
+        alert("ברוכים הבאים! אייער אינפארמאציע איז געווארן באשטעטיגט.");
+    });
+    
+    loadShorts();
+    loadMessages();
+});
+
+// 4. טוישן די סקרינס (Tabs) ווי אינסטאגראם/וואטסעפּ
+function switchTab(tabName) {
+    document.getElementById('shortsTab').style.display = tabName === 'shorts' ? 'block' : 'none';
+    document.getElementById('musicTab').style.display = tabName === 'music' ? 'block' : 'none';
+    document.getElementById('chatTab').style.display = tabName === 'chat' ? 'flex' : 'none';
+    document.getElementById('adminDashboard').style.display = tabName === 'admin' ? 'block' : 'none';
+    
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    
+    // אויב מען גייט אוועק פון די Shorts, מאך סטאפ פאר די ווידעא
+    const video = document.querySelector('#shortsTab video');
+    if (tabName !== 'shorts' && video) video.pause();
+}
+
+// 5. 💬 WhatsApp Style Chat מיט פֿייל מענעדזשער לאָגיק
+function triggerChatFileSelect() {
+    document.getElementById('chatFileInput').click(); // עפנט דעם פייל מענעדזשער
+}
+
+function uploadChatFile(input) {
+    const file = input.files[0];
+    if (!file) return;
+    
+    const user = localStorage.getItem('current_user_nickname') || 'Guest';
+    const storageRef = storage.ref('chat_media/' + Date.now() + '_' + file.name);
+    
+    document.getElementById('chatStatus').innerText = "שיקט פייל...";
+    
+    storageRef.put(file).then(snapshot => snapshot.ref.getDownloadURL())
+    .then(downloadURL => {
+        db.ref('chat_messages').push({
+            sender: user,
+            mediaUrl: downloadURL,
+            fileType: file.type,
+            timestamp: Date.now()
+        });
+        document.getElementById('chatStatus').innerText = "";
+    });
+}
+
+function sendTextMessage() {
+    const msgInput = document.getElementById('chatMessageInput');
+    const text = msgInput.value.trim();
+    if (!text) return;
+    
+    const user = localStorage.getItem('current_user_nickname') || 'Guest';
+    db.ref('chat_messages').push({
+        sender: user,
+        message: text,
+        timestamp: Date.now()
+    });
+    msgInput.value = '';
+}
+
+function loadMessages() {
+    db.ref('chat_messages').on('value', snapshot => {
+        const box = document.getElementById('chatMessagesBox');
+        box.innerHTML = '';
+        const user = localStorage.getItem('current_user_nickname') || 'Guest';
+        
+        snapshot.forEach(child => {
+            const data = child.val();
+            const isMe = data.sender === user;
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${isMe ? 'sent' : 'received'}`;
             
-            state.groups = localGroups ? JSON.parse(localGroups) : ["הויפט קבוצה", "קאנטער hacking"];
-            state.msgs = localMsgs ? JSON.parse(localMsgs) : [];
-            state.shorts = localShorts ? JSON.parse(localShorts) : [];
-            
-            renderGroups();
-        }
-
-        function save() {
-            localStorage.setItem('app_groups', JSON.stringify(state.groups));
-            localStorage.setItem('app_msgs', JSON.stringify(state.msgs));
-            localStorage.setItem('app_shorts', JSON.stringify(state.shorts));
-        }
-
-        // Router & View Manager
-        function showPage(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            let targetPage = document.getElementById(pageId);
-            if (targetPage) {
-                targetPage.classList.add('active');
-            }
-            if(pageId === 'page-shorts') {
-                renderShorts();
-            }
-        }
-
-        // 1. Group Logic
-        function renderGroups() {
-            let list = document.getElementById('groups-list');
-            list.innerHTML = "";
-            
-            if(state.groups.length === 0) {
-                list.innerHTML = `<p style="padding: 20px; text-align: center; color: #999;">דערווייל זענען נישטא קיין גרופעס</p>`;
-                return;
-            }
-
-            // Sort groups dynamically based on the latest message timestamp
-            let sortedGroups = [...state.groups].sort((a, b) => {
-                let lastMsgA = state.msgs.filter(m => m.group === a).pop();
-                let lastMsgB = state.msgs.filter(m => m.group === b).pop();
-                let timeA = lastMsgA ? new Date(lastMsgA.timestamp || 0) : new Date(0);
-                let timeB = lastMsgB ? new Date(lastMsgB.timestamp || 0) : new Date(0);
-                return timeB - timeA;
-            });
-
-            sortedGroups.forEach(gName => {
-                let lastMsg = state.msgs.filter(m => m.group === gName).pop();
-                let subtitle = lastMsg ? `${lastMsg.sender}: ${lastMsg.text}` : "דריק דא צו אנהייבן שמועסן אינעם גרופע";
-                
-                let item = document.createElement('div');
-                item.className = "list-item";
-                item.onclick = () => openChatRoom(gName);
-                item.innerHTML = `
-                    <div class="list-avatar"><i class="fas fa-users"></i></div>
-                    <div class="list-details">
-                        <b>${gName}</b>
-                        <p>${subtitle}</p>
-                    </div>
-                `;
-                list.appendChild(item);
-            });
-        }
-
-        function createGroup() {
-            let gName = prompt("אריין דעם נאמען פונדער נייע גרופע:");
-            if (!gName || gName.trim() === "") return;
-            state.groups.push(gName.trim());
-            save();
-            renderGroups();
-        }
-
-        // 2. WhatsApp-Style Chat Engine
-        function openChatRoom(groupName) {
-            state.currentGroup = groupName;
-            document.getElementById('chat-title').innerText = groupName;
-            showPage('page-chat');
-            renderMsgs();
-            setTimeout(scrollToBottomActual, 50);
-
-            // Setup scroll listening for down arrow badge
-            let container = document.getElementById('chat-messages');
-            container.onscroll = () => {
-                let badge = document.getElementById('scroll-badge');
-                if (container.scrollTop < container.scrollHeight - container.clientHeight - 200) {
-                    badge.style.display = "flex";
+            if (data.message) {
+                msgDiv.innerHTML = `<strong>${data.sender}:</strong><br>${data.message}`;
+            } else if (data.mediaUrl) {
+                if (data.fileType.startsWith('image/')) {
+                    msgDiv.innerHTML = `<strong>${data.sender}:</strong><br><img src="${data.mediaUrl}" style="max-width:100%; border-radius:6px; margin-top:5px;">`;
+                } else if (data.fileType.startsWith('video/')) {
+                    msgDiv.innerHTML = `<strong>${data.sender}:</strong><br><video src="${data.mediaUrl}" controls style="max-width:100%; border-radius:6px; margin-top:5px;"></video>`;
                 } else {
-                    badge.style.display = "none";
+                    msgDiv.innerHTML = `<strong>${data.sender}:</strong><br><a href="${data.mediaUrl}" target="_blank" style="color:#007fff;">📁 געשיקט א פייל</a>`;
                 }
-            };
-        }
+            }
+            box.appendChild(msgDiv);
+        });
+        box.scrollTop = box.scrollHeight;
+    });
+}
 
-        function renderMsgs() {
-            let container = document.getElementById('chat-messages');
-            container.innerHTML = "";
+function broadcastTypingStatus() {
+    const user = localStorage.getItem('current_user_nickname') || 'Guest';
+    db.ref('typing_status').set({ user: user, isTyping: true });
+    setTimeout(() => db.ref('typing_status').set(null), 2000);
+}
+
+db.ref('typing_status').on('value', snapshot => {
+    const data = snapshot.val();
+    const currentStatus = document.getElementById('chatStatus');
+    if (data && data.user !== localStorage.getItem('current_user_nickname')) {
+        currentStatus.innerText = `${data.user} טייפּט יעצט...`;
+    } else {
+        currentStatus.innerText = '';
+    }
+});
+
+// 6. 📸 Instagram Style Shorts לאָגיק (Likes & Views)
+function loadShorts() {
+    db.ref('shorts_videos').on('value', snapshot => {
+        const container = document.getElementById('shortsTab');
+        container.innerHTML = ''; // קלירן אלטעס
+        
+        snapshot.forEach(child => {
+            const id = child.key;
+            const videoData = child.val();
             
-            let filtered = state.msgs.filter(m => m.group === state.currentGroup);
+            const wrapper = document.createElement('div');
+            wrapper.className = 'short-video-wrapper';
+            wrapper.innerHTML = `
+                <video src="${videoData.url}" loop muted playsinline onclick="this.paused ? this.play() : this.pause()"></video>
+                <div class="video-overlay-data">
+                    <span>${videoData.title || '@user'}</span>
+                    <button class="interaction-btn" onclick="likeVideo('${id}', ${videoData.likes || 0})">❤️ <span>${videoData.likes || 0}</span></button>
+                    <button class="interaction-btn">👁️ <span>${videoData.views || 0}</span></button>
+                </div>
+            `;
+            container.appendChild(wrapper);
             
-            filtered.forEach(m => {
-                let isMe = m.sender === state.nick;
-                let bubble = document.createElement('div');
-                bubble.className = `msg-bubble ${isMe ? 'me' : 'other'}`;
-                
-                let mediaHtml = "";
-                if(m.fileUrl) {
-                    if(m.fileType === 'image') {
-                        mediaHtml = `<img src="${m.fileUrl}" class="msg-media" />`;
-                    } else if(m.fileType === 'video') {
-                        mediaHtml = `<video src="${m.fileUrl}" controls class="msg-media"></video>`;
-                    }
-                }
+            // ווען א ווידעא קומט ארויף אויפ'ן סקרין, רעכענט עס א View
+            db.ref(`shorts_videos/${id}/views`).set((videoData.views || 0) + 1);
+        });
+    });
+}
 
-                bubble.innerHTML = `
-                    <span class="msg-sender">${m.sender}</span>
-                    <div>${m.text}</div>
-                    ${mediaHtml}
-                    <span class="msg-time">${m.time}</span>
-                `;
-                container.appendChild(bubble);
-            });
+function likeVideo(id, currentLikes) {
+    db.ref(`shorts_videos/${id}/likes`).set(currentLikes + 1);
+}
+
+// 7. 📊 געהיימע Admin Dashboard לאָגיק פֿאַר דיר
+function uploadVideoFromAdmin() {
+    const fileInput = document.getElementById('adminVideoUpload');
+    const titleInput = document.getElementById('adminVideoTitle');
+    const file = fileInput.files[0];
+    
+    if (!file) return alert("ביטע קלייב אויס א ווידעא פייל פונעם פייל מענעדזשער!");
+    
+    const storageRef = storage.ref('shorts/' + Date.now() + '_' + file.name);
+    alert("די ווידעא לאדט זיך ארויף, ביטע ווארט א רגע...");
+    
+    storageRef.put(file).then(snapshot => snapshot.ref.getDownloadURL())
+    .then(downloadURL => {
+        db.ref('shorts_videos').push({
+            url: downloadURL,
+            title: titleInput.value || 'New Short',
+            likes: 0,
+            views: 0
+        });
+        alert("די ווידעא איז פולשטענדיק ארויף געהעריג!");
+        fileInput.value = '';
+        titleInput.value = '';
+    });
+}
+
+// לאָדן די רשימה פֿון אַלע געכאַפּטע מעמבערס פֿאַר דעם אדמין צו זען
+db.ref('site_members').on('value', snapshot => {
+    const listDiv = document.getElementById('adminUsersList');
+    listDiv.innerHTML = '';
+    snapshot.forEach(child => {
+        const u = child.val();
+        listDiv.innerHTML += `<p style="border-bottom:1px solid #333; padding:5px;">👤 <b>${u.nickname}</b> | 📞 ${u.phone} | ✉️ ${u.email}</p>`;
+    });
+});
+
+function closeAdminPanel() {
+    switchTab('shorts');
         }
-
-        function sendMsg() {
-            let input = document.getElementById('chat-input');
-            if (!input.value.trim()) return;
-
-            state.msgs.push({
-                group: state.currentGroup,
-                sender: state.nick,
-                text: input.value.trim(),
-                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-                timestamp: new Date().toISOString()
-            });
-
-            input.value = "";
-            save();
-            renderMsgs();
-            renderGroups();
-            scrollToBottomActual();
-        }
-
-        function checkEnter(e) {
-            if (e.key === 'Enter') sendMsg();
-        }
-
-        function scrollToBottomActual() {
-            let container = document.getElementById('chat-messages');
-            container.scrollTop = container.scrollHeight;
-        }
-
-        // Multimedia File Upload Handler inside Chat
-        function handleChatFile(input) {
-            let file = input.files[0];
-            if (!file) return;
-
-            let reader = new FileReader();
-            reader.onload = function(e) {
-                let fileUrl = e.target.result;
-                let fileType = file.type.startsWith('image/') ? 'image' : file.type.startsWith('video/') ? 'video' : 'file';
-
-                state.msgs.push({
-                    group: state.currentGroup,
-                    sender: state.nick,
-                    text: file.name,
-                    fileUrl: fileUrl,
-                    fileType: fileType,
-                    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-                    timestamp: new Date().toISOString()
-                });
-
-                save();
-                renderMsgs();
-                renderGroups();
-                setTimeout(scrollToBottomActual, 50);
-            };
-            reader.readAsDataURL(file);
-        }
-
-        // Typing Notifications Framework
-        let typingTimeout;
-        function handleTypingNotification() {
-            let status = document.getElementById('chat-status');
-            status.innerText = "שרייבט...";
-            clearTimeout(typingTimeout);
-            typingTimeout = setTimeout(() => {
-                status.innerText = "";
-            }, 1500);
-        }
-
-        function toggleVoiceRecord() {
-            alert("רעקארדינג קומט באלד!");
-        }
-
-        // 3. Instagram Reels Style Shorts Logic
-        function renderShorts() {
-            let container = document.getElementById('shorts-container');
-            container.innerHTML = "";
-
-            if(state.shorts.length === 0) {
-                container.innerHTML = `<div style="color: white; padding: 40px; text-align:center; width:100%;">קיין ווידעאוס דערווייל נישט פארהאן. דריק אויפ'ן פלוס ארויפצושטעלן!</div>`;
-                return;
-            }
-
-            state.shorts.forEach((sh, idx) => {
-                let wrapper = document.createElement('div');
-                wrapper.className = "short-video-wrapper";
-                wrapper.innerHTML = `
-                    <video src="${sh.url}" loop autoplay muted playsinline onclick="this.paused ? this.play() : this.pause()"></video>
-                    <div class="shorts-actions">
-                        <i class="fas fa-heart" style="color: ${sh.liked ? 'red' : 'white'};" onclick="doLike(${idx}, event)"></i>
-                        <span id="like-num-${idx}">${sh.likes || 0}</span>
-                        <i class="fas fa-comment"></i>
-                        <span>0</span>
-                    </div>
-                `;
-                container.appendChild(wrapper);
-            });
-        }
-
-        function uploadShortVideo() {
-            let fileInput = document.getElementById('upload-file-input');
-            let file = fileInput.files[0];
-            if(!file) { alert("קלייב אויס א ווידעא קודם"); return; }
-
-            let reader = new FileReader();
-            reader.onload = function(e) {
-                state.shorts.push({
-                    url: e.target.result,
-                    likes: 0,
-                    liked: false
-                });
-                save();
-                alert("ווידעא ארויפגעלאדנט פערפעקט!");
-                fileInput.value = "";
-                showPage('page-shorts');
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function doLike(idx, event) {
-            event.stopPropagation(); // Stop video pause trigger
-            let item = state.shorts[idx];
-            if(!item.liked) {
-                item.likes = (item.likes || 0) + 1;
-                item.liked = true;
-            } else {
-                item.likes = (item.likes || 1) - 1;
-                item.liked = false;
-            }
-            save();
-            renderShorts();
-        }
-
-        // 4. Admin Security Framework
-        function checkAdmin() {
-            let key = document.getElementById('admin-key').value;
-            if(key === "1234") {
-                state.isAdmin = true;
-                alert("באשטעטיגט! דו ביסט יעצט אדמין.");
-                showPage('page-groups');
-            } else {
-                alert("פאלשער אדמין שליסל!");
-            }
-        }
-
-        // Core Initialize
-        window.addEventListener('DOMContentLoaded', load);
     </script>
 </body>
-                </html>
+    </html>

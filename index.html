@@ -4,465 +4,200 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YID PLUS</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
-        :root {
-            --main-bg: #ffffff;
-            --main-text: #000000;
-            --dark-bg: #0f0f0f;
-            --dark-text: #ffffff;
-            --whatsapp-green: #25D366;
-            --accent-gray: #f0f2f5;
-        }
-
         body {
+            background-color: #0f0f0f;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
             margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--main-bg);
-            color: var(--main-text);
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .app-container {
+            width: 100%;
+            max-width: 450px;
+            height: 100vh;
+            background: #0f0f0f;
+            position: relative;
             display: flex;
             flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
         }
-
-        /* Top Header Navigation */
-        .app-header {
-            background-color: var(--main-bg);
-            border-bottom: 1px solid #e0e0e0;
-            padding: 10px 15px;
+        .header {
+            padding: 15px;
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            height: 50px;
-        }
-
-        .header-left {
-            display: flex;
             align-items: center;
-            gap: 15px;
+            border-bottom: 1px solid #272727;
         }
-
-        .back-arrow {
-            font-size: 24px;
-            cursor: pointer;
-            display: none;
-        }
-
-        /* Custom Logo Style: D looks like Play (▶️), others look like Pause (⏸️) */
-        .app-logo {
+        .logo {
             font-size: 22px;
             font-weight: bold;
             letter-spacing: 1px;
-            cursor: pointer;
         }
-        .logo-p { display: inline-block; position: relative; }
-        .logo-p::after { content: ' ||'; font-size: 16px; letter-spacing: -2px; }
-        .logo-d { color: #ff0000; }
-
-        .exit-btn {
-            background-color: #ff3b30;
+        .logo span {
+            color: #ff0000;
+        }
+        .form-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 30px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #aaa;
+            font-size: 14px;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            background: #212121;
+            border: 1px solid #3d3d3d;
+            border-radius: 8px;
             color: white;
+            font-size: 16px;
+            outline: none;
+        }
+        .input-group input:focus {
+            border-color: #ff0000;
+        }
+        .btn-submit {
+            background: #ff0000;
+            color: white;
+            padding: 14px;
             border: none;
-            padding: 6px 12px;
-            border-radius: 20px;
+            border-radius: 25px;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
         }
-
-        /* Main View Container */
-        .main-container {
-            flex: 1;
-            overflow-y: auto;
-            position: relative;
+        .btn-submit:hover {
+            background: #cc0000;
         }
-
-        .screen {
-            display: none;
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            box-sizing: border-box;
+        .switch-mode {
+            text-align: center;
+            margin-top: 20px;
+            color: #aaa;
+            font-size: 14px;
+            cursor: pointer;
         }
-
-        .screen.active {
-            display: block;
+        .switch-mode span {
+            color: #ff0000;
+            font-weight: bold;
         }
-
-        /* Auth Style */
-        .auth-container {
-            max-width: 400px;
-            margin: 50px auto;
-            padding: 25px;
-            border: 1px solid #e0e0e0;
-            border-radius: 12px;
-            background: #fff;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-
-        .auth-container h2 { margin-top: 0; margin-bottom: 20px; text-align: center; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 14px; }
-        .form-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        .auth-submit { width: 100%; padding: 12px; background-color: #000; color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; }
-
-        /* Chat UI Elements */
-        .chat-list-item { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
-        .badge-private { background-color: #ffcc00; color: #000; font-size: 11px; padding: 2px 6px; border-radius: 5px; font-weight: bold; margin-left: 5px; }
-        .status-ring-item { display: inline-block; text-align: center; margin-right: 15px; cursor: pointer; }
-        .fresh-ring .ring-avatar { border: 3px solid #25D366; border-radius: 50%; padding: 8px; background: #f0f0f0; }
-        
-        .status-viewer-container { position: fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:9999; display:none; }
-        .status-click-panel-left { position: absolute; left:0; top:0; width:30%; height:100%; z-index:10000; cursor: pointer; }
-        .status-click-panel-right { position: absolute; right:0; top:0; width:30%; height:100%; z-index:10000; cursor: pointer; }
-
-        /* Global Bottom Navigation Bar */
-        .bottom-nav {
-            height: 60px;
-            border-top: 1px solid #e0e0e0;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            background-color: var(--main-bg);
-        }
-
-        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 12px; cursor: pointer; color: #666; font-weight: 500; }
-        .nav-item.active { color: #000; font-weight: bold; }
-        .nav-icon { font-size: 20px; margin-bottom: 2px; }
     </style>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
-
-        // Your Web App's Actual Configured Firebase Credentials
-        const firebaseConfig = {
-            apiKey: "AIzaSyAmKpAnoV_aG_3_rGMf4l_FzcbAWzwHTnY",
-            authDomain: "flutter-ai-playground-8cfec.firebaseapp.com",
-            databaseURL: "https://flutter-ai-playground-8cfec-default-rtdb.firebaseio.com",
-            projectId: "flutter-ai-playground-8cfec",
-            storageBucket: "flutter-ai-playground-8cfec.firebasestorage.app",
-            messagingSenderId: "989658103041",
-            appId: "1:989658103041:web:f33b1ed6d748ef98b96f00"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const storage = getStorage(app);
-
-        window.YID_PLUS = {
-            auth, db, storage,
-            currentUser: null,
-            adminNickname: "Admin"
-        };
-
-        const screens = {
-            auth: document.getElementById('screen-auth'),
-            home: document.getElementById('screen-home'),
-            chats: document.getElementById('screen-chats'),
-            status: document.getElementById('screen-status'),
-            music: document.getElementById('screen-music'),
-            shorts: document.getElementById('screen-shorts'),
-            channels: document.getElementById('screen-channels'),
-            settings: document.getElementById('screen-settings')
-        };
-
-        const backArrow = document.getElementById('back-arrow');
-        const bottomNav = document.getElementById('bottom-nav');
-
-        window.navigateTo = function(screenName) {
-            Object.keys(screens).forEach(key => {
-                if(screens[key]) screens[key].classList.remove('active');
-            });
-            
-            if(screens[screenName]) screens[screenName].classList.add('active');
-
-            if (screenName === 'home' || screenName === 'auth') {
-                backArrow.style.display = 'none';
-                bottomNav.style.display = screenName === 'home' ? 'flex' : 'none';
-            } else {
-                backArrow.style.display = 'block';
-                bottomNav.style.display = 'flex';
-            }
-
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-                if(item.dataset.screen === screenName) item.classList.add('active');
-            });
-
-            if(screenName === 'chats') loadGroupsList();
-            if(screenName === 'status') loadStatusRings();
-        };
-
-        backArrow.addEventListener('click', () => window.navigateTo('home'));
-
-        // Registration setup
-        document.getElementById('register-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const nickname = document.getElementById('reg-nickname').value.trim();
-            const email = document.getElementById('reg-email').value.trim();
-            const phone = document.getElementById('reg-phone').value.trim();
-            const password = document.getElementById('reg-password').value;
-
-            try {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
-
-                await setDoc(doc(db, "users", user.uid), {
-                    uid: user.uid,
-                    nickname: nickname,
-                    email: email,
-                    phone: phone,
-                    isVerified: nickname === window.YID_PLUS.adminNickname,
-                    createdAt: new Date().toISOString()
-                });
-
-                console.log(`[SMS SYSTEM]: User created -> Name: ${nickname}, Phone: ${phone}`);
-                alert("Account created successfully!");
-            } catch (error) {
-                alert("Registration Error: " + error.message);
-            }
-        });
-
-        // --- CHAT SYSTEM ---
-        window.createGroup = async function(groupName, isPrivate = false) {
-            const user = auth.currentUser;
-            if(!user) return;
-
-            const groupRef = doc(collection(db, "groups"));
-            await setDoc(groupRef, {
-                groupId: groupRef.id,
-                name: groupName,
-                createdBy: user.uid,
-                isPrivate: isPrivate,
-                allowedUsers: [user.uid],
-                createdAt: new Date().toISOString()
-            });
-            alert(`Group "${groupName}" created!`);
-            loadGroupsList();
-        };
-
-        window.loadGroupsList = async function() {
-            const user = auth.currentUser;
-            if(!user) return;
-            const isAdmin = window.YID_PLUS.currentUser?.nickname === window.YID_PLUS.adminNickname;
-            
-            const querySnapshot = await getDocs(collection(db, "groups"));
-            const listContainer = document.getElementById('chats-list');
-            listContainer.innerHTML = "";
-
-            querySnapshot.forEach((docSnap) => {
-                const group = docSnap.data();
-                
-                if (group.isPrivate && !group.allowedUsers.includes(user.uid) && !isAdmin) return;
-
-                const item = document.createElement('div');
-                item.className = "chat-list-item";
-                item.innerHTML = `
-                    <div>
-                        <strong>${group.name}</strong> ${group.isPrivate ? '<span class="badge-private">[Private]</span>' : ''}
-                        <p style="margin:4px 0 0 0; color:#888; font-size:13px;">Click to enter chat...</p>
-                    </div>
-                `;
-                listContainer.appendChild(item);
-            });
-        };
-
-        // --- STATUS ENGINE ---
-        let currentStatusArray = [];
-        let currentStatusIndex = 0;
-        let statusTimer = null;
-
-        window.loadStatusRings = async function() {
-            const querySnapshot = await getDocs(collection(db, "statuses"));
-            const ringContainer = document.getElementById('status-rings-container');
-            ringContainer.innerHTML = "";
-
-            const now = new Date();
-            const activeStatuses = [];
-
-            querySnapshot.forEach(docSnap => {
-                const data = docSnap.data();
-                const hoursDiff = Math.abs(now - new Date(data.timestamp)) / 36e5;
-                if (hoursDiff < 24) activeStatuses.push(data);
-            });
-
-            const groupedUsers = {};
-            activeStatuses.forEach(status => {
-                if(!groupedUsers[status.userId]) {
-                    groupedUsers[status.userId] = { nickname: status.nickname, items: [] };
-                }
-                groupedUsers[status.userId].items.push(status);
-            });
-
-            Object.keys(groupedUsers).forEach(userId => {
-                const userObj = groupedUsers[userId];
-                const ring = document.createElement('div');
-                ring.className = "status-ring-item fresh-ring"; 
-                ring.innerHTML = `<div class="ring-avatar">📸</div><span>${userObj.nickname}</span>`;
-                ring.onclick = () => launchStatusViewer(userObj.items);
-                ringContainer.appendChild(ring);
-            });
-        };
-
-        function launchStatusViewer(statusItems) {
-            currentStatusArray = statusItems;
-            currentStatusIndex = 0;
-            document.getElementById('status-fullscreen-viewer').style.display = 'block';
-            showStatusItem();
-        }
-
-        function showStatusItem() {
-            clearTimeout(statusTimer);
-            if(currentStatusIndex >= currentStatusArray.length) {
-                closeStatusViewer();
-                return;
-            }
-
-            const item = currentStatusArray[currentStatusIndex];
-            const displayBox = document.getElementById('status-viewer-content');
-            const progressBar = document.getElementById('status-progress-bar-inner');
-            
-            progressBar.style.width = '0%';
-            displayBox.innerHTML = "";
-
-            if(item.mediaType === 'video') {
-                displayBox.innerHTML = `<video id="status-video" src="${item.mediaUrl}" autoplay playsinline style="width:100%; height:100%;"></video>`;
-                const vid = document.getElementById('status-video');
-                vid.onloadedmetadata = () => {
-                    animateProgressBar(vid.duration * 1000);
-                    statusTimer = setTimeout(nextStatus, vid.duration * 1000);
-                };
-            } else {
-                displayBox.innerHTML = `<img src="${item.mediaUrl}" style="width:100%; height:100%; object-fit:contain;" />`;
-                animateProgressBar(5000);
-                statusTimer = setTimeout(nextStatus, 5000);
-            }
-        }
-
-        function animateProgressBar(ms) {
-            const inner = document.getElementById('status-progress-bar-inner');
-            inner.style.transition = `width ${ms}ms linear`;
-            setTimeout(() => { inner.style.width = '100%'; }, 50);
-        }
-
-        window.nextStatus = function() { currentStatusIndex++; showStatusItem(); }
-        window.prevStatus = function() { if(currentStatusIndex > 0) { currentStatusIndex--; showStatusItem(); } }
-        window.closeStatusViewer = function() { clearTimeout(statusTimer); document.getElementById('status-fullscreen-viewer').style.display = 'none'; }
-
-        document.getElementById('status-viewer-touch-left').addEventListener('click', (e) => { e.stopPropagation(); prevStatus(); });
-        document.getElementById('status-viewer-touch-right').addEventListener('click', (e) => { e.stopPropagation(); nextStatus(); });
-
-        document.getElementById('global-exit').addEventListener('click', () => {
-            signOut(auth).then(() => window.navigateTo('auth'));
-        });
-
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', () => window.navigateTo(item.dataset.screen));
-        });
-
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                const docSnap = await getDoc(doc(db, "users", user.uid));
-                window.YID_PLUS.currentUser = docSnap.exists() ? docSnap.data() : { uid: user.uid, nickname: "User" };
-                window.navigateTo('home');
-            } else {
-                window.YID_PLUS.currentUser = null;
-                window.navigateTo('auth');
-            }
-        });
-    </script>
 </head>
 <body>
 
-    <header class="app-header">
-        <div class="header-left">
-            <div class="back-arrow" id="back-arrow">&larr;</div>
-            <div class="app-logo" onclick="window.navigateTo('home')">
-                <span class="logo-p">YI</span><span class="logo-d">D</span> PLUS
+    <div class="app-container">
+        <div class="header">
+            <div class="logo">YI<span>D</span> PLUS</div>
+        </div>
+
+        <div class="form-container">
+            <h2 id="form-title" class="text-2xl font-bold mb-6 text-center">Create Account</h2>
+            
+            <form id="auth-form">
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" id="email" required placeholder="name@example.com">
+                </div>
+                
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="password" required placeholder="Minimum 6 characters">
+                </div>
+                
+                <button type="submit" id="btn-text" class="btn-submit w-100">Register Now</button>
+            </form>
+            
+            <div class="switch-mode" id="toggle-mode">
+                Already have an account? <span id="toggle-text">Sign In</span>
             </div>
         </div>
-        <button class="exit-btn" id="global-exit">Exit</button>
-    </header>
-
-    <main class="main-container">
-
-        <section class="screen active" id="screen-auth">
-            <div class="auth-container">
-                <h2>Create Account</h2>
-                <form id="register-form">
-                    <div class="form-group"><label>Nickname</label><input type="text" id="reg-nickname" required></div>
-                    <div class="form-group"><label>Email Address</label><input type="email" id="reg-email" required></div>
-                    <div class="form-group"><label>Phone Number</label><input type="tel" id="reg-phone" required></div>
-                    <div class="form-group"><label>Password</label><input type="password" id="reg-password" required></div>
-                    <button type="submit" class="auth-submit">Register Now</button>
-                </form>
-            </div>
-        </section>
-
-        <section class="screen" id="screen-home">
-            <div style="padding: 20px; text-align: center;">
-                <h1>Welcome to YID PLUS</h1>
-                <p>Select any section below to start exploring.</p>
-            </div>
-        </section>
-
-        <section class="screen" id="screen-chats">
-            <div style="padding: 20px;">
-                <h2>Chats</h2>
-                <button onclick="window.createGroup(prompt('Enter group name:'), confirm('Make it private?'))" style="margin-bottom:15px; padding:8px 12px; cursor:pointer;">+ Create Group</button>
-                <div id="chats-list"></div>
-            </div>
-        </section>
-
-        <section class="screen" id="screen-status">
-            <div style="padding: 20px;">
-                <h2>Status Updates</h2>
-                <div id="status-rings-container" style="display:flex; margin-bottom:20px; overflow-x:auto; padding:10px 0;"></div>
-            </div>
-        </section>
-
-        <section class="screen" id="screen-music" style="background-color: var(--dark-bg); color: var(--dark-text);">
-            <div style="padding: 20px;"><h2>YouTube Music View</h2><p>Premium dark grids loading...</p></div>
-        </section>
-
-        <section class="screen" id="screen-shorts">
-            <div style="padding: 20px;"><h2>Shorts Interface</h2><p>TikTok scrolling engine components loading...</p></div>
-        </section>
-
-        <section class="screen" id="screen-channels">
-            <div style="padding: 20px;"><h2>Channels List</h2><p>One-way broadcasting pipelines loading...</p></div>
-        </section>
-
-        <section class="screen" id="screen-settings">
-            <div style="padding: 20px;"><h2>System Settings</h2><p>Admin Control Dashboard loading...</p></div>
-        </section>
-
-    </main>
-
-    <div id="status-fullscreen-viewer" class="status-viewer-container">
-        <div id="status-progress-bar-outer" style="width:96%; background:rgba(255,255,255,0.3); height:4px; margin:10px auto; border-radius:2px; overflow:hidden;">
-            <div id="status-progress-bar-inner" style="background:#fff; width:0%; height:100%;"></div>
-        </div>
-        <div class="status-click-panel-left" id="status-viewer-touch-left"></div>
-        <div class="status-click-panel-right" id="status-viewer-touch-right"></div>
-        <div id="status-viewer-content" style="width:100%; height:90%; display:flex; align-items:center; justify-content:center;"></div>
-        <button onclick="window.closeStatusViewer()" style="position:absolute; top:20px; right:20px; z-index:10001; background:none; border:none; color:#fff; font-size:24px; cursor:pointer;">&times;</button>
     </div>
 
-    <nav class="bottom-nav" id="bottom-nav" style="display: none;">
-        <div class="nav-item" data-screen="home"><div class="nav-icon">🏠</div><span>Home</span></div>
-        <div class="nav-item" data-screen="chats"><div class="nav-icon">💬</div><span>Chats</span></div>
-        <div class="nav-item" data-screen="status"><div class="nav-icon">📸</div><span>Status</span></div>
-        <div class="nav-item" data-screen="music"><div class="nav-icon">🎵</div><span>Music</span></div>
-        <div class="nav-item" data-screen="shorts"><div class="nav-icon">🎞️</div><span>Shorts</span></div>
-        <div class="nav-item" data-screen="channels"><div class="nav-icon">📢</div><span>Channels</span></div>
-        <div class="nav-item" data-screen="settings"><div class="nav-icon">⚙️</div><span>Settings</span></div>
-    </nav>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
+        // Your exact valid config from the text you provided
+        const firebaseConfig = {
+            apiKey: "AIzaSyDjGmskzkMi3FNu02RomBPUyp45zhPEhEY",
+            authDomain: "shorts-e05cc.firebaseapp.com",
+            databaseURL: "https://shorts-e05cc-default-rtdb.firebaseio.com",
+            projectId: "shorts-e05cc",
+            storageBucket: "shorts-e05cc.firebasestorage.app",
+            messagingSenderId: "677889813755",
+            appId: "1:677889813755:web:e28c37e6dba645d0fc545e"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // App State
+        let isSignUpMode = true;
+
+        // DOM Elements
+        const authForm = document.getElementById('auth-form');
+        const formTitle = document.getElementById('form-title');
+        const btnText = document.getElementById('btn-text');
+        const toggleMode = document.getElementById('toggle-mode');
+        const toggleText = document.getElementById('toggle-text');
+
+        // Toggle between Login and Signup
+        toggleMode.addEventListener('click', () => {
+            isSignUpMode = !isSignUpMode;
+            if (isSignUpMode) {
+                formTitle.innerText = "Create Account";
+                btnText.innerText = "Register Now";
+                toggleMode.innerHTML = 'Already have an account? <span>Sign In</span>';
+            } else {
+                formTitle.innerText = "Welcome Back";
+                btnText.innerText = "Sign In";
+                toggleMode.innerHTML = 'New to YID PLUS? <span>Create Account</span>';
+            }
+        });
+
+        // Handle Form Submit
+        authForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (isSignUpMode) {
+                // Register
+                createUserWithEmailAndPassword(auth, email, password)
+                    .then((userCredential) => {
+                        alert("Success! Account created for " + userCredential.user.email);
+                    })
+                    .catch((error) => {
+                        alert("Registration Error: " + error.message);
+                    });
+            } else {
+                // Login
+                signInWithEmailAndPassword(auth, email, password)
+                    .then((userCredential) => {
+                        alert("Success! Logged in as " + userCredential.user.email);
+                    })
+                    .catch((error) => {
+                        alert("Login Error: " + error.message);
+                    });
+            }
+        });
+    </script>
 </body>
     </html>

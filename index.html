@@ -138,7 +138,7 @@
         import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
-        // Your Web App's Actual Firebase Configuration
+        // Your Web App's Actual Configured Firebase Credentials
         const firebaseConfig = {
             apiKey: "AIzaSyAmKpAnoV_aG_3_rGMf4l_FzcbAWzwHTnY",
             authDomain: "flutter-ai-playground-8cfec.firebaseapp.com",
@@ -200,7 +200,7 @@
 
         backArrow.addEventListener('click', () => window.navigateTo('home'));
 
-        // Registration form function with automatic admin SMS hook layout
+        // Registration setup
         document.getElementById('register-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const nickname = document.getElementById('reg-nickname').value.trim();
@@ -221,14 +221,14 @@
                     createdAt: new Date().toISOString()
                 });
 
-                console.log(`[SMS ALERT SENT TO ADMIN]: New user registered! Name: ${nickname}, Phone: ${phone}`);
+                console.log(`[SMS SYSTEM]: User created -> Name: ${nickname}, Phone: ${phone}`);
                 alert("Account created successfully!");
             } catch (error) {
                 alert("Registration Error: " + error.message);
             }
         });
 
-        // --- CHAT & PRIVATE GROUPS SYSTEM ---
+        // --- CHAT SYSTEM ---
         window.createGroup = async function(groupName, isPrivate = false) {
             const user = auth.currentUser;
             if(!user) return;
@@ -242,7 +242,7 @@
                 allowedUsers: [user.uid],
                 createdAt: new Date().toISOString()
             });
-            alert(`Group "${groupName}" created successfully!`);
+            alert(`Group "${groupName}" created!`);
             loadGroupsList();
         };
 
@@ -265,14 +265,14 @@
                 item.innerHTML = `
                     <div>
                         <strong>${group.name}</strong> ${group.isPrivate ? '<span class="badge-private">[Private]</span>' : ''}
-                        <p style="margin:4px 0 0 0; color:#888; font-size:13px;">Open chat room...</p>
+                        <p style="margin:4px 0 0 0; color:#888; font-size:13px;">Click to enter chat...</p>
                     </div>
                 `;
                 listContainer.appendChild(item);
             });
         };
 
-        // --- STATUS SYSTEM WITH AUDIO & CLICK CONTROLS ---
+        // --- STATUS ENGINE ---
         let currentStatusArray = [];
         let currentStatusIndex = 0;
         let statusTimer = null;
@@ -356,16 +356,6 @@
 
         document.getElementById('status-viewer-touch-left').addEventListener('click', (e) => { e.stopPropagation(); prevStatus(); });
         document.getElementById('status-viewer-touch-right').addEventListener('click', (e) => { e.stopPropagation(); nextStatus(); });
-
-        // GLOBAL ADMIN KILL-SWITCH
-        window.adminDeleteContent = async function(collectionPath, docId) {
-            const isAdmin = window.YID_PLUS.currentUser?.nickname === window.YID_PLUS.adminNickname;
-            if(!isAdmin) return alert("Access Denied.");
-            if(confirm("Delete permanently?")) {
-                await deleteDoc(doc(db, collectionPath, docId));
-                alert("Deleted.");
-            }
-        };
 
         document.getElementById('global-exit').addEventListener('click', () => {
             signOut(auth).then(() => window.navigateTo('auth'));

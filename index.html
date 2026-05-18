@@ -1,514 +1,477 @@
 <!DOCTYPE html>
-<html lang="yi" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Digital Platform 2026</title>
-    
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YID PLUS</title>
     <style>
-        /* 📱 מאָדערנע 2026 דעזיין - מאָביל פֿירסט */
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif; }
-        
         :root {
-            --bg-color: #f0f2f5;
-            --panel-bg: #ffffff;
-            --text-color: #000000;
-            --border-color: #e4e6eb;
-            --accent-color: #007fff;
-            --chat-bg: #efeae2;
-        }
-
-        body.dark-mode {
-            --bg-color: #111416;
-            --panel-bg: #1f2225;
-            --text-color: #ffffff;
-            --border-color: #2f3236;
-            --chat-bg: #0b141a;
+            --main-bg: #ffffff;
+            --main-text: #000000;
+            --dark-bg: #0f0f0f;
+            --dark-text: #ffffff;
+            --whatsapp-green: #25D366;
+            --accent-gray: #f0f2f5;
         }
 
         body {
-            background-color: #333;
-            display: flex; justify-content: center; align-items: center; min-height: 100vh;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--main-bg);
+            color: var(--main-text);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
         }
 
-        /* אייזערנע פֿאָון סייז קאַנטיינער */
-        .phone-wrapper {
-            width: 100%; max-width: 480px; height: 100vh;
-            background-color: var(--bg-color); color: var(--text-color);
-            position: relative; display: flex; flex-direction: column; overflow: hidden;
+        /* Top Header Navigation */
+        .app-header {
+            background-color: var(--main-bg);
+            border-bottom: 1px solid #e0e0e0;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 50px;
         }
 
-        .screen { display: none; width: 100%; height: 100%; position: relative; }
-        .screen.active { display: flex; flex-direction: column; }
-
-        /* 🛡️ Sign-In אָווערליי */
-        #authOverlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px;
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
-        .auth-card { background: var(--panel-bg); padding: 30px; border-radius: 20px; width: 100%; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
-        .auth-card input { width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-color); text-align: right; font-size: 16px; }
-        .auth-card button { width: 100%; padding: 14px; border-radius: 10px; border: none; background: var(--accent-color); color: #fff; font-weight: bold; font-size: 16px; cursor: pointer; }
 
-        /* 🏠 הויפּט בלאַט דעזיין (באטשעלקעס) */
-        .app-header { background: var(--panel-bg); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); }
-        .grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 15px; flex: 1; overflow-y: auto; }
-        .grid-box { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px 10px; font-weight: bold; cursor: pointer; font-size: 18px; gap: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        
-        /* 📢 Ads פֿלאַץ אויפ'ן הויפּט בלאַט */
-        .ads-container { background: #fff3cd; border: 2px dashed #ffc107; margin: 15px; padding: 30px; border-radius: 16px; text-align: center; color: #856404; font-weight: bold; min-height: 120px; display: flex; align-items: center; justify-content: center; }
+        .back-arrow {
+            font-size: 24px;
+            cursor: pointer;
+            display: none;
+        }
 
-        /* 💬 WhatsApp Chat סקרין */
-        .chat-header { background: var(--panel-bg); padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); }
-        .group-list-area { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
-        .group-item { background: var(--panel-bg); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        .active-chat-window { display: none; flex-direction: column; height: 100%; background-color: var(--chat-bg); }
-        .messages-box { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-        
-        .msg-wrapper { display: flex; flex-direction: column; max-width: 75%; position: relative; margin-bottom: 5px; }
-        .msg-wrapper.me { align-self: flex-start; }
-        .msg-wrapper.them { align-self: flex-end; }
-        .msg-bubble { padding: 10px 14px; border-radius: 14px; font-size: 15px; line-height: 1.4; color: #fff; position: relative; cursor: pointer; }
-        .me .msg-bubble { background: #005c4b; border-top-right-radius: 0; text-align: right; }
-        .them .msg-bubble { background: #202c33; border-top-left-radius: 0; text-align: right; }
-        
-        /* Reactions, Double Check, Delete */
-        .msg-reactions { font-size: 12px; background: var(--panel-bg); padding: 2px 6px; border-radius: 10px; position: absolute; bottom: -12px; left: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        .read-status { font-size: 11px; color: #53bdeb; margin-top: 2px; align-self: flex-end; }
-        
-        /* 📌 אייזערנע אונטערשטע טעקסט שורה - FIXED BOTTOM */
-        .chat-footer { background: var(--panel-bg); padding: 10px; display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--border-color); position: sticky; bottom: 0; z-index: 100; }
-        .chat-footer input { flex: 1; padding: 12px; border-radius: 20px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-color); text-align: right; font-size: 15px; outline: none; }
-        .circle-btn { width: 42px; height: 42px; border-radius: 50%; border: none; background: var(--accent-color); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; }
+        /* Custom Logo Style: D looks like Play (▶️), others look like Pause (⏸️) */
+        .app-logo {
+            font-size: 22px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            cursor: pointer;
+        }
+        .logo-p { display: inline-block; position: relative; }
+        .logo-p::after { content: ' ||'; font-size: 16px; letter-spacing: -2px; }
+        .logo-d { color: #ff0000; }
 
-        /* 📸 Shorts ווידעא סקרין */
-        .shorts-container { flex: 1; overflow-y: scroll; scroll-snap-type: y mandatory; background: #000; }
-        .short-wrapper { width: 100%; height: 100%; scroll-snap-align: start; position: relative; }
-        .short-wrapper video { width: 100%; height: 100%; object-fit: cover; }
-        .shorts-sidebar { position: absolute; bottom: 40px; right: 15px; display: flex; flex-direction: column; gap: 15px; z-index: 10; }
+        .exit-btn {
+            background-color: #ff3b30;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
 
-        /* 🔔 אונטערשטע אינסטאַנט Notification באַקס */
-        #bottomNotification { position: absolute; bottom: 70px; left: 10px; right: 10px; background: #007fff; color: white; padding: 12px 15px; border-radius: 12px; display: none; justify-content: space-between; align-items: center; z-index: 9999; box-shadow: 0 5px 15px rgba(0,0,0,0.3); font-weight: bold; cursor: pointer; direction: rtl; }
+        /* Main View Container */
+        .main-container {
+            flex: 1;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .screen {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            box-sizing: border-box;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Auth Style */
+        .auth-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 25px;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            background: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .auth-container h2 { margin-top: 0; margin-bottom: 20px; text-align: center; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 14px; }
+        .form-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        .auth-submit { width: 100%; padding: 12px; background-color: #000; color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; }
+
+        /* Chat UI Elements */
+        .chat-list-item { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
+        .badge-private { background-color: #ffcc00; color: #000; font-size: 11px; padding: 2px 6px; border-radius: 5px; font-weight: bold; margin-left: 5px; }
+        .status-ring-item { display: inline-block; text-align: center; margin-right: 15px; cursor: pointer; }
+        .fresh-ring .ring-avatar { border: 3px solid #25D366; border-radius: 50%; padding: 8px; background: #f0f0f0; }
+        
+        .status-viewer-container { position: fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:9999; display:none; }
+        .status-click-panel-left { position: absolute; left:0; top:0; width:30%; height:100%; z-index:10000; cursor: pointer; }
+        .status-click-panel-right { position: absolute; right:0; top:0; width:30%; height:100%; z-index:10000; cursor: pointer; }
+
+        /* Global Bottom Navigation Bar */
+        .bottom-nav {
+            height: 60px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background-color: var(--main-bg);
+        }
+
+        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 12px; cursor: pointer; color: #666; font-weight: 500; }
+        .nav-item.active { color: #000; font-weight: bold; }
+        .nav-icon { font-size: 20px; margin-bottom: 2px; }
     </style>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
+        // Your Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        window.YID_PLUS = {
+            auth, db, storage,
+            currentUser: null,
+            adminNickname: "Admin"
+        };
+
+        const screens = {
+            auth: document.getElementById('screen-auth'),
+            home: document.getElementById('screen-home'),
+            chats: document.getElementById('screen-chats'),
+            status: document.getElementById('screen-status'),
+            music: document.getElementById('screen-music'),
+            shorts: document.getElementById('screen-shorts'),
+            channels: document.getElementById('screen-channels'),
+            settings: document.getElementById('screen-settings')
+        };
+
+        const backArrow = document.getElementById('back-arrow');
+        const bottomNav = document.getElementById('bottom-nav');
+
+        window.navigateTo = function(screenName) {
+            Object.keys(screens).forEach(key => {
+                if(screens[key]) screens[key].classList.remove('active');
+            });
+            
+            if(screens[screenName]) screens[screenName].classList.add('active');
+
+            if (screenName === 'home' || screenName === 'auth') {
+                backArrow.style.display = 'none';
+                bottomNav.style.display = screenName === 'home' ? 'flex' : 'none';
+            } else {
+                backArrow.style.display = 'block';
+                bottomNav.style.display = 'flex';
+            }
+
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+                if(item.dataset.screen === screenName) item.classList.add('active');
+            });
+
+            if(screenName === 'chats') loadGroupsList();
+            if(screenName === 'status') loadStatusRings();
+        };
+
+        backArrow.addEventListener('click', () => window.navigateTo('home'));
+
+        // Registration form function with automatic admin SMS hook layout
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nickname = document.getElementById('reg-nickname').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const phone = document.getElementById('reg-phone').value.trim();
+            const password = document.getElementById('reg-password').value;
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                await setDoc(doc(db, "users", user.uid), {
+                    uid: user.uid,
+                    nickname: nickname,
+                    email: email,
+                    phone: phone,
+                    isVerified: nickname === window.YID_PLUS.adminNickname,
+                    createdAt: new Date().toISOString()
+                });
+
+                console.log(`[SMS ALERT SENT TO ADMIN]: New user registered! Name: ${nickname}, Phone: ${phone}`);
+                alert("Account created successfully!");
+            } catch (error) {
+                alert("Registration Error: " + error.message);
+            }
+        });
+
+        // --- CHAT & PRIVATE GROUPS SYSTEM ---
+        window.createGroup = async function(groupName, isPrivate = false) {
+            const user = auth.currentUser;
+            if(!user) return;
+
+            const groupRef = doc(collection(db, "groups"));
+            await setDoc(groupRef, {
+                groupId: groupRef.id,
+                name: groupName,
+                createdBy: user.uid,
+                isPrivate: isPrivate,
+                allowedUsers: [user.uid],
+                createdAt: new Date().toISOString()
+            });
+            alert(`Group "${groupName}" created successfully!`);
+            loadGroupsList();
+        };
+
+        window.loadGroupsList = async function() {
+            const user = auth.currentUser;
+            if(!user) return;
+            const isAdmin = window.YID_PLUS.currentUser?.nickname === window.YID_PLUS.adminNickname;
+            
+            const querySnapshot = await getDocs(collection(db, "groups"));
+            const listContainer = document.getElementById('chats-list');
+            listContainer.innerHTML = "";
+
+            querySnapshot.forEach((docSnap) => {
+                const group = docSnap.data();
+                
+                if (group.isPrivate && !group.allowedUsers.includes(user.uid) && !isAdmin) return;
+
+                const item = document.createElement('div');
+                item.className = "chat-list-item";
+                item.innerHTML = `
+                    <div>
+                        <strong>${group.name}</strong> ${group.isPrivate ? '<span class="badge-private">[Private]</span>' : ''}
+                        <p style="margin:4px 0 0 0; color:#888; font-size:13px;">Open chat room...</p>
+                    </div>
+                `;
+                listContainer.appendChild(item);
+            });
+        };
+
+        // --- STATUS SYSTEM WITH AUDIO & CLICK CONTROLS ---
+        let currentStatusArray = [];
+        let currentStatusIndex = 0;
+        let statusTimer = null;
+
+        window.loadStatusRings = async function() {
+            const querySnapshot = await getDocs(collection(db, "statuses"));
+            const ringContainer = document.getElementById('status-rings-container');
+            ringContainer.innerHTML = "";
+
+            const now = new Date();
+            const activeStatuses = [];
+
+            querySnapshot.forEach(docSnap => {
+                const data = docSnap.data();
+                const hoursDiff = Math.abs(now - new Date(data.timestamp)) / 36e5;
+                if (hoursDiff < 24) activeStatuses.push(data);
+            });
+
+            const groupedUsers = {};
+            activeStatuses.forEach(status => {
+                if(!groupedUsers[status.userId]) {
+                    groupedUsers[status.userId] = { nickname: status.nickname, items: [] };
+                }
+                groupedUsers[status.userId].items.push(status);
+            });
+
+            Object.keys(groupedUsers).forEach(userId => {
+                const userObj = groupedUsers[userId];
+                const ring = document.createElement('div');
+                ring.className = "status-ring-item fresh-ring"; 
+                ring.innerHTML = `<div class="ring-avatar">📸</div><span>${userObj.nickname}</span>`;
+                ring.onclick = () => launchStatusViewer(userObj.items);
+                ringContainer.appendChild(ring);
+            });
+        };
+
+        function launchStatusViewer(statusItems) {
+            currentStatusArray = statusItems;
+            currentStatusIndex = 0;
+            document.getElementById('status-fullscreen-viewer').style.display = 'block';
+            showStatusItem();
+        }
+
+        function showStatusItem() {
+            clearTimeout(statusTimer);
+            if(currentStatusIndex >= currentStatusArray.length) {
+                closeStatusViewer();
+                return;
+            }
+
+            const item = currentStatusArray[currentStatusIndex];
+            const displayBox = document.getElementById('status-viewer-content');
+            const progressBar = document.getElementById('status-progress-bar-inner');
+            
+            progressBar.style.width = '0%';
+            displayBox.innerHTML = "";
+
+            if(item.mediaType === 'video') {
+                displayBox.innerHTML = `<video id="status-video" src="${item.mediaUrl}" autoplay playsinline style="width:100%; height:100%;"></video>`;
+                const vid = document.getElementById('status-video');
+                vid.onloadedmetadata = () => {
+                    animateProgressBar(vid.duration * 1000);
+                    statusTimer = setTimeout(nextStatus, vid.duration * 1000);
+                };
+            } else {
+                displayBox.innerHTML = `<img src="${item.mediaUrl}" style="width:100%; height:100%; object-fit:contain;" />`;
+                animateProgressBar(5000);
+                statusTimer = setTimeout(nextStatus, 5000);
+            }
+        }
+
+        function animateProgressBar(ms) {
+            const inner = document.getElementById('status-progress-bar-inner');
+            inner.style.transition = `width ${ms}ms linear`;
+            setTimeout(() => { inner.style.width = '100%'; }, 50);
+        }
+
+        window.nextStatus = function() { currentStatusIndex++; showStatusItem(); }
+        window.prevStatus = function() { if(currentStatusIndex > 0) { currentStatusIndex--; showStatusItem(); } }
+        window.closeStatusViewer = function() { clearTimeout(statusTimer); document.getElementById('status-fullscreen-viewer').style.display = 'none'; }
+
+        document.getElementById('status-viewer-touch-left').addEventListener('click', (e) => { e.stopPropagation(); prevStatus(); });
+        document.getElementById('status-viewer-touch-right').addEventListener('click', (e) => { e.stopPropagation(); nextStatus(); });
+
+        // GLOBAL ADMIN KILL-SWITCH
+        window.adminDeleteContent = async function(collectionPath, docId) {
+            const isAdmin = window.YID_PLUS.currentUser?.nickname === window.YID_PLUS.adminNickname;
+            if(!isAdmin) return alert("Access Denied.");
+            if(confirm("Delete permanently?")) {
+                await deleteDoc(doc(db, collectionPath, docId));
+                alert("Deleted.");
+            }
+        };
+
+        document.getElementById('global-exit').addEventListener('click', () => {
+            signOut(auth).then(() => window.navigateTo('auth'));
+        });
+
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => window.navigateTo(item.dataset.screen));
+        });
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const docSnap = await getDoc(doc(db, "users", user.uid));
+                window.YID_PLUS.currentUser = docSnap.exists() ? docSnap.data() : { uid: user.uid, nickname: "User" };
+                window.navigateTo('home');
+            } else {
+                window.YID_PLUS.currentUser = null;
+                window.navigateTo('auth');
+            }
+        });
+    </script>
 </head>
 <body>
 
-    <div class="phone-wrapper">
+    <header class="app-header">
+        <div class="header-left">
+            <div class="back-arrow" id="back-arrow">&larr;</div>
+            <div class="app-logo" onclick="window.navigateTo('home')">
+                <span class="logo-p">YI</span><span class="logo-d">D</span> PLUS
+            </div>
+        </div>
+        <button class="exit-btn" id="global-exit">Exit</button>
+    </header>
 
-        <div id="authOverlay">
-            <div class="auth-card">
-                <h2 style="margin-bottom: 8px;">רעגיסטראציע 2026</h2>
-                <p style="color: #666; font-size: 14px; margin-bottom: 15px;">ביטע קלייבט אויס אייערע דעטאלן:</p>
-                <form id="authForm">
-                    <input type="text" id="authNickname" placeholder="Nickname (אייגנארטיג)" required>
-                    <input type="tel" id="authPhone" placeholder="Phone Number" required>
-                    <input type="email" id="authEmail" placeholder="Email Address" required>
-                    <button type="submit">אריינגיין אינעם סיסטעם</button>
+    <main class="main-container">
+
+        <section class="screen active" id="screen-auth">
+            <div class="auth-container">
+                <h2>Create Account</h2>
+                <form id="register-form">
+                    <div class="form-group"><label>Nickname</label><input type="text" id="reg-nickname" required></div>
+                    <div class="form-group"><label>Email Address</label><input type="email" id="reg-email" required></div>
+                    <div class="form-group"><label>Phone Number</label><input type="tel" id="reg-phone" required></div>
+                    <div class="form-group"><label>Password</label><input type="password" id="reg-password" required></div>
+                    <button type="submit" class="auth-submit">Register Now</button>
                 </form>
             </div>
+        </section>
+
+        <section class="screen" id="screen-home">
+            <div style="padding: 20px; text-align: center;">
+                <h1>Welcome to YID PLUS</h1>
+                <p>Select any section below to start exploring.</p>
+            </div>
+        </section>
+
+        <section class="screen" id="screen-chats">
+            <div style="padding: 20px;">
+                <h2>Chats</h2>
+                <button onclick="window.createGroup(prompt('Enter group name:'), confirm('Make it private?'))" style="margin-bottom:15px; padding:8px 12px; cursor:pointer;">+ Create Group</button>
+                <div id="chats-list"></div>
+            </div>
+        </section>
+
+        <section class="screen" id="screen-status">
+            <div style="padding: 20px;">
+                <h2>Status Updates</h2>
+                <div id="status-rings-container" style="display:flex; margin-bottom:20px; overflow-x:auto; padding:10px 0;"></div>
+            </div>
+        </section>
+
+        <section class="screen" id="screen-music" style="background-color: var(--dark-bg); color: var(--dark-text);">
+            <div style="padding: 20px;"><h2>YouTube Music View</h2><p>Premium dark grids loading...</p></div>
+        </section>
+
+        <section class="screen" id="screen-shorts">
+            <div style="padding: 20px;"><h2>Shorts Interface</h2><p>TikTok scrolling engine components loading...</p></div>
+        </section>
+
+        <section class="screen" id="screen-channels">
+            <div style="padding: 20px;"><h2>Channels List</h2><p>One-way broadcasting pipelines loading...</p></div>
+        </section>
+
+        <section class="screen" id="screen-settings">
+            <div style="padding: 20px;"><h2>System Settings</h2><p>Admin Control Dashboard loading...</p></div>
+        </section>
+
+    </main>
+
+    <div id="status-fullscreen-viewer" class="status-viewer-container">
+        <div id="status-progress-bar-outer" style="width:96%; background:rgba(255,255,255,0.3); height:4px; margin:10px auto; border-radius:2px; overflow:hidden;">
+            <div id="status-progress-bar-inner" style="background:#fff; width:0%; height:100%;"></div>
         </div>
-
-        <div id="bottomNotification" onclick="goToNotificationTarget()">
-            <span id="notificationText">נייע מעסעדזש קלאפט אריין...</span>
-            <span style="font-size: 12px; background: rgba(0,0,0,0.2); padding: 3px 8px; border-radius: 6px;">עפן</span>
-        </div>
-
-        <div id="homeScreen" class="screen active">
-            <div class="app-header">
-                <button class="circle-btn" style="background:none; color:var(--text-color);" onclick="toggleSettingsMenu()">⚙️</button>
-                <h2 style="font-size: 20px;">דיין פלאטפארם</h2>
-                <button class="circle-btn" style="background:none; color:var(--text-color);" onclick="toggleTheme()">🌗</button>
-            </div>
-            
-            <div class="ads-container" id="mainPageAdBox">
-                📢 דא איז דער גרויסער פלאץ פאר דיינע פילע אדווערטייזמענטס (בילדער / ווידעאס)
-            </div>
-
-            <div class="grid-container">
-                <div class="grid-box" onclick="navigateTo('shortsScreen')"><span>📸</span>Shorts</div>
-                <div class="grid-box" onclick="navigateTo('musicScreen')"><span>🎵</span>Music</div>
-                <div class="grid-box" onclick="navigateTo('chatScreen')"><span>💬</span>טעקסט</div>
-                <div class="grid-box" onclick="alert('טשענעלס קומט באלד!')"><span>📺</span>טשענעלס</div>
-                <div class="grid-box" style="grid-column: span 2;" onclick="alert('סטעיט\'ס קומט באלד!')"><span>📝</span>סטעיט'ס</div>
-            </div>
-        </div>
-
-        <div id="chatScreen" class="screen">
-            <div id="chatListWindow" style="display: flex; flex-direction: column; height: 100%;">
-                <div class="app-header">
-                    <button class="circle-btn" onclick="navigateTo('homeScreen')">➔</button>
-                    <h2>שמועסן גרופעס</h2>
-                    <button class="circle-btn" onclick="createNewGroup()">➕</button>
-                </div>
-                <div style="padding: 10px; background: var(--panel-bg); text-align: center; font-size: 13px; color: var(--accent-color);">
-                    🟢 מענטשן אָנליין יעצט: <span id="onlineCount">1</span>
-                </div>
-                <div class="group-list-area" id="groupsContainer">
-                    </div>
-            </div>
-
-            <div id="chatMessageWindow" class="active-chat-window">
-                <div class="chat-header">
-                    <button class="circle-btn" onclick="exitChatWindow()">➔</button>
-                    <div>
-                        <h3 id="chatTargetTitle">גרופע</h3>
-                        <span id="typingStatusField" style="font-size: 12px; color: #8696a0;"></span>
-                    </div>
-                    <button class="circle-btn" style="background:red;" id="adminBanBtn" onclick="triggerAdminBan()">🔨</button>
-                </div>
-                
-                <div class="messages-box" id="messagesContainer"></div>
-
-                <div class="chat-footer">
-                    <button class="circle-btn" style="background:#202c33; color:#fff;" onclick="document.getElementById('chatMediaFile').click()">📎</button>
-                    <input type="file" id="chatMediaFile" style="display: none;" onchange="uploadChatMedia(this)">
-                    <input type="text" id="chatInputField" placeholder="שרייב א מעסעדזש..." oninput="handleTypingStatus()">
-                    <button class="circle-btn" onclick="sendChatMessage()">➡️</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="shortsScreen" class="screen">
-            <div class="app-header" style="position: absolute; top:0; left:0; width:100%; z-index:100; background:rgba(0,0,0,0.4); border:none; color:#fff;">
-                <button class="circle-btn" style="color:#fff;" onclick="navigateTo('homeScreen')">➔</button>
-                <h2>Shorts ווידעאס</h2>
-                <button class="circle-btn" onclick="document.getElementById('shortVideoFile').click()">➕</button>
-                <input type="file" id="shortVideoFile" accept="video/*" style="display: none;" onchange="uploadNewShortVideo(this)">
-            </div>
-            <div class="shorts-container" id="shortsListContainer" onscroll="handleShortsAutoplay()">
-                </div>
-        </div>
-
-        <div id="musicScreen" class="screen">
-            <div class="app-header"><button class="circle-btn" onclick="navigateTo('homeScreen')">➔</button><h2>מוזיק פלייער</h2></div>
-            <div style="padding: 30px; text-align: center;">
-                <div style="background:var(--panel-bg); padding:30px; border-radius:20px; border:1px solid var(--border-color);">
-                    <h3 id="playingTrackName">קיין ניגון שפילט נישט</h3>
-                    <audio id="globalAudioPlayer" controls style="width: 100%; margin-top: 20px;"></audio>
-                </div>
-            </div>
-        </div>
-
+        <div class="status-click-panel-left" id="status-viewer-touch-left"></div>
+        <div class="status-click-panel-right" id="status-viewer-touch-right"></div>
+        <div id="status-viewer-content" style="width:100%; height:90%; display:flex; align-items:center; justify-content:center;"></div>
+        <button onclick="window.closeStatusViewer()" style="position:absolute; top:20px; right:20px; z-index:10001; background:none; border:none; color:#fff; font-size:24px; cursor:pointer;">&times;</button>
     </div>
 
-    <script>
-        // 1. Firebase קאָנפֿיגוראַציע - פולשטענדיק און אקטיוו!
-const firebaseConfig = {
-    apiKey: "AIzaSyAmKpAnoV_aG_3_rGMf4l_FzcbAWzwHTnY",
-    authDomain: "flutter-ai-playground-8cfec.firebaseapp.com",
-    databaseURL: "https://flutter-ai-playground-8cfec-default-rtdb.firebaseio.com",
-    projectId: "flutter-ai-playground-8cfec",
-    storageBucket: "flutter-ai-playground-8cfec.firebasestorage.app",
-    messagingSenderId: "989658103041",
-    appId: "1:989658103041:web:f33b1ed6d748ef98b96f00"
-};
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const storage = firebase.storage();
+    <nav class="bottom-nav" id="bottom-nav" style="display: none;">
+        <div class="nav-item" data-screen="home"><div class="nav-icon">🏠</div><span>Home</span></div>
+        <div class="nav-item" data-screen="chats"><div class="nav-icon">💬</div><span>Chats</span></div>
+        <div class="nav-item" data-screen="status"><div class="nav-icon">📸</div><span>Status</span></div>
+        <div class="nav-item" data-screen="music"><div class="nav-icon">🎵</div><span>Music</span></div>
+        <div class="nav-item" data-screen="shorts"><div class="nav-icon">🎞️</div><span>Shorts</span></div>
+        <div class="nav-item" data-screen="channels"><div class="nav-icon">📢</div><span>Channels</span></div>
+        <div class="nav-item" data-screen="settings"><div class="nav-icon">⚙️</div><span>Settings</span></div>
+    </nav>
 
-        const pipedreamUrl = "https://eo2ws38ucniphqy.m.pipedream.net";
-        let currentGroupId = null;
-        let currentGroupData = null;
-        let userNickname = localStorage.getItem('user_nickname') || '';
-        let notificationTargetGroup = null;
-
-        // 2. אָנפֿירן מיט'ן סייט-סטעיט אויף רעפֿרעש
-        window.addEventListener('DOMContentLoaded', () => {
-            // האלטן דעם פלאץ אויף א refresh
-            const lastScreen = localStorage.getItem('current_screen') || 'homeScreen';
-            navigateTo(lastScreen);
-            
-            // טשעקן רעגיסטראציע
-            if (!localStorage.getItem('registered_2026')) {
-                document.getElementById('authOverlay').style.display = 'flex';
-            } else {
-                goOnline();
-            }
-
-            // סיינ-אין פארעם לאגיק מיט Nickname קאנטראל
-            document.getElementById('authForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const nickname = document.getElementById('authNickname').value.trim();
-                const phone = document.getElementById('authPhone').value.trim();
-                const email = document.getElementById('authEmail').value.trim();
-
-                // אמעקן אלטע קלאשעס: קאנטראלירן אויב דער ניקנאמען עקזיסטירט שוין גראד אינעם Firebase
-                db.ref('users_profiles/' + nickname).get().then(snapshot => {
-                    if (snapshot.exists()) {
-                        alert("דער Nickname איז שוין פארכאפט דורך א צווייטן! ביטע קלייב א נייעם.");
-                    } else {
-                        const userData = { nickname, phone, email, timestamp: Date.now() };
-                        
-                        // שיקן גראד צו Pipedream פאר דיין אימעיל / SMS נאָטיפֿיקאַציע
-                        fetch(pipedreamUrl, { method: 'POST', body: JSON.stringify(userData) }).catch(err => console.log(err));
-                        
-                        // סייוון אין Firebase און אין טעלעפאן
-                        db.ref('users_profiles/' + nickname).set(userData);
-                        localStorage.setItem('registered_2026', 'true');
-                        localStorage.setItem('user_nickname', nickname);
-                        userNickname = nickname;
-                        
-                        document.getElementById('authOverlay').style.display = 'none';
-                        goOnline();
-                    }
-                });
-            });
-
-            loadGroupsList();
-            loadGlobalShorts();
-            trackOnlineUsers();
-            listenForGlobalNotifications();
-        });
-
-        function navigateTo(screenId) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            const target = document.getElementById(screenId);
-            if (target) target.classList.add('active');
-            localStorage.setItem('current_screen', screenId);
-        }
-
-        function toggleTheme() {
-            document.body.classList.toggle('dark-mode');
-            localStorage.setItem('dark_theme', document.body.classList.contains('dark-mode'));
-        }
-
-        function goOnline() {
-            if (!userNickname) return;
-            db.ref('presence/' + userNickname).set(true);
-            db.ref('presence/' + userNickname).onDisconnect().remove();
-        }
-
-        function trackOnlineUsers() {
-            db.ref('presence').on('value', snapshot => {
-                document.getElementById('onlineCount').innerText = snapshot.numChildren() || 1;
-            });
-        }
-
-        // 3. 💬 WhatsApp Chat לאָגיק פֿולשטענדיק
-        function createNewGroup() {
-            const n = prompt("לייג אריין א נאמען פאר די נייע גרופע:");
-            if (!n) return;
-            const p = confirm("ווילסט עס מאכן פאבליק? (אדער קליק Cancel פאר פרייוועט)");
-            const gRef = db.ref('chat_groups').push();
-            gRef.set({
-                name: n,
-                admin: userNickname,
-                isPublic: p,
-                lastActivity: Date.now()
-            });
-        }
-
-        function loadGroupsList() {
-            // אטאמאטישע ראנקינג: די מערסט אקטיעווע גרופעס (lastActivity) קריכן אליינס ארויף גאנץ אויבן!
-            db.ref('chat_groups').orderByChild('lastActivity').on('value', snapshot => {
-                const container = document.getElementById('groupsContainer');
-                container.innerHTML = '';
-                let list = [];
-                snapshot.forEach(child => { list.push({ id: child.key, ...child.val() }); });
-                list.reverse(); // די פרישסטע אויבן
-                
-                list.forEach(g => {
-                    if (!g.isPublic && g.admin !== userNickname && userNickname !== 'admin') return; // פרייוועט גרופע קאנטראל
-                    const div = document.createElement('div');
-                    div.className = 'group-item';
-                    div.innerHTML = `<div><b>👥 ${g.name}</b><br><small style="color:#888;">Admin: ${g.admin}</small></div><span>➔</span>`;
-                    div.onclick = () => openChatWindow(g.id, g);
-                    container.appendChild(div);
-                });
-            });
-        }
-
-        function openChatWindow(groupId, groupData) {
-            currentGroupId = groupId;
-            currentGroupData = groupData;
-            document.getElementById('chatListWindow').style.display = 'none';
-            document.getElementById('chatMessageWindow').style.display = 'flex';
-            document.getElementById('chatTargetTitle').innerText = groupData.name;
-            
-            // אדמין "באנאנא" באטן: נאר דער הויפט אדמין קען עס זען
-            document.getElementById('adminBanBtn').style.display = (userNickname === 'admin' || groupData.admin === userNickname) ? 'block' : 'none';
-            
-            loadChatMessages(groupId);
-        }
-
-        function exitChatWindow() {
-            currentGroupId = null;
-            document.getElementById('chatMessageWindow').style.display = 'none';
-            document.getElementById('chatListWindow').style.display = 'flex';
-        }
-
-        function sendChatMessage() {
-            const input = document.getElementById('chatInputField');
-            const text = input.value.trim();
-            if (!text || !currentGroupId) return;
-
-            db.ref('chat_messages/' + currentGroupId).push({
-                sender: userNickname,
-                message: text,
-                timestamp: Date.now()
-            });
-            
-            db.ref('chat_groups/' + currentGroupId + '/lastActivity').set(Date.now());
-            input.value = '';
-        }
-
-        function uploadChatMedia(input) {
-            const file = input.files[0];
-            if (!file || !currentGroupId) return;
-            const ref = storage.ref('chat_files/' + Date.now() + '_' + file.name);
-            ref.put(file).then(s => s.ref.getDownloadURL()).then(url => {
-                db.ref('chat_messages/' + currentGroupId).push({
-                    sender: userNickname,
-                    mediaUrl: url,
-                    fileType: file.type,
-                    timestamp: Date.now()
-                });
-                db.ref('chat_groups/' + currentGroupId + '/lastActivity').set(Date.now());
-            });
-        }
-
-        function loadChatMessages(groupId) {
-            db.ref('chat_messages/' + groupId).on('value', snapshot => {
-                if (currentGroupId !== groupId) return;
-                const box = document.getElementById('messagesContainer');
-                box.innerHTML = '';
-                
-                snapshot.forEach(child => {
-                    const mId = child.key;
-                    const d = child.val();
-                    const isMe = d.sender === userNickname;
-                    
-                    const wrap = document.createElement('div');
-                    wrap.className = `msg-wrapper ${isMe ? 'me' : 'them'}`;
-                    
-                    let content = `<b>${d.sender}:</b><br>`;
-                    if (d.message) content += d.message;
-                    else if (d.mediaUrl) {
-                        if (d.fileType.startsWith('image/')) content += `<img src="${d.mediaUrl}" style="max-width:100%; border-radius:10px;">`;
-                        else if (d.fileType.startsWith('video/')) content += `<video src="${d.mediaUrl}" controls style="max-width:100%; border-radius:10px;"></video>`;
-                        else content += `<a href="${d.mediaUrl}" target="_blank" style="color:#53bdeb;">📁 געשיקט א פייל</a>`;
-                    }
-                    
-                    wrap.innerHTML = `<div class="msg-bubble" onclick="triggerMessageActions('${groupId}', '${mId}', '${d.sender}')">${content}</div><div class="read-status">✓✓</div>`;
-                    box.appendChild(wrap);
-                });
-                box.scrollTop = box.scrollHeight;
-            });
-        }
-
-        // Message Reactions & Delete for Everyone
-        function triggerMessageActions(gId, mId, sender) {
-            const act = prompt("קלייב אויס אן אקציע:\n1) ❤️ רעאקציע\n2) 👍 רעאקציע\n3) 🗑️ אויסמעקן פאר יעדן");
-            if (act === '1') db.ref(`chat_messages/${gId}/${mId}/message`).set(this.innerText + " ❤️");
-            if (act === '2') db.ref(`chat_messages/${gId}/${mId}/message`).set(this.innerText + " 👍");
-            if (act === '3') {
-                if (sender === userNickname || userNickname === 'admin') {
-                    db.ref(`chat_messages/${gId}/${mId}`).remove();
-                } else { alert("נאר ווער עס האט געשיקט אדער דער אדמין קען מעקן!"); }
-            }
-        }
-
-        function handleTypingStatus() {
-            if (!currentGroupId) return;
-            db.ref(`typing/${currentGroupId}/${userNickname}`).set(true);
-            setTimeout(() => db.ref(`typing/${currentGroupId}/${userNickname}`).remove(), 1500);
-        }
-
-        db.ref('typing').on('value', snapshot => {
-            if (!currentGroupId) return;
-            const statusField = document.getElementById('typingStatusField');
-            const currentTypers = snapshot.child(currentGroupId).val();
-            if (currentTypers) {
-                const names = Object.keys(currentTypers).filter(n => n !== userNickname);
-                statusField.innerText = names.length > 0 ? `${names.join(', ')} טייפט יעצט...` : '';
-            } else { statusField.innerText = ''; }
-        });
-
-        function triggerAdminBan() {
-            const bUser = prompt("לייג אריין דעם Nickname פונעם באניצער צו בלאקירן פונעם סייט:");
-            if (bUser) {
-                db.ref('banned_users/' + bUser).set(true);
-                alert(`באניצער ${bUser} איז געווארן בלאקירט אינגאנצן!`);
-            }
-        }
-
-        // 📸 4. Shorts ווידעא סקרין לאָגיק
-        function uploadNewShortVideo(input) {
-            const file = input.files[0];
-            if (!file) return;
-            alert("דיין ווידעא לאדט זיך יעצט ארויף, ביטע ווארט א סעקונדע...");
-            const ref = storage.ref('shorts/' + Date.now() + '_' + file.name);
-            ref.put(file).then(s => s.ref.getDownloadURL()).then(url => {
-                db.ref('shorts_videos').push({
-                    url: url,
-                    author: '@' + userNickname,
-                    likes: 0,
-                    timestamp: Date.now()
-                });
-                alert("די ווידעא איז ארויף לעבעדיג גראד צום סייט!");
-            });
-        }
-
-        function loadGlobalShorts() {
-            db.ref('shorts_videos').on('value', snapshot => {
-                const container = document.getElementById('shortsListContainer');
-                container.innerHTML = '';
-                snapshot.forEach(child => {
-                    const id = child.key;
-                    const v = child.val();
-                    const wrap = document.createElement('div');
-                    wrap.className = 'short-wrapper';
-                    wrap.innerHTML = `
-                        <video src="${v.url}" loop muted playsinline onclick="this.paused ? this.play() : this.pause()"></video>
-                        <div class="shorts-sidebar">
-                            <button class="circle-btn" onclick="db.ref('shorts_videos/${id}/likes').set(${v.likes || 0} + 1)">❤️<br><small>${v.likes || 0}</small></button>
-                        </div>
-                        <div style="position:absolute; bottom:20px; left:20px; z-index:10; font-weight:bold; text-shadow:1px 1px 3px #000;">${v.author}</div>
-                    `;
-                    container.appendChild(wrap);
-                });
-                handleShortsAutoplay();
-            });
-        }
-
-        function handleShortsAutoplay() {
-            const videos = document.querySelectorAll('.short-wrapper video');
-            videos.forEach(v => {
-                const rect = v.getBoundingClientRect();
-                if (rect.top >= 0 && rect.bottom <= window.innerHeight) {
-                    if (v.paused) v.play().catch(() => {});
-                } else { v.pause(); }
-            });
-        }
-
-        // 🔔 5. אונטערשטע Notification סיסטעם
-        function listenForGlobalNotifications() {
-            db.ref('chat_groups').on('child_changed', snapshot => {
-                const gId = snapshot.key;
-                const gData = snapshot.val();
-                if (currentGroupId !== gId && localStorage.getItem('current_screen') !== 'chatScreen') {
-                    notificationTargetGroup = gId;
-                    const notif = document.getElementById('bottomNotification');
-                    document.getElementById('notificationText').innerText = `נייע מעסעדזש אינמיטן די גרופע: ${gData.name}`;
-                    notif.style.display = 'flex';
-                    setTimeout(() => notif.style.display = 'none', 5000);
-                }
-            });
-        }
-
-        function goToNotificationTarget() {
-            if (notificationTargetGroup) {
-                navigateTo('chatScreen');
-                db.ref('chat_groups/' + notificationTargetGroup).get().then(s => {
-                    openChatWindow(notificationTargetGroup, s.val());
-                    document.getElementById('bottomNotification').style.display = 'none';
-                });
-            }
-        }
-    </script>
 </body>
     </html>

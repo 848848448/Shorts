@@ -138,14 +138,15 @@
         import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
-        // Your Firebase Configuration
+        // Your Web App's Actual Firebase Configuration
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyAmKpAnoV_aG_3_rGMf4l_FzcbAWzwHTnY",
+            authDomain: "flutter-ai-playground-8cfec.firebaseapp.com",
+            databaseURL: "https://flutter-ai-playground-8cfec-default-rtdb.firebaseio.com",
+            projectId: "flutter-ai-playground-8cfec",
+            storageBucket: "flutter-ai-playground-8cfec.firebasestorage.app",
+            messagingSenderId: "989658103041",
+            appId: "1:989658103041:web:f33b1ed6d748ef98b96f00"
         };
 
         const app = initializeApp(firebaseConfig);

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YID PLUS</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
             background-color: #0f0f0f;
@@ -16,6 +17,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            overflow: hidden;
         }
         .app-container {
             width: 100%;
@@ -27,113 +29,154 @@
             flex-direction: column;
             box-shadow: 0 0 20px rgba(0,0,0,0.8);
         }
-        .header {
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #272727;
-        }
-        .logo {
-            font-size: 22px;
-            font-weight: bold;
-            letter-spacing: 1px;
-        }
-        .logo span {
-            color: #ff0000;
-        }
-        .form-container {
-            flex: 1;
+        /* Auth Styles */
+        .auth-screen {
             display: flex;
             flex-direction: column;
             justify-content: center;
             padding: 30px;
+            height: 100%;
         }
-        .input-group {
-            margin-bottom: 20px;
-        }
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #aaa;
-            font-size: 14px;
-        }
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; margin-bottom: 8px; color: #aaa; font-size: 14px; }
         .input-group input {
-            width: 100%;
-            padding: 12px;
-            background: #212121;
-            border: 1px solid #3d3d3d;
-            border-radius: 8px;
-            color: white;
-            font-size: 16px;
-            outline: none;
+            width: 100%; padding: 12px; background: #212121; border: 1px solid #3d3d3d;
+            border-radius: 8px; color: white; font-size: 16px; outline: none;
         }
-        .input-group input:focus {
-            border-color: #ff0000;
+        .input-group input:focus { border-color: #ff0000; }
+        .btn-red {
+            background: #ff0000; color: white; padding: 14px; border: none;
+            border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer;
+            width: 100%; transition: background 0.2s;
         }
-        .btn-submit {
-            background: #ff0000;
-            color: white;
-            padding: 14px;
-            border: none;
-            border-radius: 25px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: background 0.2s;
+        .btn-red:hover { background: #cc0000; }
+        
+        /* Main App Styles (Hidden by default) */
+        .main-app {
+            display: none;
+            flex-direction: column;
+            height: 100%;
         }
-        .btn-submit:hover {
-            background: #cc0000;
+        .header {
+            padding: 15px; display: flex; justify-content: space-between;
+            align-items: center; border-bottom: 1px solid #272727;
         }
-        .switch-mode {
-            text-align: center;
-            margin-top: 20px;
-            color: #aaa;
-            font-size: 14px;
-            cursor: pointer;
+        .logo { font-size: 22px; font-weight: bold; letter-spacing: 1px; }
+        .logo span { color: #ff0000; }
+        
+        .content-area { flex: 1; overflow-y: auto; position: relative; padding-bottom: 80px; }
+        
+        /* Shorts View */
+        .short-video-container {
+            height: 100%; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; background: #000; position: relative;
         }
-        .switch-mode span {
-            color: #ff0000;
-            font-weight: bold;
+        .video-placeholder {
+            font-size: 18px; color: #666; display: flex; flex-direction: column; align-items: center;
         }
+        .shorts-right-menu {
+            position: absolute; right: 15px; bottom: 100px; display: flex;
+            flex-direction: column; gap: 20px; align-items: center;
+        }
+        .menu-icon-btn { display: flex; flex-direction: column; align-items: center; font-size: 24px; cursor: pointer; }
+        .menu-icon-btn span { font-size: 12px; margin-top: 5px; color: #aaa; }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 70px;
+            background: #0f0f0f; border-top: 1px solid #272727; display: flex;
+            justify-content: space-around; align-items: center; z-index: 50;
+        }
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center;
+            color: #aaa; cursor: pointer; font-size: 12px;
+        }
+        .nav-item.active { color: #ffffff; }
+        .nav-item i { font-size: 20px; margin-bottom: 4px; }
+
+        /* Chat Styles (WhatsApp Style) */
+        .chat-input-area {
+            position: absolute; bottom: 70px; left: 0; width: 100%; padding: 10px;
+            background: #121212; display: flex; gap: 10px; align-items: center;
+        }
+        .chat-input {
+            flex: 1; padding: 12px; background: #2c2c2c; border: none;
+            border-radius: 25px; color: white; outline: none;
+        }
+
+        /* YouTube Music Style Player */
+        .music-player-card {
+            background: #1a1a1a; margin: 15px; padding: 20px; border-radius: 12px; text-align: center;
+        }
+        .music-bar {
+            width: 100%; height: 4px; background: #333; margin: 15px 0; border-radius: 2px; position: relative;
+        }
+        .music-progress { width: 35%; height: 100%; background: #ff0000; border-radius: 2px; }
     </style>
 </head>
 <body>
 
     <div class="app-container">
-        <div class="header">
-            <div class="logo">YI<span>D</span> PLUS</div>
-        </div>
-
-        <div class="form-container">
-            <h2 id="form-title" class="text-2xl font-bold mb-6 text-center">Create Account</h2>
+        
+        <div id="auth-screen" class="auth-screen">
+            <div class="text-center mb-8">
+                <div class="logo text-3xl mb-2">YI<span>D</span> PLUS</div>
+                <p class="text-gray-400 text-sm">Enter your details to continue</p>
+            </div>
             
+            <h2 id="form-title" class="text-xl font-bold mb-4">Create Account</h2>
             <form id="auth-form">
                 <div class="input-group">
                     <label>Email Address</label>
                     <input type="email" id="email" required placeholder="name@example.com">
                 </div>
-                
                 <div class="input-group">
                     <label>Password</label>
                     <input type="password" id="password" required placeholder="Minimum 6 characters">
                 </div>
-                
-                <button type="submit" id="btn-text" class="btn-submit w-100">Register Now</button>
+                <button type="submit" id="btn-text" class="btn-red mt-2">Register Now</button>
             </form>
-            
-            <div class="switch-mode" id="toggle-mode">
-                Already have an account? <span id="toggle-text">Sign In</span>
+            <div class="text-center mt-6 text-sm text-gray-400 cursor-pointer" id="toggle-mode">
+                Already have an account? <span class="text-red-500 font-bold">Sign In</span>
             </div>
         </div>
+
+        <div id="main-app" class="main-app">
+            <div class="header">
+                <div class="logo">YI<span>D</span> PLUS</div>
+                <div class="flex gap-4 items-center">
+                    <i class="fa-solid fa-bell text-xl cursor-pointer"></i>
+                    <i class="fa-solid fa-right-from-bracket text-xl cursor-pointer text-gray-400" id="btn-logout"></i>
+                </div>
+            </div>
+
+            <div class="content-area" id="content-area">
+                </div>
+
+            <div class="bottom-nav">
+                <div class="nav-item active" onclick="switchTab('shorts')">
+                    <i class="fa-solid fa-film"></i><div>Shorts</div>
+                </div>
+                <div class="nav-item" onclick="switchTab('music')">
+                    <i class="fa-solid fa-music"></i><div>Music</div>
+                </div>
+                <div class="nav-item" onclick="switchTab('chat')">
+                    <i class="fa-solid fa-comment-dots"></i><div>Chat</div>
+                </div>
+                <div class="nav-item" onclick="switchTab('admin')">
+                    <i class="fa-solid fa-user-shield"></i><div>Admin</div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Your exact valid config from the text you provided
+        // Your 100% verified configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDjGmskzkMi3FNu02RomBPUyp45zhPEhEY",
             authDomain: "shorts-e05cc.firebaseapp.com",
@@ -144,60 +187,164 @@
             appId: "1:677889813755:web:e28c37e6dba645d0fc545e"
         };
 
-        // Initialize Firebase
+        // Init Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getDatabase(app);
 
-        // App State
+        // UI State
         let isSignUpMode = true;
 
-        // DOM Elements
+        // Elements
+        const authScreen = document.getElementById('auth-screen');
+        const mainApp = document.getElementById('main-app');
         const authForm = document.getElementById('auth-form');
         const formTitle = document.getElementById('form-title');
         const btnText = document.getElementById('btn-text');
         const toggleMode = document.getElementById('toggle-mode');
-        const toggleText = document.getElementById('toggle-text');
+        const btnLogout = document.getElementById('btn-logout');
 
-        // Toggle between Login and Signup
+        // Monitor Auth State (Keep user logged in if they refresh)
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                authScreen.style.display = 'none';
+                mainApp.style.display = 'flex';
+                switchTab('shorts'); // Default tab
+            } else {
+                authScreen.style.display = 'flex';
+                mainApp.style.display = 'none';
+            }
+        });
+
+        // Toggle Sign In / Sign Up
         toggleMode.addEventListener('click', () => {
             isSignUpMode = !isSignUpMode;
             if (isSignUpMode) {
                 formTitle.innerText = "Create Account";
                 btnText.innerText = "Register Now";
-                toggleMode.innerHTML = 'Already have an account? <span>Sign In</span>';
+                toggleMode.innerHTML = 'Already have an account? <span class="text-red-500 font-bold">Sign In</span>';
             } else {
                 formTitle.innerText = "Welcome Back";
                 btnText.innerText = "Sign In";
-                toggleMode.innerHTML = 'New to YID PLUS? <span>Create Account</span>';
+                toggleMode.innerHTML = 'New to YID PLUS? <span class="text-red-500 font-bold">Create Account</span>';
             }
         });
 
-        // Handle Form Submit
+        // Form Submit
         authForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
             if (isSignUpMode) {
-                // Register
-                createUserWithEmailAndPassword(auth, email, password)
-                    .then((userCredential) => {
-                        alert("Success! Account created for " + userCredential.user.email);
-                    })
-                    .catch((error) => {
-                        alert("Registration Error: " + error.message);
-                    });
+                createUserWithEmailAndPassword(auth, email, password).catch(err => alert(err.message));
             } else {
-                // Login
-                signInWithEmailAndPassword(auth, email, password)
-                    .then((userCredential) => {
-                        alert("Success! Logged in as " + userCredential.user.email);
-                    })
-                    .catch((error) => {
-                        alert("Login Error: " + error.message);
-                    });
+                signInWithEmailAndPassword(auth, email, password).catch(err => alert(err.message));
             }
         });
+
+        // Logout Button
+        btnLogout.addEventListener('click', () => {
+            signOut(auth);
+        });
+
+        // Global function for layout switching
+        window.switchTab = function(tabName) {
+            const contentArea = document.getElementById('content-area');
+            
+            // Update Active Nav Style
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            const index = ['shorts', 'music', 'chat', 'admin'].indexOf(tabName);
+            document.querySelectorAll('.nav-item')[index].classList.add('active');
+
+            if (tabName === 'shorts') {
+                contentArea.innerHTML = `
+                    <div class="short-video-container">
+                        <div class="video-placeholder">
+                            <i class="fa-solid fa-play text-5xl mb-3 text-red-600"></i>
+                            <span>YID PLUS Shorts Video</span>
+                        </div>
+                        <div class="shorts-right-menu">
+                            <div class="menu-icon-btn"><i class="fa-solid fa-heart text-red-500"></i><span>1.2k</span></div>
+                            <div class="menu-icon-btn"><i class="fa-solid fa-comment"></i><span>45</span></div>
+                            <div class="menu-icon-btn"><i class="fa-solid fa-share"></i><span>Share</span></div>
+                        </div>
+                    </div>`;
+            } 
+            else if (tabName === 'music') {
+                contentArea.innerHTML = `
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold mb-4 text-red-500">YouTube Music Player</h3>
+                        <div class="music-player-card">
+                            <div class="w-32 h-32 bg-zinc-800 mx-auto rounded-lg flex items-center justify-center mb-4">
+                                <i class="fa-solid fa-music text-4xl text-red-600"></i>
+                            </div>
+                            <h4 class="font-bold text-lg">Chassidish Track</h4>
+                            <p class="text-gray-400 text-sm">YID PLUS Streaming</p>
+                            <div class="music-bar"><div class="music-progress"></div></div>
+                            <div class="flex justify-center gap-6 text-2xl items-center">
+                                <i class="fa-solid fa-backward cursor-pointer"></i>
+                                <i class="fa-solid fa-circle-play text-4xl text-red-600 cursor-pointer"></i>
+                                <i class="fa-solid fa-forward cursor-pointer"></i>
+                            </div>
+                        </div>
+                    </div>`;
+            } 
+            else if (tabName === 'chat') {
+                contentArea.innerHTML = `
+                    <div class="flex flex-col h-100 relative">
+                        <div id="msg-box" class="flex-1 p-4 overflow-y-auto space-y-3" style="max-height: calc(100vh - 220px);">
+                            <div class="bg-zinc-800 p-3 rounded-lg max-w-xs">שלום עליכם! ברוך הבא צו YID PLUS</div>
+                        </div>
+                        <div class="chat-input-area">
+                            <input type="text" id="msg-input" class="chat-input" placeholder="Type a message...">
+                            <button id="btn-send-msg" class="bg-red-600 p-3 rounded-full text-white w-12 h-12 flex items-center justify-center">
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>`;
+                
+                // Realtime Chat Integration
+                const btnSend = document.getElementById('btn-send-msg');
+                const msgInput = document.getElementById('msg-input');
+                const msgBox = document.getElementById('msg-box');
+
+                btnSend.onclick = () => {
+                    if(!msgInput.value.trim()) return;
+                    push(ref(db, 'chats'), {
+                        user: auth.currentUser.email,
+                        text: msgInput.value
+                    });
+                    msgInput.value = '';
+                };
+
+                // Listen for messages live
+                onChildAdded(ref(db, 'chats'), (snapshot) => {
+                    const data = snapshot.val();
+                    const isMe = data.user === auth.currentUser.email;
+                    const msgDiv = document.createElement('div');
+                    msgDiv.className = `p-3 rounded-lg max-w-xs ${isMe ? 'bg-red-600 ml-auto text-right' : 'bg-zinc-800'}`;
+                    msgDiv.innerHTML = `<small class="block text-zinc-300 text-xs">${data.user.split('@')[0]}</small>${data.text}`;
+                    msgBox.appendChild(msgDiv);
+                    msgBox.scrollTop = msgBox.scrollHeight;
+                });
+            } 
+            else if (tabName === 'admin') {
+                contentArea.innerHTML = `
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold mb-4 text-red-500"><i class="fa-solid fa-user-shield mr-2"></i>Admin Dashboard</h3>
+                        <div class="bg-zinc-900 p-4 rounded-lg border border-zinc-800 space-y-4">
+                            <p class="text-sm text-gray-400">Upload promotional advertisements or control platform content.</p>
+                            <button class="w-full bg-zinc-800 p-3 rounded-lg text-left text-sm flex justify-between items-center hover:bg-zinc-700">
+                                <span>Upload Video Ad (.mp4)</span><i class="fa-solid fa-upload"></i>
+                            </button>
+                            <button class="w-full bg-zinc-800 p-3 rounded-lg text-left text-sm flex justify-between items-center hover:bg-zinc-700 text-red-400">
+                                <span>Moderate & Delete Content</span><i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>`;
+            }
+        }
     </script>
 </body>
-    </html>
+</html>

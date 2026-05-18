@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>YID PLUS</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -49,43 +49,70 @@
             border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer;
             width: 100%; transition: background 0.2s;
         }
-        .btn-red:hover { background: #cc0000; }
         
-        /* Main App Styles (Hidden by default) */
+        /* Main App Styles */
         .main-app {
             display: none;
             flex-direction: column;
             height: 100%;
+            position: relative;
         }
         .header {
-            padding: 15px; display: flex; justify-content: space-between;
-            align-items: center; border-bottom: 1px solid #272727;
+            height: 60px;
+            padding: 0 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #272727;
+            background: #0f0f0f;
+            z-index: 60;
         }
         .logo { font-size: 22px; font-weight: bold; letter-spacing: 1px; }
         .logo span { color: #ff0000; }
         
-        .content-area { flex: 1; overflow-y: auto; position: relative; padding-bottom: 80px; }
-        
-        /* Shorts View */
-        .short-video-container {
-            height: 100%; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; background: #000; position: relative;
+        .content-area { 
+            height: calc(100vh - 130px); 
+            overflow-y: auto; 
+            position: relative;
+            background: #000;
         }
-        .video-placeholder {
-            font-size: 18px; color: #666; display: flex; flex-direction: column; align-items: center;
+        
+        /* Shorts View Fix */
+        .short-video-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .main-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         .shorts-right-menu {
-            position: absolute; right: 15px; bottom: 100px; display: flex;
-            flex-direction: column; gap: 20px; align-items: center;
+            position: absolute; right: 15px; bottom: 40px; display: flex;
+            flex-direction: column; gap: 20px; align-items: center; z-index: 70;
+            background: rgba(0,0,0,0.3); padding: 10px; border-radius: 20px;
         }
-        .menu-icon-btn { display: flex; flex-direction: column; align-items: center; font-size: 24px; cursor: pointer; }
-        .menu-icon-btn span { font-size: 12px; margin-top: 5px; color: #aaa; }
+        .menu-icon-btn { display: flex; flex-direction: column; align-items: center; font-size: 24px; cursor: pointer; text-shadow: 1px 1px 5px black; }
+        .menu-icon-btn span { font-size: 12px; margin-top: 5px; color: #ffffff; font-weight: bold; }
 
-        /* Bottom Nav */
+        /* FIXED BOTTOM NAV */
         .bottom-nav {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 70px;
-            background: #0f0f0f; border-top: 1px solid #272727; display: flex;
-            justify-content: space-around; align-items: center; z-index: 50;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background: #0f0f0f;
+            border-top: 1px solid #272727;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 100;
         }
         .nav-item {
             display: flex; flex-direction: column; align-items: center;
@@ -96,8 +123,8 @@
 
         /* Chat Styles (WhatsApp Style) */
         .chat-input-area {
-            position: absolute; bottom: 70px; left: 0; width: 100%; padding: 10px;
-            background: #121212; display: flex; gap: 10px; align-items: center;
+            position: absolute; bottom: 0; left: 0; width: 100%; padding: 10px;
+            background: #121212; display: flex; gap: 10px; align-items: center; z-index: 80;
         }
         .chat-input {
             flex: 1; padding: 12px; background: #2c2c2c; border: none;
@@ -111,7 +138,7 @@
         .music-bar {
             width: 100%; height: 4px; background: #333; margin: 15px 0; border-radius: 2px; position: relative;
         }
-        .music-progress { width: 35%; height: 100%; background: #ff0000; border-radius: 2px; }
+        .music-progress { width: 45%; height: 100%; background: #ff0000; border-radius: 2px; }
     </style>
 </head>
 <body>
@@ -176,7 +203,6 @@
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Your 100% verified configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDjGmskzkMi3FNu02RomBPUyp45zhPEhEY",
             authDomain: "shorts-e05cc.firebaseapp.com",
@@ -187,15 +213,12 @@
             appId: "1:677889813755:web:e28c37e6dba645d0fc545e"
         };
 
-        // Init Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        // UI State
         let isSignUpMode = true;
 
-        // Elements
         const authScreen = document.getElementById('auth-screen');
         const mainApp = document.getElementById('main-app');
         const authForm = document.getElementById('auth-form');
@@ -204,19 +227,17 @@
         const toggleMode = document.getElementById('toggle-mode');
         const btnLogout = document.getElementById('btn-logout');
 
-        // Monitor Auth State (Keep user logged in if they refresh)
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 authScreen.style.display = 'none';
                 mainApp.style.display = 'flex';
-                switchTab('shorts'); // Default tab
+                switchTab('shorts');
             } else {
                 authScreen.style.display = 'flex';
                 mainApp.style.display = 'none';
             }
         });
 
-        // Toggle Sign In / Sign Up
         toggleMode.addEventListener('click', () => {
             isSignUpMode = !isSignUpMode;
             if (isSignUpMode) {
@@ -230,12 +251,10 @@
             }
         });
 
-        // Form Submit
         authForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-
             if (isSignUpMode) {
                 createUserWithEmailAndPassword(auth, email, password).catch(err => alert(err.message));
             } else {
@@ -243,35 +262,30 @@
             }
         });
 
-        // Logout Button
-        btnLogout.addEventListener('click', () => {
-            signOut(auth);
-        });
+        btnLogout.addEventListener('click', () => { signOut(auth); });
 
-        // Global function for layout switching
         window.switchTab = function(tabName) {
             const contentArea = document.getElementById('content-area');
-            
-            // Update Active Nav Style
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             const index = ['shorts', 'music', 'chat', 'admin'].indexOf(tabName);
             document.querySelectorAll('.nav-item')[index].classList.add('active');
 
             if (tabName === 'shorts') {
+                contentArea.style.paddingBottom = "0";
                 contentArea.innerHTML = `
                     <div class="short-video-container">
-                        <div class="video-placeholder">
-                            <i class="fa-solid fa-play text-5xl mb-3 text-red-600"></i>
-                            <span>YID PLUS Shorts Video</span>
-                        </div>
+                        <video class="main-video" autoplay loop muted playsinline>
+                            <source src="https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-sign-lighting-40049-large.mp4" type="video/mp4">
+                        </video>
                         <div class="shorts-right-menu">
                             <div class="menu-icon-btn"><i class="fa-solid fa-heart text-red-500"></i><span>1.2k</span></div>
-                            <div class="menu-icon-btn"><i class="fa-solid fa-comment"></i><span>45</span></div>
-                            <div class="menu-icon-btn"><i class="fa-solid fa-share"></i><span>Share</span></div>
+                            <div class="menu-icon-btn"><i class="fa-solid fa-comment text-white"></i><span>45</span></div>
+                            <div class="menu-icon-btn"><i class="fa-solid fa-share text-white"></i><span>Share</span></div>
                         </div>
                     </div>`;
             } 
             else if (tabName === 'music') {
+                contentArea.style.paddingBottom = "0";
                 contentArea.innerHTML = `
                     <div class="p-4">
                         <h3 class="text-xl font-bold mb-4 text-red-500">YouTube Music Player</h3>
@@ -291,54 +305,50 @@
                     </div>`;
             } 
             else if (tabName === 'chat') {
+                contentArea.style.paddingBottom = "70px"; 
                 contentArea.innerHTML = `
-                    <div class="flex flex-col h-100 relative">
-                        <div id="msg-box" class="flex-1 p-4 overflow-y-auto space-y-3" style="max-height: calc(100vh - 220px);">
-                            <div class="bg-zinc-800 p-3 rounded-lg max-w-xs">שלום עליכם! ברוך הבא צו YID PLUS</div>
+                    <div class="flex flex-col h-full justify-between">
+                        <div id="msg-box" class="flex-1 p-4 overflow-y-auto space-y-3" style="height: calc(100% - 60px);">
+                            <div class="bg-zinc-800 p-3 rounded-lg max-w-xs text-sm">שלום עליכם! ברוך הבא צו YID PLUS</div>
                         </div>
                         <div class="chat-input-area">
                             <input type="text" id="msg-input" class="chat-input" placeholder="Type a message...">
-                            <button id="btn-send-msg" class="bg-red-600 p-3 rounded-full text-white w-12 h-12 flex items-center justify-center">
+                            <button id="btn-send-msg" class="bg-red-600 p-3 rounded-full text-white w-10 h-10 flex items-center justify-center">
                                 <i class="fa-solid fa-paper-plane"></i>
                             </button>
                         </div>
                     </div>`;
                 
-                // Realtime Chat Integration
                 const btnSend = document.getElementById('btn-send-msg');
                 const msgInput = document.getElementById('msg-input');
                 const msgBox = document.getElementById('msg-box');
 
                 btnSend.onclick = () => {
                     if(!msgInput.value.trim()) return;
-                    push(ref(db, 'chats'), {
-                        user: auth.currentUser.email,
-                        text: msgInput.value
-                    });
+                    push(ref(db, 'chats'), { user: auth.currentUser.email, text: msgInput.value });
                     msgInput.value = '';
                 };
 
-                // Listen for messages live
                 onChildAdded(ref(db, 'chats'), (snapshot) => {
                     const data = snapshot.val();
                     const isMe = data.user === auth.currentUser.email;
                     const msgDiv = document.createElement('div');
-                    msgDiv.className = `p-3 rounded-lg max-w-xs ${isMe ? 'bg-red-600 ml-auto text-right' : 'bg-zinc-800'}`;
-                    msgDiv.innerHTML = `<small class="block text-zinc-300 text-xs">${data.user.split('@')[0]}</small>${data.text}`;
+                    msgDiv.className = `p-3 rounded-lg max-w-xs text-sm ${isMe ? 'bg-red-600 ml-auto text-right' : 'bg-zinc-800'}`;
+                    msgDiv.innerHTML = `<small class="block text-zinc-400 text-xs">${data.user.split('@')[0]}</small>${data.text}`;
                     msgBox.appendChild(msgDiv);
                     msgBox.scrollTop = msgBox.scrollHeight;
                 });
             } 
             else if (tabName === 'admin') {
+                contentArea.style.paddingBottom = "0";
                 contentArea.innerHTML = `
                     <div class="p-4">
                         <h3 class="text-xl font-bold mb-4 text-red-500"><i class="fa-solid fa-user-shield mr-2"></i>Admin Dashboard</h3>
                         <div class="bg-zinc-900 p-4 rounded-lg border border-zinc-800 space-y-4">
-                            <p class="text-sm text-gray-400">Upload promotional advertisements or control platform content.</p>
-                            <button class="w-full bg-zinc-800 p-3 rounded-lg text-left text-sm flex justify-between items-center hover:bg-zinc-700">
+                            <button class="w-full bg-zinc-800 p-3 rounded-lg text-left text-sm flex justify-between items-center">
                                 <span>Upload Video Ad (.mp4)</span><i class="fa-solid fa-upload"></i>
                             </button>
-                            <button class="w-full bg-zinc-800 p-3 rounded-lg text-left text-sm flex justify-between items-center hover:bg-zinc-700 text-red-400">
+                            <button class="w-full bg-zinc-800 p-3 rounded-lg text-left text-sm flex justify-between items-center text-red-400">
                                 <span>Moderate & Delete Content</span><i class="fa-solid fa-trash"></i>
                             </button>
                         </div>
@@ -347,4 +357,4 @@
         }
     </script>
 </body>
-</html>
+                    </html>
